@@ -4,6 +4,7 @@ import "../styles/globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/motion/CartDrawer";
+import CursorGlow from "@/components/ui/CursorGlow";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -29,6 +30,7 @@ export default function RootLayout({
   return (
     <html lang="en" className={`${geistSans.variable} ${geistMono.variable}`}>
       <body className="bg-bg-primary text-text-primary antialiased min-h-screen flex flex-col">
+        <CursorGlow />
         <Navbar />
         <main className="flex-1">{children}</main>
         <CartDrawer />

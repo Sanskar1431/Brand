@@ -256,7 +256,7 @@ export default function CollectionReveal() {
                 </span>
                 <Link
                   href={cat.link}
-                  className="text-xs bg-white text-black hover:bg-accent hover:text-white px-5 py-3 font-bold uppercase tracking-widest transition-colors"
+                  className="text-xs bg-accent text-white hover:bg-accent-hover px-5 py-3 font-bold uppercase tracking-widest transition-colors"
                 >
                   {cat.btnText}
                 </Link>

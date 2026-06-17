@@ -59,6 +59,31 @@ function Particles({ count, convergence, opacity = 0.6 }: ParticleFieldProps) {
     return arr;
   }, [count, startPositions]);
 
+  // Create color array for colorful glowing particles
+  const colorArray = useMemo(() => {
+    const arr = new Float32Array(count * 3);
+    for (let i = 0; i < count; i++) {
+      const r = Math.random();
+      if (r < 0.35) {
+        // Sunset Coral (#FF4E50)
+        arr[i * 3] = 1.0;
+        arr[i * 3 + 1] = 0.31;
+        arr[i * 3 + 2] = 0.31;
+      } else if (r < 0.7) {
+        // Neon Cyan (#06B6D4)
+        arr[i * 3] = 0.02;
+        arr[i * 3 + 1] = 0.71;
+        arr[i * 3 + 2] = 0.83;
+      } else {
+        // Vibrant Purple (#7C3AED)
+        arr[i * 3] = 0.48;
+        arr[i * 3 + 1] = 0.22;
+        arr[i * 3 + 2] = 0.93;
+      }
+    }
+    return arr;
+  }, [count]);
+
   // Update loop (Section 5.1.3)
   useFrame((state) => {
     if (!pointsRef.current) return;
@@ -94,10 +119,14 @@ function Particles({ count, convergence, opacity = 0.6 }: ParticleFieldProps) {
           attach="attributes-position"
           args={[positionArray, 3]}
         />
+        <bufferAttribute
+          attach="attributes-color"
+          args={[colorArray, 3]}
+        />
       </bufferGeometry>
       <pointsMaterial
         size={0.16}
-        color={new THREE.Color("#B8BCC4")}
+        vertexColors={true}
         map={texture}
         transparent
         opacity={opacity}

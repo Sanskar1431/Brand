@@ -218,7 +218,7 @@ export default function ContactPage() {
                 <button
                   type="submit"
                   disabled={submitStatus === "loading"}
-                  className="w-full bg-white text-black hover:bg-accent hover:text-white py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors relative flex items-center justify-center min-h-[52px] cursor-pointer"
+                  className="w-full bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors relative flex items-center justify-center min-h-[52px] cursor-pointer"
                 >
                   <AnimatePresence mode="wait">
                     {submitStatus === "idle" && (

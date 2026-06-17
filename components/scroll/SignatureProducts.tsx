@@ -204,7 +204,7 @@ export default function SignatureProducts() {
             <div className="mt-8">
               <Link
                 href={`/product/${sigTee.slug}`}
-                className="bg-white text-black hover:bg-accent hover:text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
+                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
               >
                 SHOP THE LAUNCH
               </Link>
@@ -233,7 +233,7 @@ export default function SignatureProducts() {
             <div className="mt-8">
               <Link
                 href={`/product/${sigJogger.slug}`}
-                className="bg-white text-black hover:bg-accent hover:text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
+                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
               >
                 SHOP THE LAUNCH
               </Link>
