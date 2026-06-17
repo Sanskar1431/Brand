@@ -115,7 +115,7 @@ export default function CursorGlow() {
   return (
     <div
       ref={containerRef}
-      className="fixed inset-0 pointer-events-none overflow-hidden z-[25] select-none mix-blend-multiply dark:mix-blend-screen transition-opacity duration-300"
+      className="fixed inset-0 pointer-events-none overflow-hidden z-[25] select-none mix-blend-screen transition-opacity duration-300"
       style={{ opacity: 0.6 }}
     >
       {/* Blob 1: Purple (Large & Fast) */}
