@@ -1,0 +1,25 @@
+:root {
+  --c-black: #0A0A0A;
+  --c-obsidian: #121214;
+  --c-gunmetal: #2C2E33;
+  --c-purple: #6B46C1;
+  --c-purple-bright: #8B5CF6;
+  --c-chrome: #B8BCC4;
+  --c-soft-white: #F5F4F2;
+  --c-white: #FFFFFF;
+
+  /* semantic aliases — components reference these, never raw colours */
+  --bg-primary: var(--c-black);
+  --bg-surface: var(--c-obsidian);
+  --bg-elevated: var(--c-gunmetal);
+  --text-primary: var(--c-soft-white);
+  --text-muted: color-mix(in srgb, var(--c-soft-white) 60%, transparent);
+  --accent: var(--c-purple);
+  --accent-hover: var(--c-purple-bright);
+  --border-subtle: color-mix(in srgb, var(--c-chrome) 20%, transparent);
+  --state-error: #8B4A4A; /* muted brick tone rather than pure red */
+
+  /* layout and spacing tokens */
+  --container-max-width: 1600px;
+  --base-unit: 8px;
+}
