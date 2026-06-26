@@ -8,6 +8,7 @@ import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import { drawerSlide } from "./variants";
 
 export default function CartDrawer() {
@@ -15,6 +16,7 @@ export default function CartDrawer() {
   const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [isCheckoutWiping, setIsCheckoutWiping] = useState(false);
+  const router = useRouter();
 
   // Fetch 1-2 Signature Products if cart is empty
   useEffect(() => {
@@ -28,7 +30,7 @@ export default function CartDrawer() {
     setTimeout(() => {
       setIsCheckoutWiping(false);
       setOpenCart(false);
-      alert("Checkout triggered! Transitioning to secure checkout gateway.");
+      router.push("/checkout");
     }, 1200);
   };
 
