@@ -7,6 +7,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useUIStore } from "@/lib/store/uiStore";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useAmbientAudio } from "@/hooks/useAmbientAudio";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
+import { useRouter } from "next/navigation";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -17,8 +19,12 @@ export default function Navbar() {
   
   const { setOpenCart, isAudioPlaying, toggleAudio, isMenuOpen, setOpenMenu } = useUIStore();
   const cartItemsCount = useCartStore((state) => state.getTotalItems());
+  const wishlistCount = useWishlistStore((state) => state.items.length);
+  const router = useRouter();
   
   const [hasBg, setHasBg] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
 
   useEffect(() => {
     const handleScroll = () => {
@@ -126,6 +132,55 @@ export default function Navbar() {
               ))}
             </button>
 
+            {/* Search Toggle Button */}
+            <button
+              onClick={() => setIsSearchOpen(true)}
+              className="p-2 text-chrome hover:text-text-primary transition-colors cursor-pointer"
+              aria-label="Search Catalog"
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.637 10.637Z"
+                />
+              </svg>
+            </button>
+
+            {/* Wishlist Link Button */}
+            <Link
+              href="/wishlist"
+              className="relative p-2 text-chrome hover:text-text-primary transition-colors"
+              aria-label={`View Wishlist, ${wishlistCount} items`}
+            >
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-5 h-5"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                />
+              </svg>
+              {wishlistCount > 0 && (
+                <span className="absolute -top-1 -right-1 bg-accent text-white text-[8px] w-4 h-4 rounded-full flex items-center justify-center font-bold font-sans">
+                  {wishlistCount}
+                </span>
+              )}
+            </Link>
+
             {/* Cart Button */}
             <button
               onClick={() => setOpenCart(true)}
@@ -223,6 +278,88 @@ export default function Navbar() {
               >
                 Contact Concierge
               </Link>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Search Overlay Modal */}
+      <AnimatePresence>
+        {isSearchOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] flex flex-col justify-start pt-32 px-6 md:px-12"
+          >
+            <div className="max-w-2xl mx-auto w-full relative">
+              {/* Close Button */}
+              <button
+                onClick={() => {
+                  setIsSearchOpen(false);
+                  setSearchQuery("");
+                }}
+                className="absolute -top-16 right-0 text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer"
+                aria-label="Close search"
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-6 h-6"
+                >
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                </svg>
+              </button>
+
+              {/* Form */}
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  if (searchQuery.trim()) {
+                    setIsSearchOpen(false);
+                    router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
+                    setSearchQuery("");
+                  }
+                }}
+                className="w-full flex items-center border-b border-border-subtle py-4"
+              >
+                <input
+                  type="text"
+                  placeholder="SEARCH ARCHIVES..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  autoFocus
+                  className="w-full bg-transparent text-xl sm:text-2xl tracking-[0.1em] text-text-primary placeholder:text-chrome/30 outline-none uppercase font-semibold font-display"
+                />
+                <button
+                  type="submit"
+                  className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer"
+                  aria-label="Submit search"
+                >
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M13.5 4.5 21 12m0 0-7.5 7.5M21 12H3"
+                    />
+                  </svg>
+                </button>
+              </form>
+              <div className="mt-4 text-left">
+                <span className="text-[10px] text-accent tracking-[0.25em] font-bold uppercase">
+                  Press Enter to search the collection
+                </span>
+              </div>
             </div>
           </motion.div>
         )}
