@@ -7,6 +7,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { Product, ProductColor } from "@/lib/products/schema";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useUIStore } from "@/lib/store/uiStore";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
 import ProductCard from "./ProductCard";
 
 interface ProductDetailClientProps {
@@ -20,6 +21,16 @@ export default function ProductDetailClient({
 }: ProductDetailClientProps) {
   const { addItem } = useCartStore();
   const { setOpenCart } = useUIStore();
+  const { addItem: addToWishlist, removeItem: removeFromWishlist, hasItem: isInWishlist } = useWishlistStore();
+  const isWishlisted = isInWishlist(product.id);
+
+  const toggleWishlist = () => {
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+    } else {
+      addToWishlist(product);
+    }
+  };
 
   const [selectedColor, setSelectedColor] = useState<ProductColor>(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState<"S" | "M" | "L" | "XL">("M");
@@ -206,13 +217,37 @@ export default function ProductDetailClient({
               </div>
             </div>
 
-            {/* Add to Cart Button */}
-            <div className="pt-4">
+            {/* Add to Cart & Wishlist Buttons */}
+            <div className="pt-4 flex gap-3">
               <button
                 onClick={handleAddToCart}
-                className="w-full bg-accent text-white hover:bg-accent-hover py-4.5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl cursor-pointer"
+                className="flex-1 bg-accent text-white hover:bg-accent-hover py-4.5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl cursor-pointer"
               >
                 ADD TO ARCHIVES
+              </button>
+              <button
+                onClick={toggleWishlist}
+                className={`w-14 border flex items-center justify-center transition-all cursor-pointer ${
+                  isWishlisted
+                    ? "bg-text-primary text-bg-primary border-text-primary"
+                    : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
+                }`}
+                aria-label={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill={isWishlisted ? "currentColor" : "none"}
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-5 h-5"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                  />
+                </svg>
               </button>
             </div>
 
