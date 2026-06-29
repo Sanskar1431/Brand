@@ -1,8 +1,20 @@
 "use client";
 
 import Link from "next/link";
+import { useToastStore } from "@/lib/store/toastStore";
+import { useState } from "react";
 
 export default function Footer() {
+  const { addToast } = useToastStore();
+  const [email, setEmail] = useState("");
+
+  const handleSubscribe = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (email.trim()) {
+      addToast(`SUBSCRIBED TO COLLECTION UPDATES`, "success");
+      setEmail("");
+    }
+  };
   return (
     <footer className="bg-bg-primary border-t border-border-subtle py-20 px-6 md:px-12">
       <div className="max-w-[1600px] mx-auto grid grid-cols-1 md:grid-cols-4 gap-12 md:gap-8">
@@ -52,6 +64,11 @@ export default function Footer() {
               </Link>
             </li>
             <li>
+              <Link href="/profile" className="hover:text-accent transition-colors">
+                My Profile / Orders
+              </Link>
+            </li>
+            <li>
               <Link href="/contact" className="hover:text-accent transition-colors">
                 Contact & Support
               </Link>
@@ -73,15 +90,14 @@ export default function Footer() {
             Subscribe to unlock private collection updates.
           </p>
           <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              alert("Joined the list.");
-            }}
+            onSubmit={handleSubscribe}
             className="flex items-center gap-2 border-b border-chrome/30 py-2 focus-within:border-accent transition-colors"
           >
             <input
               type="email"
               placeholder="ENTER EMAIL"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
               className="bg-transparent text-sm w-full outline-none text-text-primary placeholder:text-chrome/50 tracking-wider uppercase"
               required
             />
