@@ -46,6 +46,15 @@ export default function ProductDetailClient({
   const [weightInput, setWeightInput] = useState("");
   const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
 
+  // Load persistent size preference on mount
+  useEffect(() => {
+    const savedRec = localStorage.getItem("prince-size-recommendation");
+    if (savedRec && ["S", "M", "L", "XL"].includes(savedRec)) {
+      setSelectedSize(savedRec as any);
+      setRecommendedSize(savedRec);
+    }
+  }, []);
+
   // Care Accordion State
   const [isCareOpen, setIsCareOpen] = useState(false);
 
@@ -79,6 +88,10 @@ export default function ProductDetailClient({
       sizeRec = "S";
     }
     setRecommendedSize(sizeRec);
+    setSelectedSize(sizeRec as any);
+    localStorage.setItem("prince-size-recommendation", sizeRec);
+    addToast(`SIZE PROFILE SAVED: ${sizeRec} SELECT`, "success");
+    setIsSizeGuideOpen(false);
   };
 
   const allAngles = [product.images.hero, ...product.images.gallery];
@@ -197,7 +210,10 @@ export default function ProductDetailClient({
             {/* Size Selector */}
             <div className="space-y-3">
               <div className="flex justify-between items-center text-[10px] text-accent tracking-[0.2em] font-bold uppercase">
-                <span>Select Size</span>
+                <span>
+                  Select Size
+                  {recommendedSize && ` (Fit profile: ${recommendedSize})`}
+                </span>
                 <button
                   onClick={() => setIsSizeGuideOpen(true)}
                   className="underline hover:text-text-primary transition-colors cursor-pointer"
