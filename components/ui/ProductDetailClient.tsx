@@ -8,6 +8,7 @@ import { Product, ProductColor } from "@/lib/products/schema";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useUIStore } from "@/lib/store/uiStore";
 import { useWishlistStore } from "@/lib/store/wishlistStore";
+import { useToastStore } from "@/lib/store/toastStore";
 import ProductCard from "./ProductCard";
 
 interface ProductDetailClientProps {
@@ -23,12 +24,15 @@ export default function ProductDetailClient({
   const { setOpenCart } = useUIStore();
   const { addItem: addToWishlist, removeItem: removeFromWishlist, hasItem: isInWishlist } = useWishlistStore();
   const isWishlisted = isInWishlist(product.id);
+  const { addToast } = useToastStore();
 
   const toggleWishlist = () => {
     if (isWishlisted) {
       removeFromWishlist(product.id);
+      addToast(`${product.name} REMOVED FROM WISHLIST`, "info");
     } else {
       addToWishlist(product);
+      addToast(`${product.name} ADDED TO WISHLIST`, "success");
     }
   };
 
@@ -52,6 +56,7 @@ export default function ProductDetailClient({
 
   const handleAddToCart = () => {
     addItem(product, selectedColor.name, selectedSize, 1);
+    addToast(`${product.name} ADDED TO CART`, "success");
     setOpenCart(true); // Open cart slide drawer immediately (Section 7.1.3 feedback)
   };
 

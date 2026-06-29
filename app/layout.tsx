@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import CartDrawer from "@/components/motion/CartDrawer";
 import CursorGlow from "@/components/ui/CursorGlow";
+import ToastContainer from "@/components/ui/ToastContainer";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -34,6 +35,7 @@ export default function RootLayout({
         <Navbar />
         <main className="flex-1">{children}</main>
         <CartDrawer />
+        <ToastContainer />
         <Footer />
       </body>
     </html>
