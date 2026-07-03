@@ -69,8 +69,8 @@ export default function Footer() {
               </Link>
             </li>
             <li>
-              <Link href="/contact" className="hover:text-accent transition-colors">
-                Contact & Support
+              <Link href="/support" className="hover:text-accent transition-colors">
+                Support & FAQ
               </Link>
             </li>
             <li>
