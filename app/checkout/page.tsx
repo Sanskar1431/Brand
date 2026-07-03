@@ -4,10 +4,12 @@ import { useState } from "react";
 import { useCartStore } from "@/lib/store/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const [isSuccess, setIsSuccess] = useState(false);
+  const router = useRouter();
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -26,8 +28,9 @@ export default function CheckoutPage() {
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
-      setIsSuccess(true);
+      const randomOrderId = "PRNC-" + Math.floor(100000 + Math.random() * 900000);
       clearCart();
+      router.push(`/checkout/success?orderId=${randomOrderId}`);
     }, 1800);
   };
 
