@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { motion, AnimatePresence } from "framer-motion";
+import { useToastStore } from "@/lib/store/toastStore";
 
 // Zod validation schema (Section 7.3.2)
 const contactSchema = z.object({
@@ -34,6 +35,7 @@ const faqs = [
 export default function ContactPage() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "loading" | "success">("idle");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const { addToast } = useToastStore();
 
   const {
     register,
@@ -49,6 +51,7 @@ export default function ContactPage() {
     // Simulate network submission delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setSubmitStatus("success");
+    addToast("INQUIRY SUBMITTED TO CONCIERGE QUEUE", "success");
     reset();
     setTimeout(() => setSubmitStatus("idle"), 5000);
   };
