@@ -46,10 +46,10 @@ export default function Navbar() {
         initial={{ y: -20, opacity: 0 }}
         animate={{ y: 0, opacity: 1 }}
         transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className={`fixed top-0 left-0 w-full z-40 transition-all duration-300 ${
+        className={`fixed left-0 w-full z-40 transition-all duration-300 ${
           hasBg
-            ? "bg-bg-surface/85 backdrop-blur-md border-b border-border-subtle py-2"
-            : "bg-transparent border-b border-transparent py-3"
+            ? "top-0 bg-bg-surface/85 backdrop-blur-md border-b border-border-subtle py-2"
+            : "top-9 bg-transparent border-b border-transparent py-3"
         }`}
       >
         <div className="max-w-[1600px] mx-auto px-6 md:px-12 h-14 flex items-center justify-between">
