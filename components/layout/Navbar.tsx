@@ -26,6 +26,14 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
 
+  const popularSearches = ["TEE", "JOGGER", "HEAVYWEIGHT", "RAW", "FRENCH TERRY"];
+
+  const handlePopularSearchClick = (term: string) => {
+    setIsSearchOpen(false);
+    router.push(`/search?q=${encodeURIComponent(term)}`);
+    setSearchQuery("");
+  };
+
   useEffect(() => {
     const handleScroll = () => {
       if (window.scrollY > 50) {
@@ -359,6 +367,22 @@ export default function Navbar() {
                 <span className="text-[10px] text-accent tracking-[0.25em] font-bold uppercase">
                   Press Enter to search the collection
                 </span>
+              </div>
+              <div className="mt-8 text-left space-y-3">
+                <span className="text-[10px] text-chrome/55 tracking-[0.2em] font-bold uppercase block">
+                  Popular Searches:
+                </span>
+                <div className="flex flex-wrap gap-2">
+                  {popularSearches.map((term) => (
+                    <button
+                      key={term}
+                      onClick={() => handlePopularSearchClick(term)}
+                      className="text-[10px] tracking-wider uppercase font-mono border border-border-subtle/50 px-3 py-1.5 hover:border-accent hover:text-accent transition-all cursor-pointer bg-bg-surface/30"
+                    >
+                      {term}
+                    </button>
+                  ))}
+                </div>
               </div>
             </div>
           </motion.div>
