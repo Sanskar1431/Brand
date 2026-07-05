@@ -427,10 +427,10 @@ export default function ProductDetailClient({
               className="fixed inset-0 bg-black z-50 backdrop-blur-sm"
             />
             <motion.div
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0, scale: 0.95 }}
-              className="fixed inset-x-4 top-[20%] max-w-md mx-auto bg-bg-surface border border-border-subtle p-6 rounded-2xl z-[60] text-left shadow-2xl"
+              initial={{ opacity: 0, scale: 0.95, y: "-40%" }}
+              animate={{ opacity: 1, scale: 1, y: "-50%" }}
+              exit={{ opacity: 0, scale: 0.95, y: "-40%" }}
+              className="fixed inset-x-4 top-1/2 -translate-y-1/2 max-w-md mx-auto max-h-[90vh] overflow-y-auto bg-bg-surface border border-border-subtle p-6 rounded-2xl z-[60] text-left shadow-2xl no-scrollbar"
             >
               <div className="flex justify-between items-center border-b border-border-subtle/50 pb-4 mb-6">
                 <h3 className="font-display text-sm tracking-[0.15em] font-semibold uppercase">
@@ -500,6 +500,40 @@ export default function ProductDetailClient({
                   </motion.div>
                 )}
               </AnimatePresence>
+
+              {/* Measurements Table */}
+              <div className="mt-8 border-t border-border-subtle/30 pt-6">
+                <h4 className="text-[10px] text-chrome tracking-[0.2em] font-bold uppercase mb-4">
+                  GARMENT DIMENSIONS (CM)
+                </h4>
+                <div className="overflow-x-auto">
+                  <table className="w-full text-[10px] font-mono text-chrome border-collapse">
+                    <thead>
+                      <tr className="border-b border-border-subtle/30 pb-2 text-left uppercase text-[9px] text-accent font-bold">
+                        <th className="py-2">SIZE</th>
+                        <th className="py-2">CHEST</th>
+                        <th className="py-2">LENGTH</th>
+                        <th className="py-2">SLEEVE</th>
+                      </tr>
+                    </thead>
+                    <tbody className="divide-y divide-border-subtle/20">
+                      {[
+                        { size: "S", chest: "116", length: "72", sleeve: "22" },
+                        { size: "M", chest: "122", length: "74", sleeve: "23" },
+                        { size: "L", chest: "128", length: "76", sleeve: "24" },
+                        { size: "XL", chest: "134", length: "78", sleeve: "25" },
+                      ].map((row) => (
+                        <tr key={row.size} className="hover:text-text-primary transition-colors">
+                          <td className="py-2 font-bold">{row.size}</td>
+                          <td className="py-2">{row.chest}</td>
+                          <td className="py-2">{row.length}</td>
+                          <td className="py-2">{row.sleeve}</td>
+                        </tr>
+                      ))}
+                    </tbody>
+                  </table>
+                </div>
+              </div>
             </motion.div>
           </>
         )}
