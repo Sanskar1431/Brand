@@ -1,9 +1,25 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useState } from "react";
 
 export default function ProfilePage() {
+  const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+
+  const toggleOrderExpand = (id: string) => {
+    setExpandedOrderId(expandedOrderId === id ? null : id);
+  };
+
+  const getTimelineSteps = (status: string) => {
+    return [
+      { label: "ORDER PLACED", active: true },
+      { label: "PREPARED", active: true },
+      { label: "DISPATCHED", active: status === "DELIVERED" || status === "IN TRANSIT" },
+      { label: "DELIVERED", active: status === "DELIVERED" },
+    ];
+  };
+
   const mockOrders = [
     {
       id: "PRNC-940182",
@@ -112,35 +128,79 @@ export default function ProfilePage() {
               {mockOrders.map((order) => (
                 <div
                   key={order.id}
-                  className="bg-bg-surface border border-border-subtle/50 p-6 flex flex-col sm:flex-row justify-between sm:items-center gap-4 hover:border-chrome/40 transition-colors"
+                  onClick={() => toggleOrderExpand(order.id)}
+                  className="bg-bg-surface border border-border-subtle/50 p-6 flex flex-col justify-between gap-4 hover:border-chrome/40 transition-colors cursor-pointer"
                 >
-                  <div className="space-y-2">
-                    <div className="flex items-center gap-3">
-                      <span className="text-xs font-mono font-bold text-accent select-all">{order.id}</span>
-                      <span className="text-[10px] text-chrome uppercase tracking-wider">{order.date}</span>
+                  <div className="flex flex-col sm:flex-row justify-between sm:items-center gap-4 w-full">
+                    <div className="space-y-2 text-left">
+                      <div className="flex items-center gap-3">
+                        <span className="text-xs font-mono font-bold text-accent select-all">{order.id}</span>
+                        <span className="text-[10px] text-chrome uppercase tracking-wider">{order.date}</span>
+                      </div>
+                      <h4 className="text-sm uppercase tracking-wider font-semibold text-text-primary">
+                        {order.item}
+                      </h4>
+                      <p className="text-xs text-chrome uppercase tracking-widest">
+                        COLOR: {order.color} | SIZE: {order.size}
+                      </p>
                     </div>
-                    <h4 className="text-sm uppercase tracking-wider font-semibold text-text-primary">
-                      {order.item}
-                    </h4>
-                    <p className="text-xs text-chrome uppercase tracking-widest">
-                      COLOR: {order.color} | SIZE: {order.size}
-                    </p>
+
+                    <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-4">
+                      <span className="text-sm font-sans font-bold tabular-nums">
+                        ₹{(order.price / 100).toLocaleString("en-IN")}
+                      </span>
+                      <span
+                        className={`text-[9px] font-bold tracking-widest px-3 py-1 border uppercase font-mono ${
+                          order.status === "DELIVERED"
+                            ? "bg-bg-primary text-text-primary border-border-subtle"
+                            : "bg-accent/15 text-accent border-accent/20 animate-pulse"
+                        }`}
+                      >
+                        {order.status}
+                      </span>
+                    </div>
                   </div>
 
-                  <div className="flex sm:flex-col items-baseline sm:items-end justify-between sm:justify-center gap-4">
-                    <span className="text-sm font-sans font-bold tabular-nums">
-                      ₹{(order.price / 100).toLocaleString("en-IN")}
-                    </span>
-                    <span
-                      className={`text-[9px] font-bold tracking-widest px-3 py-1 border uppercase font-mono ${
-                        order.status === "DELIVERED"
-                          ? "bg-bg-primary text-text-primary border-border-subtle"
-                          : "bg-accent/15 text-accent border-accent/20 animate-pulse"
-                      }`}
-                    >
-                      {order.status}
-                    </span>
-                  </div>
+                  <AnimatePresence>
+                    {expandedOrderId === order.id && (
+                      <motion.div
+                        initial={{ height: 0, opacity: 0 }}
+                        animate={{ height: "auto", opacity: 1 }}
+                        exit={{ height: 0, opacity: 0 }}
+                        transition={{ duration: 0.3 }}
+                        className="w-full border-t border-border-subtle/30 pt-6 mt-2 space-y-6 overflow-hidden"
+                        onClick={(e) => e.stopPropagation()} // Stop click bubbling
+                      >
+                        <div className="flex justify-between items-center relative py-2">
+                          {/* Connecting Line */}
+                          <div className="absolute top-[18px] left-[10%] right-[10%] h-[2px] bg-border-subtle/30 z-0" />
+                          
+                          {getTimelineSteps(order.status).map((step, idx) => (
+                            <div key={idx} className="flex flex-col items-center z-10 space-y-2 flex-1 relative">
+                              {/* Circle Node */}
+                              <div
+                                className={`w-4 h-4 rounded-full border-2 flex items-center justify-center transition-all duration-300 ${
+                                  step.active
+                                    ? "bg-accent border-accent text-white scale-110 shadow-lg shadow-accent/20"
+                                    : "bg-bg-surface border-border-subtle text-chrome"
+                                }`}
+                              >
+                                {step.active && <span className="w-1 h-1 rounded-full bg-white" />}
+                              </div>
+                              {/* Label */}
+                              <span
+                                className={`text-[8px] tracking-wider font-mono font-bold text-center uppercase ${
+                                  step.active ? "text-text-primary" : "text-chrome/30"
+                                }`}
+                              >
+                                {step.label}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
               ))}
             </div>
