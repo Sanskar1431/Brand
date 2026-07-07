@@ -6,6 +6,7 @@ import { fetchSignatureProducts } from "@/lib/products/fetchProducts";
 import { Product } from "@/lib/products/schema";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import { useToastStore } from "@/lib/store/toastStore";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -13,10 +14,16 @@ import { drawerSlide } from "./variants";
 
 export default function CartDrawer() {
   const { isCartOpen, setOpenCart } = useUIStore();
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore();
+  const { addToast } = useToastStore();
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [isCheckoutWiping, setIsCheckoutWiping] = useState(false);
   const router = useRouter();
+
+  const handleClearCart = () => {
+    clearCart();
+    addToast("ALL ITEMS WIPED FROM CART ARCHIVE", "info");
+  };
 
   // Fetch 1-2 Signature Products if cart is empty
   useEffect(() => {
@@ -60,22 +67,32 @@ export default function CartDrawer() {
               <h3 className="font-display text-lg tracking-[0.15em] font-semibold uppercase">
                 YOUR CART ({getTotalItems()})
               </h3>
-              <button
-                onClick={() => setOpenCart(false)}
-                className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer"
-                aria-label="Close Cart"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
+              <div className="flex items-center gap-2">
+                {items.length > 0 && (
+                  <button
+                    onClick={handleClearCart}
+                    className="text-[9px] tracking-wider uppercase font-mono border border-border-subtle/50 px-2.5 py-1 hover:border-error hover:text-error transition-all cursor-pointer bg-bg-primary/20 mr-2"
+                  >
+                    CLEAR ALL
+                  </button>
+                )}
+                <button
+                  onClick={() => setOpenCart(false)}
+                  className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer"
+                  aria-label="Close Cart"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Cart Items (Scrollable) */}
