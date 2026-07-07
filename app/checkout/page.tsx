@@ -5,11 +5,31 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
+import { useToastStore } from "@/lib/store/toastStore";
 
 export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const [isSuccess, setIsSuccess] = useState(false);
   const router = useRouter();
+  const { addToast } = useToastStore();
+
+  const [promoInput, setPromoInput] = useState("");
+  const [discountPercent, setDiscountPercent] = useState(0);
+
+  const applyPromo = () => {
+    const code = promoInput.trim().toUpperCase();
+    if (code === "PRINCE10") {
+      setDiscountPercent(10);
+      addToast("PROMO CODE PRINCE10 APPLIED: 10% OFF", "success");
+    } else if (code === "KINGDOM20") {
+      setDiscountPercent(20);
+      addToast("PROMO CODE KINGDOM20 APPLIED: 20% OFF", "success");
+    } else {
+      addToast("INVALID ARCHIVE PROMO CODE", "error");
+    }
+    setPromoInput("");
+  };
+
   const [formData, setFormData] = useState({
     email: "",
     name: "",
@@ -40,9 +60,11 @@ export default function CheckoutPage() {
   };
 
   const subtotal = getTotalPrice();
-  const shipping = subtotal > 1500000 ? 0 : 50000; // Free shipping over ₹15,000
-  const tax = Math.round(subtotal * 0.18); // 18% GST
-  const total = subtotal + shipping + tax;
+  const discountAmount = Math.round((subtotal * discountPercent) / 100);
+  const discountedSubtotal = subtotal - discountAmount;
+  const shipping = discountedSubtotal > 1500000 ? 0 : 50000; // Free shipping over ₹15,000
+  const tax = Math.round(discountedSubtotal * 0.18); // 18% GST
+  const total = discountedSubtotal + shipping + tax;
 
   if (items.length === 0 && !isSuccess) {
     return (
@@ -259,6 +281,31 @@ export default function CheckoutPage() {
                   ))}
                 </div>
 
+                {/* Promo Code Input */}
+                <div className="border-t border-border-subtle/30 pt-4 space-y-2">
+                  <div className="flex gap-2">
+                    <input
+                      type="text"
+                      placeholder="PROMO CODE"
+                      value={promoInput}
+                      onChange={(e) => setPromoInput(e.target.value)}
+                      className="flex-1 bg-bg-primary border border-border-subtle p-2 text-[10px] tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={applyPromo}
+                      className="bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      APPLY
+                    </button>
+                  </div>
+                  {discountPercent > 0 && (
+                    <p className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block">
+                      ✓ CODE APPLIED: {discountPercent}% DISCOUNT ACTUATED
+                    </p>
+                  )}
+                </div>
+
                 {/* Totals table */}
                 <div className="border-t border-border-subtle/50 pt-4 space-y-3 text-xs uppercase tracking-wider">
                   <div className="flex justify-between">
@@ -267,6 +314,14 @@ export default function CheckoutPage() {
                       ₹{(subtotal / 100).toLocaleString("en-IN")}
                     </span>
                   </div>
+                  {discountPercent > 0 && (
+                    <div className="flex justify-between text-accent">
+                      <span>Discount ({discountPercent}%)</span>
+                      <span className="font-sans font-semibold tabular-nums">
+                        -₹{(discountAmount / 100).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  )}
                   <div className="flex justify-between">
                     <span className="text-chrome">Estimated Shipping</span>
                     <span className="font-sans font-semibold tabular-nums">
