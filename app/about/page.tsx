@@ -135,6 +135,62 @@ export default function AboutPage() {
           </p>
         </div>
       </section>
+
+      {/* Section 5: Brand Chronicle Timeline */}
+      <section className="relative w-full py-32 bg-bg-primary border-t border-border-subtle/20">
+        <div className="max-w-4xl mx-auto px-6 space-y-16">
+          <div className="text-center space-y-2">
+            <span className="text-xs text-accent tracking-[0.3em] font-bold uppercase block">
+              CHRONOLOGY
+            </span>
+            <h2 className="font-display text-3xl sm:text-5xl tracking-widest font-semibold uppercase">
+              DESIGN EXPERIMENT MILESTONES
+            </h2>
+          </div>
+
+          <div className="relative border-l border-border-subtle/40 ml-4 md:ml-32 space-y-12 py-4">
+            {[
+              {
+                year: "2024",
+                title: "FOUNDING DOCTRINE",
+                desc: "PRINCE established as an architectural streetwear experiment. Core principles defined: boxy silhouettes, heavy cotton drapes, and logo omission.",
+              },
+              {
+                year: "2025",
+                title: "TIER 01 PROTOTYPING",
+                desc: "Development of custom double-twist knit combs yielding 280GSM and 450GSM fabric matrices. Private preview releases to selected archive collectors.",
+              },
+              {
+                year: "2026",
+                title: "PUBLIC ACCESS GATEWAY",
+                desc: "Launch of online web interface to allow public orders globally. Introduction of persistent fit guidelines, search indices, and order history tracking.",
+              },
+            ].map((milestone, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, x: -20 }}
+                whileInView={{ opacity: 1, x: 0 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.6, delay: idx * 0.15 }}
+                className="relative pl-8 md:pl-12 text-left"
+              >
+                {/* Timeline Dot Indicator */}
+                <span className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-accent border-4 border-bg-primary" />
+                
+                <span className="font-mono text-xs font-bold text-accent tracking-widest">
+                  {milestone.year}
+                </span>
+                <h4 className="font-display text-lg tracking-wider font-semibold uppercase text-text-primary mt-1">
+                  {milestone.title}
+                </h4>
+                <p className="text-chrome/70 text-xs sm:text-sm font-sans mt-2 max-w-xl leading-relaxed uppercase">
+                  {milestone.desc}
+                </p>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
       
     </div>
   );
