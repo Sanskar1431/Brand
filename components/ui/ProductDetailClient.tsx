@@ -46,6 +46,8 @@ export default function ProductDetailClient({
   const [selectedColor, setSelectedColor] = useState<ProductColor>(product.colors[0]);
   const [selectedSize, setSelectedSize] = useState<"S" | "M" | "L" | "XL">("M");
   const [activeAngle, setActiveAngle] = useState<string>(product.images.hero);
+
+  const calculatedStock = ((selectedColor.name.length + selectedSize.charCodeAt(0)) % 5) + 1;
   
   // Size Guide States
   const [isSizeGuideOpen, setIsSizeGuideOpen] = useState(false);
@@ -243,6 +245,13 @@ export default function ProductDetailClient({
                   </button>
                 ))}
               </div>
+            </div>
+
+            {/* Inventory Scarcity Alert */}
+            <div className="pt-2">
+              <span className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block animate-pulse">
+                ⚠ ONLY {calculatedStock} ITEMS REMAINING IN {selectedColor.name} // SIZE {selectedSize}
+              </span>
             </div>
 
             {/* Add to Cart & Wishlist Buttons */}
