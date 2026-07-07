@@ -7,6 +7,7 @@ import CartDrawer from "@/components/motion/CartDrawer";
 import CursorGlow from "@/components/ui/CursorGlow";
 import ToastContainer from "@/components/ui/ToastContainer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
+import BackToTop from "@/components/ui/BackToTop";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -38,6 +39,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <CartDrawer />
         <ToastContainer />
+        <BackToTop />
         <Footer />
       </body>
     </html>
