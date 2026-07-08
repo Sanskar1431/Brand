@@ -33,6 +33,13 @@ export default function ProductDetailClient({
     }
   };
 
+  const scrollToReviews = () => {
+    const el = document.getElementById("client-reviews-section");
+    if (el) {
+      el.scrollIntoView({ behavior: "smooth" });
+    }
+  };
+
   const toggleWishlist = () => {
     if (isWishlisted) {
       removeFromWishlist(product.id);
@@ -175,9 +182,38 @@ export default function ProductDetailClient({
           {/* Details Configurator (5 cols) */}
           <div className="lg:col-span-5 space-y-8">
             <div>
-              <span className="text-xs text-accent tracking-[0.25em] font-bold uppercase block mb-1">
-                {product.category} // {product.fit} FIT
-              </span>
+              <div className="flex items-center justify-between gap-4 mb-2">
+                <span className="text-xs text-accent tracking-[0.25em] font-bold uppercase block">
+                  {product.category} // {product.fit} FIT
+                </span>
+                
+                <button
+                  onClick={scrollToReviews}
+                  className="flex items-center gap-1.5 hover:text-accent transition-colors text-chrome cursor-pointer"
+                >
+                  <div className="flex text-accent">
+                    {[...Array(5)].map((_, i) => (
+                      <svg
+                        key={i}
+                        xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20"
+                        fill="currentColor"
+                        className="w-3 h-3"
+                      >
+                        <path
+                          fillRule="evenodd"
+                          d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.6 3.1-.114 4.713c-.02.839.881 1.493 1.611 1.024L10 15.657l4.137 2.507c.73.469 1.63-.185 1.61-1.024l-.113-4.713 3.6-3.1c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z"
+                          clipRule="evenodd"
+                        />
+                      </svg>
+                    ))}
+                  </div>
+                  <span className="text-[9px] tracking-widest font-mono font-bold">
+                    4.9 (42 REVIEWS)
+                  </span>
+                </button>
+              </div>
+
               <h1 className="font-display text-3xl sm:text-5xl font-semibold tracking-wider text-text-primary uppercase leading-tight">
                 {product.name}
               </h1>
@@ -341,7 +377,7 @@ export default function ProductDetailClient({
         </div>
 
         {/* 2. PROGRESSIVE DETAIL REVEAL (Section 7.2.2) */}
-        <div className="space-y-16 border-t border-border-subtle/30 pt-24 mb-24">
+        <div id="client-reviews-section" className="space-y-16 border-t border-border-subtle/30 pt-24 mb-24">
           <div className="max-w-xl text-left">
             <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block mb-1">
               SPEC DETAILS
