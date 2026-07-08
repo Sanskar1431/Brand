@@ -34,6 +34,7 @@ export default function ProductDetailClient({
   };
 
   const scrollToReviews = () => {
+    setIsReviewsOpen(true);
     const el = document.getElementById("client-reviews-section");
     if (el) {
       el.scrollIntoView({ behavior: "smooth" });
@@ -73,6 +74,7 @@ export default function ProductDetailClient({
 
   // Care Accordion State
   const [isCareOpen, setIsCareOpen] = useState(false);
+  const [isReviewsOpen, setIsReviewsOpen] = useState(false);
 
   // Reset angle when color changes
   useEffect(() => {
@@ -367,6 +369,76 @@ export default function ProductDetailClient({
                       <p>• Do not bleach. Tumble dry low or line dry in shade.</p>
                       <p>• Warm iron inside out if needed. Do not iron prints.</p>
                       <p>• Designed to build character and age gracefully over time.</p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
+            </div>
+
+            {/* Reviews Accordion */}
+            <div className="border-t border-b border-border-subtle/40 py-4">
+              <button
+                onClick={() => setIsReviewsOpen(!isReviewsOpen)}
+                className="w-full flex justify-between items-center text-xs uppercase tracking-[0.2em] text-text-primary font-bold py-2 cursor-pointer"
+              >
+                <span>CLIENT REVIEWS ({42})</span>
+                <span>{isReviewsOpen ? "−" : "+"}</span>
+              </button>
+              
+              <AnimatePresence>
+                {isReviewsOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="py-4 space-y-4 divide-y divide-border-subtle/20">
+                      {[
+                        {
+                          author: "SANSKAR V.",
+                          rating: 5,
+                          title: "FABRIC WEIGHT IS INSANE",
+                          body: "The 450GSM drape is exactly what I was searching for. It stands up on its own, boxy, matches high-end silhouette lines. Fits oversized but in a refined way.",
+                        },
+                        {
+                          author: "KARTIK R.",
+                          rating: 5,
+                          title: "PERFECT SEAMLESS DROPS",
+                          body: "Shoulder lines drop beautifully. Seamless details are top tier. Best premium purchase this year.",
+                        },
+                      ].map((rev, idx) => (
+                        <div key={idx} className="pt-4 first:pt-0 space-y-1.5 text-left">
+                          <div className="flex justify-between items-center">
+                            <span className="text-[10px] text-accent tracking-widest font-mono font-bold">
+                              {rev.author}
+                            </span>
+                            <div className="flex text-accent">
+                              {[...Array(rev.rating)].map((_, i) => (
+                                <svg
+                                  key={i}
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  viewBox="0 0 20 20"
+                                  fill="currentColor"
+                                  className="w-2.5 h-2.5"
+                                >
+                                  <path
+                                    fillRule="evenodd"
+                                    d="M10.868 2.884c-.321-.772-1.415-.772-1.736 0l-1.83 4.401-4.753.381c-.833.067-1.171 1.107-.536 1.651l3.6 3.1-.114 4.713c-.02.839.881 1.493 1.611 1.024L10 15.657l4.137 2.507c.73.469 1.63-.185 1.61-1.024l-.113-4.713 3.6-3.1c.635-.544.297-1.584-.536-1.65l-4.752-.382-1.831-4.401Z"
+                                    clipRule="evenodd"
+                                  />
+                                </svg>
+                              ))}
+                            </div>
+                          </div>
+                          <h5 className="text-[10px] tracking-wider uppercase font-bold text-text-primary">
+                            {rev.title}
+                          </h5>
+                          <p className="text-[10px] text-chrome/75 leading-relaxed font-sans uppercase">
+                            {rev.body}
+                          </p>
+                        </div>
+                      ))}
                     </div>
                   </motion.div>
                 )}
