@@ -6,6 +6,8 @@ import { useState } from "react";
 
 export default function ProfilePage() {
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
+  const [orderSearchQuery, setOrderSearchQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState<"ALL" | "DELIVERED" | "IN TRANSIT">("ALL");
 
   const toggleOrderExpand = (id: string) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
@@ -40,6 +42,14 @@ export default function ProfilePage() {
       status: "IN TRANSIT",
     },
   ];
+
+  const filteredOrders = mockOrders.filter((order) => {
+    const matchesSearch =
+      order.item.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
+      order.id.toLowerCase().includes(orderSearchQuery.toLowerCase());
+    const matchesStatus = statusFilter === "ALL" || order.status === statusFilter;
+    return matchesSearch && matchesStatus;
+  });
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -125,8 +135,35 @@ export default function ProfilePage() {
             </h3>
 
             <div className="space-y-4">
-              {mockOrders.map((order) => (
-                <div
+              {/* Search & Filter Tray */}
+              <div className="flex flex-col sm:flex-row gap-3">
+                <input
+                  type="text"
+                  placeholder="SEARCH ARCHIVE BY ITEM OR ID..."
+                  value={orderSearchQuery}
+                  onChange={(e) => setOrderSearchQuery(e.target.value)}
+                  className="flex-1 bg-bg-surface border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+                />
+                <div className="flex gap-2">
+                  {(["ALL", "DELIVERED", "IN TRANSIT"] as const).map((status) => (
+                    <button
+                      key={status}
+                      onClick={() => setStatusFilter(status)}
+                      className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider border transition-colors cursor-pointer ${
+                        statusFilter === status
+                          ? "bg-accent border-accent text-white"
+                          : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
+                      }`}
+                    >
+                      {status}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {filteredOrders.length > 0 ? (
+                filteredOrders.map((order) => (
+                  <div
                   key={order.id}
                   onClick={() => toggleOrderExpand(order.id)}
                   className="bg-bg-surface border border-border-subtle/50 p-6 flex flex-col justify-between gap-4 hover:border-chrome/40 transition-colors cursor-pointer"
@@ -202,7 +239,14 @@ export default function ProfilePage() {
                     )}
                   </AnimatePresence>
                 </div>
-              ))}
+              ))
+              ) : (
+                <div className="text-center py-16 border border-dashed border-border-subtle/50 rounded-lg">
+                  <p className="text-chrome uppercase tracking-widest text-xs">
+                    No matching archives found inside your orders.
+                  </p>
+                </div>
+              )}
             </div>
           </motion.div>
         </div>
