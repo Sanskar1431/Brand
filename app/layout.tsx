@@ -8,6 +8,7 @@ import CursorGlow from "@/components/ui/CursorGlow";
 import ToastContainer from "@/components/ui/ToastContainer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import BackToTop from "@/components/ui/BackToTop";
+import CookieConsent from "@/components/ui/CookieConsent";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
         <CartDrawer />
         <ToastContainer />
         <BackToTop />
+        <CookieConsent />
         <Footer />
       </body>
     </html>
