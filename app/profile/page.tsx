@@ -3,14 +3,36 @@
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
+import { useToastStore } from "@/lib/store/toastStore";
 
 export default function ProfilePage() {
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "DELIVERED" | "IN TRANSIT">("ALL");
+  const { addToast } = useToastStore();
 
   const toggleOrderExpand = (id: string) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
+  };
+
+  const handleActionSubmit = (orderId: string, action: "RETURN" | "CANCEL") => {
+    const inputEl = document.getElementById(`reason-${orderId}`) as HTMLInputElement;
+    const reason = inputEl?.value.trim() || "";
+    if (!reason) {
+      addToast("REASON REQUIRED FOR THIS ARCHIVE PROTOCOL", "error");
+      return;
+    }
+    
+    if (action === "RETURN") {
+      addToast(`RETURN INITIATED FOR ORDER ${orderId}: REASON CACHED`, "success");
+    } else {
+      addToast(`ORDER ${orderId} CANCELLED IN ARCHIVE`, "info");
+    }
+    
+    if (inputEl) {
+      inputEl.value = "";
+    }
+    setExpandedOrderId(null);
   };
 
   const getTimelineSteps = (status: string) => {
@@ -234,6 +256,53 @@ export default function ProfilePage() {
                               </span>
                             </div>
                           ))}
+                        </div>
+
+                        {/* Return/Cancel actions */}
+                        <div className="border-t border-border-subtle/20 pt-4 flex flex-col gap-4">
+                          {order.status === "DELIVERED" ? (
+                            <div className="space-y-4">
+                              <span className="text-[9px] text-chrome tracking-wider uppercase font-bold block text-left">
+                                INITIATE ARCHIVE RETURN
+                              </span>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="REASON FOR RETURN (E.G. SIZE TOO BIG)..."
+                                  className="flex-1 bg-bg-primary border border-border-subtle p-2.5 text-[10px] tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+                                  id={`reason-${order.id}`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleActionSubmit(order.id, "RETURN")}
+                                  className="bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                >
+                                  SUBMIT REQUEST
+                                </button>
+                              </div>
+                            </div>
+                          ) : (
+                            <div className="space-y-4">
+                              <span className="text-[9px] text-chrome tracking-wider uppercase font-bold block text-left">
+                                CANCEL DISPATCH PROTOCOL
+                              </span>
+                              <div className="flex gap-2">
+                                <input
+                                  type="text"
+                                  placeholder="REASON FOR CANCELLATION..."
+                                  className="flex-1 bg-bg-primary border border-border-subtle p-2.5 text-[10px] tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+                                  id={`reason-${order.id}`}
+                                />
+                                <button
+                                  type="button"
+                                  onClick={() => handleActionSubmit(order.id, "CANCEL")}
+                                  className="bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                >
+                                  CANCEL ORDER
+                                </button>
+                              </div>
+                            </div>
+                          )}
                         </div>
                       </motion.div>
                     )}
