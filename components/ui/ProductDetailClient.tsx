@@ -55,6 +55,12 @@ export default function ProductDetailClient({
   const [selectedSize, setSelectedSize] = useState<"S" | "M" | "L" | "XL">("M");
   const [activeAngle, setActiveAngle] = useState<string>(product.images.hero);
 
+  const isOutOfStock = (colorName: string, sizeName: string) => {
+    const c = colorName.toLowerCase();
+    const s = sizeName.toUpperCase();
+    return (c.includes("pumice") && s === "S") || (c.includes("carbon") && s === "XL");
+  };
+
   const calculatedStock = ((selectedColor.name.length + selectedSize.charCodeAt(0)) % 5) + 1;
   
   // Size Guide States
@@ -269,37 +275,57 @@ export default function ProductDetailClient({
                 </button>
               </div>
               <div className="flex gap-3">
-                {product.sizes.map((s) => (
-                  <button
-                    key={s}
-                    onClick={() => setSelectedSize(s as any)}
-                    className={`w-12 h-12 text-xs font-bold border transition-all cursor-pointer ${
-                      selectedSize === s
-                        ? "bg-accent border-accent text-white shadow-lg shadow-accent/20"
-                        : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
-                    }`}
-                  >
-                    {s}
-                  </button>
-                ))}
+                {product.sizes.map((s) => {
+                  const oos = isOutOfStock(selectedColor.name, s);
+                  return (
+                    <button
+                      key={s}
+                      onClick={() => !oos && setSelectedSize(s as any)}
+                      className={`w-12 h-12 text-xs font-bold border transition-all cursor-pointer relative ${
+                        oos
+                          ? "border-border-subtle/30 text-chrome/30 line-through cursor-not-allowed bg-bg-surface/20"
+                          : selectedSize === s
+                          ? "bg-accent border-accent text-white shadow-lg shadow-accent/20"
+                          : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
+                      }`}
+                    >
+                      {s}
+                    </button>
+                  );
+                })}
               </div>
             </div>
 
             {/* Inventory Scarcity Alert */}
             <div className="pt-2">
-              <span className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block animate-pulse">
-                ⚠ ONLY {calculatedStock} ITEMS REMAINING IN {selectedColor.name} // SIZE {selectedSize}
-              </span>
+              {isOutOfStock(selectedColor.name, selectedSize) ? (
+                <span className="text-[9px] text-error tracking-[0.15em] font-bold uppercase block">
+                  ✕ TEMPORARILY SOLD OUT IN ARCHIVE
+                </span>
+              ) : (
+                <span className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block animate-pulse">
+                  ⚠ ONLY {calculatedStock} ITEMS REMAINING IN {selectedColor.name} // SIZE {selectedSize}
+                </span>
+              )}
             </div>
 
             {/* Add to Cart & Wishlist Buttons */}
             <div className="pt-4 flex gap-3">
-              <button
-                onClick={handleAddToCart}
-                className="flex-1 bg-accent text-white hover:bg-accent-hover py-4.5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl cursor-pointer"
-              >
-                ADD TO ARCHIVES
-              </button>
+              {isOutOfStock(selectedColor.name, selectedSize) ? (
+                <button
+                  disabled
+                  className="flex-1 bg-border-subtle/50 text-chrome/40 py-4.5 text-xs font-bold uppercase tracking-[0.25em] cursor-not-allowed border border-border-subtle/20"
+                >
+                  OUT OF STOCK
+                </button>
+              ) : (
+                <button
+                  onClick={handleAddToCart}
+                  className="flex-1 bg-accent text-white hover:bg-accent-hover py-4.5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl cursor-pointer"
+                >
+                  ADD TO ARCHIVES
+                </button>
+              )}
               <button
                 onClick={toggleWishlist}
                 className={`w-14 border flex items-center justify-center transition-all cursor-pointer ${
