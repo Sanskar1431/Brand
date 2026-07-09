@@ -9,6 +9,7 @@ import ToastContainer from "@/components/ui/ToastContainer";
 import AnnouncementBar from "@/components/layout/AnnouncementBar";
 import BackToTop from "@/components/ui/BackToTop";
 import CookieConsent from "@/components/ui/CookieConsent";
+import NewsletterModal from "@/components/ui/NewsletterModal";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -42,6 +43,7 @@ export default function RootLayout({
         <ToastContainer />
         <BackToTop />
         <CookieConsent />
+        <NewsletterModal />
         <Footer />
       </body>
     </html>
