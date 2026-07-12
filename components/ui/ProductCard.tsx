@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
 import QuickViewModal from "./QuickViewModal";
 import { Product } from "@/lib/products/schema";
 import { cardLift } from "../motion/variants";
@@ -20,6 +21,7 @@ export default function ProductCard({
 }: ProductCardProps) {
   const isFeature = variant === "feature";
   const [openQuickView, setOpenQuickView] = useState(false);
+  const { formatPrice } = useCurrencyStore();
 
   // Enforce 'No Generic Cards' (Section 7.1.1)
   return (
@@ -76,7 +78,7 @@ export default function ProductCard({
                 {product.name}
               </h4>
               <span className="font-sans text-xs sm:text-sm font-semibold text-text-primary tabular-nums whitespace-nowrap">
-                ₹{(product.price / 100).toLocaleString("en-IN")}
+                {formatPrice(product.price)}
               </span>
             </div>
             

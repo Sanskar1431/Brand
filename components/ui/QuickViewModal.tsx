@@ -6,6 +6,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { useUIStore } from "@/lib/store/uiStore";
 import { useToastStore } from "@/lib/store/toastStore";
 import { motion, AnimatePresence } from "framer-motion";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -17,6 +18,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
   const { addItem } = useCartStore();
   const { setOpenCart } = useUIStore();
   const { addToast } = useToastStore();
+  const { formatPrice } = useCurrencyStore();
 
   const [selectedColor, setSelectedColor] = useState<ProductColor | null>(null);
   const [selectedSize, setSelectedSize] = useState<"S" | "M" | "L" | "XL">("M");
@@ -81,7 +83,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                   {product.name}
                 </h3>
                 <p className="font-sans text-lg font-bold text-text-primary mt-2 tabular-nums">
-                  ₹{(product.price / 100).toLocaleString("en-IN")}
+                  {formatPrice(product.price)}
                 </p>
               </div>
 

@@ -9,6 +9,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { useUIStore } from "@/lib/store/uiStore";
 import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { useToastStore } from "@/lib/store/toastStore";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
 import ProductCard from "./ProductCard";
 
 interface ProductDetailClientProps {
@@ -25,6 +26,7 @@ export default function ProductDetailClient({
   const { addItem: addToWishlist, removeItem: removeFromWishlist, hasItem: isInWishlist } = useWishlistStore();
   const isWishlisted = isInWishlist(product.id);
   const { addToast } = useToastStore();
+  const { formatPrice } = useCurrencyStore();
 
   const handleShare = () => {
     if (typeof window !== "undefined") {
@@ -226,7 +228,7 @@ export default function ProductDetailClient({
                 {product.name}
               </h1>
               <p className="font-sans text-2xl font-bold text-text-primary mt-4 tabular-nums">
-                ₹{(product.price / 100).toLocaleString("en-IN")}
+                {formatPrice(product.price)}
               </p>
             </div>
 
