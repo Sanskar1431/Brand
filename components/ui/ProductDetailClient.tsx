@@ -84,10 +84,26 @@ export default function ProductDetailClient({
   const [isCareOpen, setIsCareOpen] = useState(false);
   const [isReviewsOpen, setIsReviewsOpen] = useState(false);
 
+  const [isPlayingLoop, setIsPlayingLoop] = useState(false);
+  const [timecode, setTimecode] = useState(0);
+
   // Reset angle when color changes
   useEffect(() => {
     setActiveAngle(product.images.hero);
   }, [selectedColor, product]);
+
+  // Timecode timer loop
+  useEffect(() => {
+    let interval: any;
+    if (isPlayingLoop) {
+      interval = setInterval(() => {
+        setTimecode((prev) => (prev >= 99 ? 0 : prev + 1));
+      }, 80);
+    } else {
+      setTimecode(0);
+    }
+    return () => clearInterval(interval);
+  }, [isPlayingLoop]);
 
   const handleAddToCart = () => {
     addItem(product, selectedColor.name, selectedSize, 1);
@@ -524,11 +540,40 @@ export default function ProductDetailClient({
             </div>
 
             {/* Right side close-up micro showcase */}
-            <div className="aspect-[4/3] bg-bg-surface border border-border-subtle p-6 flex flex-col justify-between">
-              <div className="flex-1 bg-bg-elevated flex items-center justify-center relative overflow-hidden">
-                <span className="text-[10px] text-chrome/30 uppercase tracking-widest font-mono">
-                  CLOSE UP MACRO VIEW // WEAVE DETAILS
-                </span>
+            <div className="aspect-[4/3] bg-bg-surface border border-border-subtle p-6 flex flex-col justify-between relative overflow-hidden select-none">
+              <div className="flex-1 bg-bg-elevated flex flex-col items-center justify-center relative overflow-hidden w-full">
+                {isPlayingLoop ? (
+                  <div className="space-y-3 z-10 text-center animate-fade-in">
+                    <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block animate-pulse">
+                      • CINEMATIC MACRO LOOP ACTIVE
+                    </span>
+                    <span className="text-xs text-chrome/80 tracking-widest font-mono block">
+                      TIMECODE: 00:04:12:{timecode.toString().padStart(2, "0")}
+                    </span>
+                    <button
+                      onClick={() => setIsPlayingLoop(false)}
+                      className="bg-bg-primary border border-border-subtle px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-chrome hover:text-accent hover:border-accent transition-colors cursor-pointer"
+                    >
+                      PAUSE LOOP
+                    </button>
+                  </div>
+                ) : (
+                  <div className="space-y-3 z-10 text-center">
+                    <span className="text-[9px] text-chrome/45 tracking-[0.2em] font-mono font-bold block">
+                      CLOSE UP MACRO VIEW // WEAVE DETAILS
+                    </span>
+                    <button
+                      onClick={() => setIsPlayingLoop(true)}
+                      className="bg-accent text-white px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors cursor-pointer shadow-md"
+                    >
+                      PLAY CINEMATIC REVEAL
+                    </button>
+                  </div>
+                )}
+                
+                {isPlayingLoop && (
+                  <div className="absolute inset-0 bg-gradient-to-b from-accent/5 via-transparent to-accent/5 pointer-events-none z-0 animate-pulse" />
+                )}
               </div>
               <p className="text-[10px] text-chrome uppercase tracking-widest mt-4">
                 Section details showing high density stitch profiles.
