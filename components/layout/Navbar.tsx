@@ -9,6 +9,7 @@ import { useCartStore } from "@/lib/store/cartStore";
 import { useAmbientAudio } from "@/hooks/useAmbientAudio";
 import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { useRouter } from "next/navigation";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -19,7 +20,9 @@ export default function Navbar() {
   
   const { setOpenCart, isAudioPlaying, toggleAudio, isMenuOpen, setOpenMenu } = useUIStore();
   const cartItemsCount = useCartStore((state) => state.getTotalItems());
-  const wishlistCount = useWishlistStore((state) => state.items.length);
+  const { items: wishlistItems } = useWishlistStore();
+  const wishlistCount = wishlistItems.length;
+  const { currency, setCurrency } = useCurrencyStore();
   const router = useRouter();
   
   const [hasBg, setHasBg] = useState(false);
@@ -138,6 +141,15 @@ export default function Navbar() {
                   className={`w-[3px] rounded-full bg-accent`}
                 />
               ))}
+            </button>
+
+            {/* Currency Switcher */}
+            <button
+              onClick={() => setCurrency(currency === "INR" ? "USD" : "INR")}
+              className="px-2 py-1 text-[9px] font-bold font-mono tracking-widest border border-border-subtle/30 hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer mr-1"
+              aria-label={`Toggle currency, currently ${currency}`}
+            >
+              {currency}
             </button>
 
             {/* Search Toggle Button */}
