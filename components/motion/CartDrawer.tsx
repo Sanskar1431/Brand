@@ -7,6 +7,7 @@ import { Product } from "@/lib/products/schema";
 import { useEffect, useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useToastStore } from "@/lib/store/toastStore";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
@@ -16,6 +17,7 @@ export default function CartDrawer() {
   const { isCartOpen, setOpenCart } = useUIStore();
   const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore();
   const { addToast } = useToastStore();
+  const { formatPrice } = useCurrencyStore();
   const [recommendations, setRecommendations] = useState<Product[]>([]);
   const [isCheckoutWiping, setIsCheckoutWiping] = useState(false);
   const router = useRouter();
@@ -117,7 +119,7 @@ export default function CartDrawer() {
                             {item.product.name}
                           </h4>
                           <span className="text-sm font-sans tabular-nums font-semibold">
-                            ₹{((item.product.price * item.quantity) / 100).toLocaleString("en-IN")}
+                            {formatPrice(item.product.price * item.quantity)}
                           </span>
                         </div>
                         <p className="text-xs text-chrome mt-1 uppercase tracking-wider">
@@ -195,7 +197,7 @@ export default function CartDrawer() {
                                 {prod.name}
                               </h5>
                               <p className="text-[10px] text-chrome font-sans font-semibold mt-1">
-                               ₹{(prod.price / 100).toLocaleString("en-IN")}
+                               {formatPrice(prod.price)}
                               </p>
                             </Link>
                           </div>
@@ -212,7 +214,7 @@ export default function CartDrawer() {
               <div className="p-6 border-t border-border-subtle bg-bg-primary/50 space-y-4">
                 <div className="flex justify-between items-center text-sm uppercase tracking-wider font-semibold">
                   <span>Subtotal</span>
-                  <span className="font-sans tabular-nums">₹{(getTotalPrice() / 100).toLocaleString("en-IN")}</span>
+                  <span className="font-sans tabular-nums">{formatPrice(getTotalPrice())}</span>
                 </div>
                 <p className="text-[10px] text-chrome uppercase tracking-wider leading-relaxed">
                   Shipping, taxes, and duties calculated at checkout.

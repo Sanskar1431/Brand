@@ -6,12 +6,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useToastStore } from "@/lib/store/toastStore";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
 
 export default function CheckoutPage() {
   const { items, getTotalPrice, clearCart } = useCartStore();
   const [isSuccess, setIsSuccess] = useState(false);
   const router = useRouter();
   const { addToast } = useToastStore();
+  const { formatPrice } = useCurrencyStore();
 
   const [promoInput, setPromoInput] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
@@ -275,7 +277,7 @@ export default function CheckoutPage() {
                         </p>
                       </div>
                       <span className="text-xs font-sans font-semibold tabular-nums">
-                        ₹{((item.product.price * item.quantity) / 100).toLocaleString("en-IN")}
+                        {formatPrice(item.product.price * item.quantity)}
                       </span>
                     </div>
                   ))}
@@ -311,33 +313,33 @@ export default function CheckoutPage() {
                   <div className="flex justify-between">
                     <span className="text-chrome">Subtotal</span>
                     <span className="font-sans font-semibold tabular-nums">
-                      ₹{(subtotal / 100).toLocaleString("en-IN")}
+                      {formatPrice(subtotal)}
                     </span>
                   </div>
                   {discountPercent > 0 && (
                     <div className="flex justify-between text-accent">
                       <span>Discount ({discountPercent}%)</span>
                       <span className="font-sans font-semibold tabular-nums">
-                        -₹{(discountAmount / 100).toLocaleString("en-IN")}
+                        -{formatPrice(discountAmount)}
                       </span>
                     </div>
                   )}
                   <div className="flex justify-between">
                     <span className="text-chrome">Estimated Shipping</span>
                     <span className="font-sans font-semibold tabular-nums">
-                      {shipping === 0 ? "FREE" : `₹${(shipping / 100).toLocaleString("en-IN")}`}
+                      {shipping === 0 ? "FREE" : formatPrice(shipping)}
                     </span>
                   </div>
                   <div className="flex justify-between">
                     <span className="text-chrome">GST (18%)</span>
                     <span className="font-sans font-semibold tabular-nums">
-                      ₹{(tax / 100).toLocaleString("en-IN")}
+                      {formatPrice(tax)}
                     </span>
                   </div>
                   <div className="flex justify-between border-t border-border-subtle/50 pt-3 text-sm font-bold">
                     <span className="text-text-primary">Total</span>
                     <span className="font-sans tabular-nums text-accent">
-                      ₹{(total / 100).toLocaleString("en-IN")}
+                      {formatPrice(total)}
                     </span>
                   </div>
                 </div>
