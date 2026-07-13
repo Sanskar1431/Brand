@@ -6,6 +6,7 @@ import { useFilterStore } from "@/lib/store/filterStore";
 import ProductCard from "./ProductCard";
 import FilterPanel from "./FilterPanel";
 import { motion, AnimatePresence } from "framer-motion";
+import { useRouter } from "next/navigation";
 
 interface ShopCatalogProps {
   initialProducts: Product[];
@@ -25,6 +26,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
   const [visibleCount, setVisibleCount] = useState(24); // pagination count (Section 7.1)
+  const router = useRouter();
 
   // Sync category filter from URL route if present
   useEffect(() => {
@@ -122,6 +124,37 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
           <p className="text-chrome/50 text-xs sm:text-sm tracking-wider uppercase mt-2">
             SHOWING {filteredProducts.length} PRODUCTS
           </p>
+        </div>
+
+        {/* Category switcher quick navigation carousel */}
+        <div className="w-full overflow-x-auto pb-4 mb-10 scrollbar-hide flex gap-3 border-b border-border-subtle/20 select-none">
+          {[
+            { label: "ALL COLLECTION", value: "" },
+            { label: "SIGNATURE TEES", value: "tshirt" },
+            { label: "PREMIUM JOGGERS", value: "jogger" },
+          ].map((catOption) => {
+            const isSelected = (categoryFilter || category || "") === catOption.value;
+            return (
+              <button
+                key={catOption.value}
+                onClick={() => {
+                  if (categoryFilter) {
+                    setCategory(catOption.value as any);
+                    router.push("/shop");
+                  } else {
+                    setCategory(catOption.value as any);
+                  }
+                }}
+                className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer whitespace-nowrap ${
+                  isSelected
+                    ? "bg-text-primary text-bg-primary border-text-primary shadow-lg"
+                    : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome bg-bg-surface/20"
+                }`}
+              >
+                {catOption.label}
+              </button>
+            );
+          })}
         </div>
 
         {/* Product Grid (Section 7.1.1 asymmetric crop, grid rhythm) */}
