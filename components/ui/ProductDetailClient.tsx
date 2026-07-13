@@ -32,6 +32,8 @@ export default function ProductDetailClient({
     if (typeof window !== "undefined") {
       navigator.clipboard.writeText(window.location.href);
       addToast("ARCHIVE LINK COPIED TO CLIPBOARD", "success");
+      setShowTooltip(true);
+      setTimeout(() => setShowTooltip(false), 2000);
     }
   };
 
@@ -83,6 +85,7 @@ export default function ProductDetailClient({
   // Care Accordion State
   const [isCareOpen, setIsCareOpen] = useState(false);
   const [isReviewsOpen, setIsReviewsOpen] = useState(false);
+  const [showTooltip, setShowTooltip] = useState(false);
 
   const [isPlayingLoop, setIsPlayingLoop] = useState(false);
   const [timecode, setTimecode] = useState(0);
@@ -368,26 +371,40 @@ export default function ProductDetailClient({
                   />
                 </svg>
               </button>
-              <button
-                onClick={handleShare}
-                className="w-14 border flex items-center justify-center border-border-subtle text-chrome hover:text-text-primary hover:border-chrome transition-all cursor-pointer"
-                aria-label="Share product"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-5 h-5"
+              <div className="relative flex">
+                <AnimatePresence>
+                  {showTooltip && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -10, scale: 0.95 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -10, scale: 0.95 }}
+                      className="absolute -top-10 left-1/2 -translate-x-1/2 bg-bg-surface border border-accent text-accent px-2.5 py-1 text-[9px] font-bold tracking-wider uppercase whitespace-nowrap shadow-md z-30 font-mono"
+                    >
+                      COPIED!
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+                <button
+                  onClick={handleShare}
+                  className="w-14 border flex items-center justify-center border-border-subtle text-chrome hover:text-text-primary hover:border-chrome transition-all cursor-pointer py-4"
+                  aria-label="Share product"
                 >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
-                  />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-5 h-5"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      d="M7.217 10.907a2.25 2.25 0 1 0 0 2.186m0-2.186c.18.324.283.696.283 1.093s-.103.77-.283 1.093m0-2.186 9.566-5.314m-9.566 7.5 9.566 5.314m0 0a2.25 2.25 0 1 0 3.935 2.186 2.25 2.25 0 0 0-3.935-2.186Zm0-12.814a2.25 2.25 0 1 0 3.933-2.185 2.25 2.25 0 0 0-3.933 2.185Z"
+                    />
+                  </svg>
+                </button>
+              </div>
             </div>
 
             {/* Care accordion */}
