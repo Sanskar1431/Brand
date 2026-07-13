@@ -2,8 +2,50 @@
 
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useToastStore } from "@/lib/store/toastStore";
+
+interface OrderCountdownProps {
+  status: string;
+}
+
+function OrderCountdown({ status }: OrderCountdownProps) {
+  const [timeLeft, setTimeLeft] = useState({ hours: 14, minutes: 45, seconds: 32 });
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setTimeLeft((prev) => {
+        if (prev.seconds > 0) {
+          return { ...prev, seconds: prev.seconds - 1 };
+        } else if (prev.minutes > 0) {
+          return { ...prev, minutes: prev.minutes - 1, seconds: 59 };
+        } else if (prev.hours > 0) {
+          return { hours: prev.hours - 1, minutes: 59, seconds: 59 };
+        }
+        clearInterval(timer);
+        return prev;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatNum = (num: number) => num.toString().padStart(2, "0");
+
+  const label = status === "IN TRANSIT" ? "ESTIMATED DELIVERY" : "DISPATCH PROTOCOL COUNTDOWN";
+
+  return (
+    <div className="bg-bg-primary/40 border border-border-subtle/30 p-4 flex flex-col items-center justify-center space-y-1.5 text-center mt-4">
+      <span className="text-[8px] text-accent tracking-[0.25em] font-mono font-bold block animate-pulse">
+        • {label}
+      </span>
+      <span className="text-sm font-mono tracking-widest text-text-primary font-bold">
+        {timeLeft.hours > 0 ? `${formatNum(timeLeft.hours)}h : ` : ""}
+        {formatNum(timeLeft.minutes)}m : {formatNum(timeLeft.seconds)}s
+      </span>
+    </div>
+  );
+}
 
 export default function ProfilePage() {
   const [expandedOrderId, setExpandedOrderId] = useState<string | null>(null);
@@ -257,6 +299,10 @@ export default function ProfilePage() {
                             </div>
                           ))}
                         </div>
+
+                        {order.status !== "DELIVERED" && (
+                          <OrderCountdown status={order.status} />
+                        )}
 
                         {/* Return/Cancel actions */}
                         <div className="border-t border-border-subtle/20 pt-4 flex flex-col gap-4">
