@@ -14,11 +14,7 @@ export default function WishlistPage() {
   const { setOpenCart } = useUIStore();
   const { addToast } = useToastStore();
 
-  const handleQuickAdd = (product: any) => {
-    addItem(product, product.colors[0].name, "M", 1);
-    addToast(`${product.name} QUICK ADDED TO CART`, "success");
-    setOpenCart(true);
-  };
+
 
   return (
     <div className="w-full min-h-screen bg-bg-primary pt-32 pb-24 px-6 md:px-12">
@@ -53,27 +49,24 @@ export default function WishlistPage() {
                     variant="standard"
                     aspectRatio="aspect-[3/4]"
                   />
-                  {/* Quick Add to Cart button */}
-                  <button
-                    onClick={() => handleQuickAdd(product)}
-                    className="absolute top-4 right-14 z-10 bg-bg-surface/80 hover:bg-accent hover:text-white text-text-primary p-2 border border-border-subtle hover:border-accent transition-all duration-300 rounded-full cursor-pointer shadow-md opacity-0 group-hover:opacity-100"
-                    aria-label={`Quick add ${product.name} to cart`}
-                  >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      strokeWidth="1.5"
-                      stroke="currentColor"
-                      className="w-4 h-4"
-                    >
-                      <path
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                        d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
-                      />
-                    </svg>
-                  </button>
+                  {/* Quick Add Size Strip on hover */}
+                  <div className="absolute inset-x-4 bottom-[84px] z-20 bg-bg-surface/95 backdrop-blur-sm border border-border-subtle p-2 flex justify-around items-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg">
+                    <span className="text-[8px] text-chrome tracking-widest uppercase font-bold">QUICK ADD:</span>
+                    {["S", "M", "L", "XL"].map((sz) => (
+                      <button
+                        key={sz}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          addItem(product, product.colors[0].name, sz as any, 1);
+                          addToast(`${product.name} (SIZE ${sz}) QUICK ADDED`, "success");
+                          setOpenCart(true);
+                        }}
+                        className="text-[10px] font-bold font-mono text-chrome hover:text-accent p-1 cursor-pointer transition-colors"
+                      >
+                        {sz}
+                      </button>
+                    ))}
+                  </div>
 
                   <button
                     onClick={() => removeItem(product.id)}
