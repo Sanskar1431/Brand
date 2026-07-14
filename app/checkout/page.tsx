@@ -18,6 +18,32 @@ export default function CheckoutPage() {
   const [promoInput, setPromoInput] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
 
+  const [panNumber, setPanNumber] = useState("");
+  const [panVerified, setPanVerified] = useState(false);
+  const [panError, setPanError] = useState("");
+  const [isVerifyingPan, setIsVerifyingPan] = useState(false);
+
+  const handleVerifyPan = () => {
+    if (!panNumber.trim()) {
+      setPanError("PLEASE ENTER A VALID PAN NUMBER");
+      return;
+    }
+    setIsVerifyingPan(true);
+    setPanError("");
+    setTimeout(() => {
+      setIsVerifyingPan(false);
+      const cleanPan = panNumber.trim().toUpperCase();
+      const validPans = ["SANSR1431P", "PRNCE1990A", "KINGDOM20P", "GUEST9999F"];
+      if (validPans.includes(cleanPan)) {
+        setPanVerified(true);
+        addToast("PAN VERIFIED SUCCESSFULLY", "success");
+      } else {
+        setPanError("Error : PAN does not exist, Please register this PAN or try with some other PAN.");
+        addToast("PAN VERIFICATION FAILED", "error");
+      }
+    }, 1200);
+  };
+
   const applyPromo = () => {
     const code = promoInput.trim().toUpperCase();
     if (code === "PRINCE10") {
@@ -47,6 +73,11 @@ export default function CheckoutPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!panVerified) {
+      addToast("Error: PAN verification protocol required", "error");
+      setPanError("Error : PAN does not exist, Please register this PAN or try with some other PAN.");
+      return;
+    }
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
@@ -189,10 +220,67 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {/* Tax Compliance Section */}
+                <div className="space-y-4">
+                  <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
+                    03. TAX COMPLIANCE (PAN VERIFICATION)
+                  </h3>
+                  <div className="space-y-3">
+                    <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
+                      Permanent Account Number (PAN)
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        placeholder="E.G. SANSR1431P"
+                        value={panNumber}
+                        onChange={(e) => {
+                          setPanNumber(e.target.value.toUpperCase());
+                          setPanVerified(false);
+                          setPanError("");
+                        }}
+                        disabled={panVerified || isVerifyingPan}
+                        className={`flex-1 bg-bg-surface border p-3 outline-none text-sm text-text-primary transition-colors font-mono uppercase ${
+                          panVerified
+                            ? "border-success/40 focus:border-success/40"
+                            : panError
+                            ? "border-error/40 focus:border-error/40"
+                            : "border-border-subtle focus:border-accent"
+                        }`}
+                      />
+                      <button
+                        type="button"
+                        onClick={handleVerifyPan}
+                        disabled={panVerified || isVerifyingPan}
+                        className={`px-6 py-3 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border ${
+                          panVerified
+                            ? "bg-success/15 border-success/30 text-success cursor-default"
+                            : "bg-bg-surface border-border-subtle hover:border-accent text-text-primary"
+                        }`}
+                      >
+                        {isVerifyingPan ? "VERIFYING..." : panVerified ? "VERIFIED" : "VERIFY PAN"}
+                      </button>
+                    </div>
+                    {panError && (
+                      <p className="text-[10px] text-error font-mono font-bold uppercase tracking-wider leading-relaxed">
+                        {panError}
+                      </p>
+                    )}
+                    {panVerified && (
+                      <p className="text-[10px] text-success font-mono font-bold uppercase tracking-wider">
+                        ✓ PAN VERIFIED PROTOCOL ACTIVE
+                      </p>
+                    )}
+                    <p className="text-[9px] text-chrome/50 uppercase tracking-widest leading-relaxed">
+                      * Tax Compliance simulated validation is required for high value archive transactions. Valid mock PAN examples: <span className="font-mono text-chrome font-bold select-all">SANSR1431P</span>, <span className="font-mono text-chrome font-bold select-all">PRNCE1990A</span>.
+                    </p>
+                  </div>
+                </div>
+
                 {/* Payment Section */}
                 <div className="space-y-4">
                   <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
-                    03. PAYMENT DETAIL
+                    04. PAYMENT DETAIL
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="sm:col-span-3">
