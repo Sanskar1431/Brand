@@ -2,6 +2,7 @@
 
 import { useUIStore } from "@/lib/store/uiStore";
 import { useCartStore } from "@/lib/store/cartStore";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { fetchSignatureProducts } from "@/lib/products/fetchProducts";
 import { Product } from "@/lib/products/schema";
 import { useEffect, useState } from "react";
@@ -18,7 +19,14 @@ export default function CartDrawer() {
   const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore();
   const { addToast } = useToastStore();
   const { formatPrice } = useCurrencyStore();
+  const { addItem: addToWishlist } = useWishlistStore();
   const [recommendations, setRecommendations] = useState<Product[]>([]);
+
+  const handleTransferToWishlist = (item: any) => {
+    addToWishlist(item.product);
+    removeItem(item.product.id, item.selectedColor, item.selectedSize);
+    addToast(`${item.product.name} SAVED TO WISHLIST`, "success");
+  };
   const [isCheckoutWiping, setIsCheckoutWiping] = useState(false);
   const router = useRouter();
 
@@ -159,14 +167,36 @@ export default function CartDrawer() {
                           </button>
                         </div>
 
-                        <button
-                          onClick={() =>
-                            removeItem(item.product.id, item.selectedColor, item.selectedSize)
-                          }
-                          className="text-xs text-error/80 hover:text-error transition-colors uppercase tracking-widest cursor-pointer"
-                        >
-                          Remove
-                        </button>
+                        <div className="flex gap-4">
+                          <button
+                            onClick={() =>
+                              removeItem(item.product.id, item.selectedColor, item.selectedSize)
+                            }
+                            className="text-xs text-error/80 hover:text-error transition-colors uppercase tracking-widest cursor-pointer"
+                          >
+                            Remove
+                          </button>
+                          <button
+                            onClick={() => handleTransferToWishlist(item)}
+                            className="text-xs text-chrome hover:text-accent transition-colors uppercase tracking-widest cursor-pointer flex items-center gap-1 font-bold"
+                          >
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              strokeWidth="2"
+                              stroke="currentColor"
+                              className="w-3 h-3"
+                            >
+                              <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                              />
+                            </svg>
+                            Save
+                          </button>
+                        </div>
                       </div>
                     </div>
                   </div>
