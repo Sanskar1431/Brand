@@ -86,6 +86,21 @@ export default function ProductDetailClient({
   const [isCareOpen, setIsCareOpen] = useState(false);
   const [isReviewsOpen, setIsReviewsOpen] = useState(false);
   const [showTooltip, setShowTooltip] = useState(false);
+  const [postalCode, setPostalCode] = useState("");
+  const [deliveryEstimate, setDeliveryEstimate] = useState("");
+
+  const handleCheckDelivery = () => {
+    if (!postalCode.trim()) {
+      addToast("PLEASE ENTER A POSTAL CODE", "error");
+      return;
+    }
+    const delayDays = (postalCode.trim().length % 3) + 2;
+    addToast("CALCULATING LOGISTICS ROUTE...", "info");
+    setTimeout(() => {
+      setDeliveryEstimate(`ESTIMATED ARRIVAL IN ${delayDays} BUSINESS DAYS PROTOCOL`);
+      addToast("DELIVERY PROTOCOL ESTIMATED", "success");
+    }, 800);
+  };
 
   const [isPlayingLoop, setIsPlayingLoop] = useState(false);
   const [timecode, setTimecode] = useState(0);
@@ -405,6 +420,38 @@ export default function ProductDetailClient({
                   </svg>
                 </button>
               </div>
+            </div>
+
+            {/* Delivery protocol checker */}
+            <div className="pt-6 border-t border-border-subtle/30 space-y-3">
+              <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block">
+                DELIVERY PROTOCOL CHECKER
+              </span>
+              <div className="flex gap-2">
+                <input
+                  type="text"
+                  placeholder="ENTER ZIP/POSTAL CODE..."
+                  value={postalCode}
+                  onChange={(e) => {
+                    setPostalCode(e.target.value.toUpperCase());
+                    setDeliveryEstimate("");
+                  }}
+                  className="flex-1 bg-bg-surface border border-border-subtle p-2.5 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono"
+                  maxLength={10}
+                />
+                <button
+                  type="button"
+                  onClick={handleCheckDelivery}
+                  className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                >
+                  CHECK
+                </button>
+              </div>
+              {deliveryEstimate && (
+                <p className="text-[10px] text-accent font-mono font-bold uppercase tracking-wider">
+                  ✓ {deliveryEstimate}
+                </p>
+              )}
             </div>
 
             {/* Care accordion */}
