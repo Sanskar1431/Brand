@@ -16,7 +16,7 @@ import { drawerSlide } from "./variants";
 
 export default function CartDrawer() {
   const { isCartOpen, setOpenCart } = useUIStore();
-  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart } = useCartStore();
+  const { items, removeItem, updateQuantity, getTotalPrice, getTotalItems, clearCart, giftWrap, toggleGiftWrap } = useCartStore();
   const { addToast } = useToastStore();
   const { formatPrice } = useCurrencyStore();
   const { addItem: addToWishlist } = useWishlistStore();
@@ -242,9 +242,37 @@ export default function CartDrawer() {
             {/* Footer Summary */}
             {items.length > 0 && (
               <div className="p-6 border-t border-border-subtle bg-bg-primary/50 space-y-4">
+                {/* Gift wrapping toggle */}
+                <div className="border border-border-subtle/40 p-3 bg-bg-surface/20 flex items-center justify-between">
+                  <div className="flex flex-col text-left">
+                    <span className="text-[10px] text-text-primary tracking-wider uppercase font-bold">
+                      SIGNATURE GIFT BOX PACKAGING
+                    </span>
+                    <span className="text-[9px] text-chrome uppercase font-mono">
+                      + {formatPrice(25000)} // PREMIUM BOX & EMBOSSED ARCHIVE TICKET
+                    </span>
+                  </div>
+                  <input
+                    type="checkbox"
+                    checked={giftWrap}
+                    onChange={(e) => {
+                      toggleGiftWrap();
+                      addToast(
+                        e.target.checked
+                          ? "GIFT PACKAGING ADDED TO DISPATCH PROTOCOL"
+                          : "GIFT PACKAGING REMOVED",
+                        "info"
+                      );
+                    }}
+                    className="accent-accent w-4 h-4 cursor-pointer"
+                  />
+                </div>
+
                 <div className="flex justify-between items-center text-sm uppercase tracking-wider font-semibold">
                   <span>Subtotal</span>
-                  <span className="font-sans tabular-nums">{formatPrice(getTotalPrice())}</span>
+                  <span className="font-sans tabular-nums">
+                    {formatPrice(getTotalPrice() + (giftWrap ? 25000 : 0))}
+                  </span>
                 </div>
                 <p className="text-[10px] text-chrome uppercase tracking-wider leading-relaxed">
                   Shipping, taxes, and duties calculated at checkout.

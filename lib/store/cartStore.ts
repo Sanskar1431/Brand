@@ -11,18 +11,21 @@ export interface CartItem {
 
 interface CartState {
   items: CartItem[];
+  giftWrap: boolean;
   addItem: (product: Product, color: string, size: string, quantity?: number) => void;
   removeItem: (productId: string, color: string, size: string) => void;
   updateQuantity: (productId: string, color: string, size: string, quantity: number) => void;
   clearCart: () => void;
   getTotalItems: () => number;
   getTotalPrice: () => number;
+  toggleGiftWrap: () => void;
 }
 
 export const useCartStore = create<CartState>()(
   persist(
     (set, get) => ({
       items: [],
+      giftWrap: false,
       
       addItem: (product, color, size, quantity = 1) => {
         set((state) => {
@@ -71,7 +74,9 @@ export const useCartStore = create<CartState>()(
         }));
       },
 
-      clearCart: () => set({ items: [] }),
+      clearCart: () => set({ items: [], giftWrap: false }),
+
+      toggleGiftWrap: () => set((state) => ({ giftWrap: !state.giftWrap })),
 
       getTotalItems: () => {
         return get().items.reduce((sum, item) => sum + item.quantity, 0);
