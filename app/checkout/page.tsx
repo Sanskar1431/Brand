@@ -9,7 +9,7 @@ import { useToastStore } from "@/lib/store/toastStore";
 import { useCurrencyStore } from "@/lib/store/currencyStore";
 
 export default function CheckoutPage() {
-  const { items, getTotalPrice, clearCart } = useCartStore();
+  const { items, getTotalPrice, clearCart, giftWrap } = useCartStore();
   const [isSuccess, setIsSuccess] = useState(false);
   const router = useRouter();
   const { addToast } = useToastStore();
@@ -93,11 +93,12 @@ export default function CheckoutPage() {
   };
 
   const subtotal = getTotalPrice();
+  const giftPackagingFee = giftWrap ? 25000 : 0;
   const discountAmount = Math.round((subtotal * discountPercent) / 100);
   const discountedSubtotal = subtotal - discountAmount;
-  const shipping = discountedSubtotal > 1500000 ? 0 : 50000; // Free shipping over ₹15,000
-  const tax = Math.round(discountedSubtotal * 0.18); // 18% GST
-  const total = discountedSubtotal + shipping + tax;
+  const shipping = (discountedSubtotal + giftPackagingFee) > 1500000 ? 0 : 50000;
+  const tax = Math.round((discountedSubtotal + giftPackagingFee) * 0.18);
+  const total = discountedSubtotal + giftPackagingFee + shipping + tax;
 
   if (items.length === 0 && !isSuccess) {
     return (
@@ -409,6 +410,14 @@ export default function CheckoutPage() {
                       <span>Discount ({discountPercent}%)</span>
                       <span className="font-sans font-semibold tabular-nums">
                         -{formatPrice(discountAmount)}
+                      </span>
+                    </div>
+                  )}
+                  {giftWrap && (
+                    <div className="flex justify-between">
+                      <span className="text-chrome">Signature Packaging</span>
+                      <span className="font-sans font-semibold tabular-nums text-accent">
+                        {formatPrice(giftPackagingFee)}
                       </span>
                     </div>
                   )}
