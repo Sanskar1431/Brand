@@ -22,6 +22,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
     search,
     sortBy,
     setCategory,
+    setSize,
   } = useFilterStore();
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
@@ -152,6 +153,28 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
                 }`}
               >
                 {catOption.label}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Quick Size Filter Pills */}
+        <div className="w-full overflow-x-auto pb-4 mb-10 scrollbar-hide flex gap-2 items-center select-none text-[10px] uppercase tracking-wider font-bold border-b border-border-subtle/20">
+          <span className="text-chrome mr-2">Quick Size:</span>
+          {["ALL", "S", "M", "L", "XL"].map((szVal) => {
+            const isAll = szVal === "ALL";
+            const isSelected = isAll ? !size : size === szVal;
+            return (
+              <button
+                key={szVal}
+                onClick={() => setSize(isAll ? "" : szVal as any)}
+                className={`w-9 h-9 text-xs font-bold font-mono border transition-all cursor-pointer rounded-full flex items-center justify-center ${
+                  isSelected
+                    ? "bg-accent border-accent text-white shadow-md shadow-accent/20"
+                    : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome bg-bg-surface/10"
+                }`}
+              >
+                {szVal}
               </button>
             );
           })}
