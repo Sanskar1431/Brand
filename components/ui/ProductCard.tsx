@@ -23,6 +23,13 @@ export default function ProductCard({
   const [openQuickView, setOpenQuickView] = useState(false);
   const { formatPrice } = useCurrencyStore();
 
+  const getBadgeText = () => {
+    if (product.price > 700000) return "LIMITED RELEASE";
+    if (product.name.toLowerCase().includes("tee")) return "LOW STOCK";
+    if (product.id.charCodeAt(0) % 2 === 0) return "SIGNATURE ARCHIVE";
+    return "";
+  };
+
   // Enforce 'No Generic Cards' (Section 7.1.1)
   return (
     <>
@@ -37,6 +44,19 @@ export default function ProductCard({
       <Link href={`/product/${product.slug}`} className="w-full h-full flex flex-col justify-between">
         {/* Product Image Frame */}
         <div className={`relative w-full ${isFeature ? "aspect-[4/3] md:h-full" : aspectRatio} bg-bg-elevated overflow-hidden`}>
+          {/* Badge Overlay */}
+          {getBadgeText() && (
+            <span className={`absolute top-4 left-4 z-15 text-[8px] font-bold font-mono tracking-widest px-2.5 py-1 uppercase shadow-md select-none border ${
+              getBadgeText() === "LOW STOCK"
+                ? "bg-error/15 border-error/25 text-error"
+                : getBadgeText() === "LIMITED RELEASE"
+                ? "bg-accent/15 border-accent/25 text-accent animate-pulse"
+                : "bg-bg-surface/90 border-border-subtle text-chrome"
+            }`}>
+              {getBadgeText()}
+            </span>
+          )}
+
           {/* Subtle gradient spotlight overlay (Section 5.5 / 7.1.1) */}
           <div className="absolute inset-0 bg-gradient-to-t from-bg-primary/90 via-transparent to-transparent opacity-80 group-hover:opacity-60 transition-opacity duration-300 z-10" />
 
