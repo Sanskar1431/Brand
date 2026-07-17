@@ -53,6 +53,27 @@ export default function ProfilePage() {
   const [statusFilter, setStatusFilter] = useState<"ALL" | "DELIVERED" | "IN TRANSIT">("ALL");
   const { addToast } = useToastStore();
 
+  const [orders, setOrders] = useState([
+    {
+      id: "PRNC-940182",
+      date: "2026-06-15",
+      item: "SIGNATURE RAW OVERSIZED TEE",
+      color: "CARBON BLACK",
+      size: "M",
+      price: 450000,
+      status: "DELIVERED",
+    },
+    {
+      id: "PRNC-930571",
+      date: "2026-06-20",
+      item: "HEAVYWEIGHT FRENCH TERRY JOGGER",
+      color: "PUMICE GREY",
+      size: "L",
+      price: 780000,
+      status: "IN TRANSIT",
+    },
+  ]);
+
   const toggleOrderExpand = (id: string) => {
     setExpandedOrderId(expandedOrderId === id ? null : id);
   };
@@ -66,8 +87,14 @@ export default function ProfilePage() {
     }
     
     if (action === "RETURN") {
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, status: "RETURN INITIATED" } : o))
+      );
       addToast(`RETURN INITIATED FOR ORDER ${orderId}: REASON CACHED`, "success");
     } else {
+      setOrders((prev) =>
+        prev.map((o) => (o.id === orderId ? { ...o, status: "CANCELLED" } : o))
+      );
       addToast(`ORDER ${orderId} CANCELLED IN ARCHIVE`, "info");
     }
     
@@ -93,28 +120,7 @@ export default function ProfilePage() {
     ];
   };
 
-  const mockOrders = [
-    {
-      id: "PRNC-940182",
-      date: "2026-06-15",
-      item: "SIGNATURE RAW OVERSIZED TEE",
-      color: "CARBON BLACK",
-      size: "M",
-      price: 450000,
-      status: "DELIVERED",
-    },
-    {
-      id: "PRNC-930571",
-      date: "2026-06-20",
-      item: "HEAVYWEIGHT FRENCH TERRY JOGGER",
-      color: "PUMICE GREY",
-      size: "L",
-      price: 780000,
-      status: "IN TRANSIT",
-    },
-  ];
-
-  const filteredOrders = mockOrders.filter((order) => {
+  const filteredOrders = orders.filter((order) => {
     const matchesSearch =
       order.item.toLowerCase().includes(orderSearchQuery.toLowerCase()) ||
       order.id.toLowerCase().includes(orderSearchQuery.toLowerCase());
@@ -261,6 +267,10 @@ export default function ProfilePage() {
                         className={`text-[9px] font-bold tracking-widest px-3 py-1 border uppercase font-mono ${
                           order.status === "DELIVERED"
                             ? "bg-bg-primary text-text-primary border-border-subtle"
+                            : order.status === "CANCELLED"
+                            ? "bg-bg-primary text-chrome/50 border-border-subtle/40 line-through"
+                            : order.status.includes("RETURN")
+                            ? "bg-amber-500/10 text-amber-500 border-amber-500/20"
                             : "bg-accent/15 text-accent border-accent/20 animate-pulse"
                         }`}
                       >
@@ -337,7 +347,8 @@ export default function ProfilePage() {
                         </div>
 
                         {/* Return/Cancel actions */}
-                        <div className="border-t border-border-subtle/20 pt-4 flex flex-col gap-4">
+                        {order.status !== "CANCELLED" && !order.status.includes("RETURN") && (
+                          <div className="border-t border-border-subtle/20 pt-4 flex flex-col gap-4">
                           {order.status === "DELIVERED" ? (
                             <div className="space-y-4">
                               <span className="text-[9px] text-chrome tracking-wider uppercase font-bold block text-left">
@@ -382,6 +393,7 @@ export default function ProfilePage() {
                             </div>
                           )}
                         </div>
+                        )}
                       </motion.div>
                     )}
                   </AnimatePresence>
