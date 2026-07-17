@@ -17,6 +17,7 @@ export default function CheckoutPage() {
 
   const [promoInput, setPromoInput] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
+  const [showCouponsDropdown, setShowCouponsDropdown] = useState(false);
 
   const [panNumber, setPanNumber] = useState("");
   const [panVerified, setPanVerified] = useState(false);
@@ -373,7 +374,7 @@ export default function CheckoutPage() {
                 </div>
 
                 {/* Promo Code Input */}
-                <div className="border-t border-border-subtle/30 pt-4 space-y-2">
+                <div className="border-t border-border-subtle/30 pt-4 space-y-2 relative">
                   <div className="flex gap-2">
                     <input
                       type="text"
@@ -390,11 +391,64 @@ export default function CheckoutPage() {
                       APPLY
                     </button>
                   </div>
-                  {discountPercent > 0 && (
-                    <p className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block">
-                      ✓ CODE APPLIED: {discountPercent}% DISCOUNT ACTUATED
-                    </p>
-                  )}
+                  <div className="flex justify-between items-center select-none">
+                    {discountPercent > 0 ? (
+                      <p className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block">
+                        ✓ CODE APPLIED: {discountPercent}% DISCOUNT ACTUATED
+                      </p>
+                    ) : (
+                      <span className="text-[9px] text-chrome/40 uppercase tracking-widest font-mono">
+                        HAVE A COUPON CODE?
+                      </span>
+                    )}
+                    <button
+                      type="button"
+                      onClick={() => setShowCouponsDropdown(!showCouponsDropdown)}
+                      className="text-[9px] text-accent hover:underline uppercase tracking-wider font-bold cursor-pointer"
+                    >
+                      {showCouponsDropdown ? "HIDE COUPONS" : "VIEW COUPONS"}
+                    </button>
+                  </div>
+
+                  <AnimatePresence>
+                    {showCouponsDropdown && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -5 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        exit={{ opacity: 0, y: -5 }}
+                        className="bg-bg-primary border border-border-subtle p-3 space-y-2 mt-1 z-25 text-left shadow-xl"
+                      >
+                        <span className="text-[8px] text-chrome tracking-widest font-mono font-bold block uppercase border-b border-border-subtle/30 pb-1">
+                          ACTIVE ARCHIVE PROTOCOLS
+                        </span>
+                        {[
+                          { code: "PRINCE10", desc: "10% OFF ALL GARMENT ARCHIVES" },
+                          { code: "KINGDOM20", desc: "20% OFF HIGH DENSITY PRODUCTS" },
+                        ].map((cp) => (
+                          <button
+                            key={cp.code}
+                            type="button"
+                            onClick={() => {
+                              setPromoInput(cp.code);
+                              setShowCouponsDropdown(false);
+                              const code = cp.code;
+                              if (code === "PRINCE10") {
+                                setDiscountPercent(10);
+                                addToast("PROMO CODE PRINCE10 APPLIED: 10% OFF", "success");
+                              } else if (code === "KINGDOM20") {
+                                setDiscountPercent(20);
+                                addToast("PROMO CODE KINGDOM20 APPLIED: 20% OFF", "success");
+                              }
+                            }}
+                            className="w-full text-left p-2 hover:bg-bg-surface flex flex-col gap-0.5 border border-border-subtle/20 hover:border-accent transition-colors cursor-pointer"
+                          >
+                            <span className="text-[10px] font-bold font-mono text-text-primary">{cp.code}</span>
+                            <span className="text-[8px] text-chrome font-mono uppercase tracking-wider">{cp.desc}</span>
+                          </button>
+                        ))}
+                      </motion.div>
+                    )}
+                  </AnimatePresence>
                 </div>
 
                 {/* Totals table */}
