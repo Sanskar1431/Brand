@@ -23,6 +23,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
     sortBy,
     setCategory,
     setSize,
+    setColor,
   } = useFilterStore();
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
@@ -175,6 +176,39 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
                 }`}
               >
                 {szVal}
+              </button>
+            );
+          })}
+        </div>
+
+        {/* Quick Color Swatch Filters */}
+        <div className="w-full overflow-x-auto pb-4 mb-10 scrollbar-hide flex gap-2 items-center select-none text-[10px] uppercase tracking-wider font-bold border-b border-border-subtle/20">
+          <span className="text-chrome mr-2">Quick Color:</span>
+          {[
+            { label: "ALL", value: "", hex: "" },
+            { label: "BLACK", value: "Obsidian Black", hex: "#0f0f10" },
+            { label: "PURPLE", value: "Royal Purple", hex: "#3b1e54" },
+            { label: "GREY", value: "Gunmetal Grey", hex: "#4a4e51" },
+            { label: "WHITE", value: "Soft White", hex: "#f5f5f7" },
+          ].map((colOpt) => {
+            const isSelected = colOpt.value ? color === colOpt.value : !color;
+            return (
+              <button
+                key={colOpt.label}
+                onClick={() => setColor(colOpt.value)}
+                className={`px-4 py-2 border text-[9px] uppercase tracking-wider font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                  isSelected
+                    ? "bg-text-primary text-bg-primary border-text-primary shadow-md"
+                    : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome bg-bg-surface/10"
+                }`}
+              >
+                {colOpt.hex && (
+                  <span
+                    className="w-2.5 h-2.5 rounded-full border border-border-subtle"
+                    style={{ backgroundColor: colOpt.hex }}
+                  />
+                )}
+                {colOpt.label}
               </button>
             );
           })}
