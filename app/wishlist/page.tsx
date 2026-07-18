@@ -70,7 +70,7 @@ export default function WishlistPage() {
                               className={`w-3.5 h-3.5 rounded-full border transition-all cursor-pointer ${
                                 isSelected ? "border-accent ring-1 ring-accent scale-110" : "border-border-subtle hover:scale-105"
                               }`}
-                              style={{ backgroundColor: col.colorCode }}
+                              style={{ backgroundColor: col.hex }}
                               title={col.name}
                             />
                           );
