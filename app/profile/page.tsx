@@ -321,6 +321,32 @@ export default function ProfilePage() {
                           <OrderCountdown status={order.status} />
                         )}
 
+                        {/* Transaction Price Breakdown */}
+                        <div className="border-t border-border-subtle/20 pt-4 space-y-2 select-none text-left">
+                          <span className="text-[9px] text-accent tracking-[0.15em] font-mono font-bold block uppercase">
+                            TRANSACTION COST BREAKDOWN
+                          </span>
+                          <div className="grid grid-cols-2 gap-y-1.5 text-[10px] font-mono uppercase tracking-wider text-chrome">
+                            <span>Item Subtotal:</span>
+                            <span className="text-right text-text-primary">
+                              ₹{((order.price - Math.round(order.price * 0.18)) / 100).toLocaleString("en-IN")}
+                            </span>
+
+                            <span>GST Tax (18%):</span>
+                            <span className="text-right text-text-primary">
+                              ₹{(Math.round(order.price * 0.18) / 100).toLocaleString("en-IN")}
+                            </span>
+
+                            <span>Shipping Protocol:</span>
+                            <span className="text-right text-accent font-bold">FREE</span>
+
+                            <span className="border-t border-border-subtle/30 pt-1.5 font-bold text-text-primary">Total Paid:</span>
+                            <span className="border-t border-border-subtle/30 pt-1.5 font-bold text-right text-text-primary text-xs">
+                              ₹{(order.price / 100).toLocaleString("en-IN")}
+                            </span>
+                          </div>
+                        </div>
+
                         {/* Invoice download simulation */}
                         <div className="border-t border-border-subtle/20 pt-4">
                           <button
