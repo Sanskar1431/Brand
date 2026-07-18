@@ -93,6 +93,13 @@ export default function CheckoutPage() {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  const getDeliveryEstimateText = () => {
+    const pc = formData.postalCode.trim();
+    if (pc.length < 4) return "";
+    const delayDays = (pc.length % 3) + 2;
+    return `GUARANTEED ARRIVAL: IN ${delayDays} BUSINESS DAYS`;
+  };
+
   const subtotal = getTotalPrice();
   const giftPackagingFee = giftWrap ? 25000 : 0;
   const discountAmount = Math.round((subtotal * discountPercent) / 100);
@@ -481,8 +488,13 @@ export default function CheckoutPage() {
                       {shipping === 0 ? "FREE" : formatPrice(shipping)}
                     </span>
                   </div>
+                  {getDeliveryEstimateText() && (
+                    <div className="bg-bg-primary border border-border-subtle/40 p-2 text-[8px] text-accent font-bold font-mono tracking-widest uppercase text-center animate-pulse">
+                      ✓ {getDeliveryEstimateText()}
+                    </div>
+                  )}
                   <div className="flex justify-between">
-                    <span className="text-chrome">GST (18%)</span>
+                    <span className="text-chrome">GST Tax (18%)</span>
                     <span className="font-sans font-semibold tabular-nums">
                       {formatPrice(tax)}
                     </span>
