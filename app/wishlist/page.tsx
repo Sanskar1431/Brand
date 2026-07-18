@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useUIStore } from "@/lib/store/uiStore";
@@ -13,6 +14,7 @@ export default function WishlistPage() {
   const { addItem } = useCartStore();
   const { setOpenCart } = useUIStore();
   const { addToast } = useToastStore();
+  const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
 
 
 
@@ -49,23 +51,51 @@ export default function WishlistPage() {
                     variant="standard"
                     aspectRatio="aspect-[3/4]"
                   />
-                  {/* Quick Add Size Strip on hover */}
-                  <div className="absolute inset-x-4 bottom-[84px] z-20 bg-bg-surface/95 backdrop-blur-sm border border-border-subtle p-2 flex justify-around items-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg">
-                    <span className="text-[8px] text-chrome tracking-widest uppercase font-bold">QUICK ADD:</span>
-                    {["S", "M", "L", "XL"].map((sz) => (
-                      <button
-                        key={sz}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          addItem(product, product.colors[0].name, sz as any, 1);
-                          addToast(`${product.name} (SIZE ${sz}) QUICK ADDED`, "success");
-                          setOpenCart(true);
-                        }}
-                        className="text-[10px] font-bold font-mono text-chrome hover:text-accent p-1 cursor-pointer transition-colors"
-                      >
-                        {sz}
-                      </button>
-                    ))}
+                  {/* Quick Configuration Panel on hover */}
+                  <div className="absolute inset-x-4 bottom-[84px] z-20 bg-bg-surface/95 backdrop-blur-sm border border-border-subtle p-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg select-none">
+                    {/* Color swatches choice */}
+                    <div className="flex gap-2 items-center justify-center border-b border-border-subtle/30 pb-1.5">
+                      <span className="text-[7px] text-chrome tracking-widest uppercase font-bold">COLOR:</span>
+                      <div className="flex gap-1.5">
+                        {product.colors.map((col) => {
+                          const activeColor = selectedColors[product.id] || product.colors[0].name;
+                          const isSelected = col.name === activeColor;
+                          return (
+                            <button
+                              key={col.name}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                setSelectedColors((prev) => ({ ...prev, [product.id]: col.name }));
+                              }}
+                              className={`w-3.5 h-3.5 rounded-full border transition-all cursor-pointer ${
+                                isSelected ? "border-accent ring-1 ring-accent scale-110" : "border-border-subtle hover:scale-105"
+                              }`}
+                              style={{ backgroundColor: col.colorCode }}
+                              title={col.name}
+                            />
+                          );
+                        })}
+                      </div>
+                    </div>
+
+                    <div className="flex justify-around items-center">
+                      <span className="text-[8px] text-chrome tracking-widest uppercase font-bold">QUICK ADD:</span>
+                      {["S", "M", "L", "XL"].map((sz) => (
+                        <button
+                          key={sz}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            const activeColor = selectedColors[product.id] || product.colors[0].name;
+                            addItem(product, activeColor, sz as any, 1);
+                            addToast(`${product.name} (${activeColor} / ${sz}) QUICK ADDED`, "success");
+                            setOpenCart(true);
+                          }}
+                          className="text-[10px] font-bold font-mono text-chrome hover:text-accent p-1 cursor-pointer transition-colors"
+                        >
+                          {sz}
+                        </button>
+                      ))}
+                    </div>
                   </div>
 
                   <button
