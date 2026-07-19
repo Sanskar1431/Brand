@@ -107,6 +107,41 @@ export default function CartDrawer() {
 
             {/* Cart Items (Scrollable) */}
             <div className="flex-1 overflow-y-auto p-6 space-y-6">
+              {items.length > 0 && (
+                <div className="border border-border-subtle/40 p-4 bg-bg-surface/20 space-y-3 select-none">
+                  {(() => {
+                    const threshold = 1500000; // ₹15,000 in cents
+                    const subtotal = getTotalPrice();
+                    const isUnlocked = subtotal >= threshold;
+                    const percent = Math.min(100, (subtotal / threshold) * 100);
+                    const remaining = threshold - subtotal;
+                    return (
+                      <>
+                        <div className="flex justify-between items-center text-[9px] font-bold font-mono tracking-widest uppercase">
+                          <span className={isUnlocked ? "text-accent animate-pulse" : "text-chrome"}>
+                            {isUnlocked
+                              ? "✓ FREE SECURE AIR SHIPPING UNLOCKED"
+                              : "SHIPPING UPGRADE PATHWAY"}
+                          </span>
+                          {!isUnlocked && (
+                            <span className="text-accent">
+                              {formatPrice(remaining)} TO UNLOCK
+                            </span>
+                          )}
+                        </div>
+                        {/* Progress Bar Track */}
+                        <div className="w-full h-[3px] bg-border-subtle/20 overflow-hidden relative">
+                          <div
+                            className="h-full bg-accent transition-all duration-500 ease-out"
+                            style={{ width: `${percent}%` }}
+                          />
+                        </div>
+                      </>
+                    );
+                  })()}
+                </div>
+              )}
+
               {items.length > 0 ? (
                 items.map((item, idx) => (
                   <div
