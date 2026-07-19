@@ -8,15 +8,19 @@ import Link from "next/link";
 function SuccessContent() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState("PRNC-940182");
+  const [conciergeNotes, setConciergeNotes] = useState("");
 
   useEffect(() => {
     const id = searchParams.get("orderId");
     if (id) {
       setOrderId(id);
     } else {
-      // Generate a random one if not supplied
       const randomId = "PRNC-" + Math.floor(100000 + Math.random() * 900000);
       setOrderId(randomId);
+    }
+    const nt = searchParams.get("notes");
+    if (nt) {
+      setConciergeNotes(decodeURIComponent(nt));
     }
   }, [searchParams]);
 
@@ -27,7 +31,7 @@ function SuccessContent() {
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+        transition={{ duration: 0.6, ease: [0.16, 1, 0.3, 1] as const }}
         className="max-w-md mx-auto text-center space-y-8 py-16 z-10"
       >
         <div className="w-16 h-16 bg-accent/10 border border-accent rounded-full flex items-center justify-center mx-auto text-accent shadow-lg shadow-accent/10">
@@ -54,6 +58,17 @@ function SuccessContent() {
             Your transaction has been finalized. Order Reference: <span className="font-mono font-bold text-accent select-all">{orderId}</span>
           </p>
         </div>
+
+        {conciergeNotes && (
+          <div className="border border-border-subtle/50 p-4 bg-bg-surface/20 space-y-2 text-left max-w-sm mx-auto select-none">
+            <span className="text-[8px] text-accent tracking-widest font-mono font-bold block uppercase border-b border-border-subtle/30 pb-1">
+              CONCIERGE SPECIAL INSTRUCTIONS CACHED
+            </span>
+            <p className="text-[10px] text-chrome font-mono uppercase tracking-wider leading-relaxed">
+              "{conciergeNotes}"
+            </p>
+          </div>
+        )}
 
         <div className="w-12 h-[1px] bg-border-subtle mx-auto" />
 
