@@ -18,6 +18,7 @@ export default function CheckoutPage() {
   const [promoInput, setPromoInput] = useState("");
   const [discountPercent, setDiscountPercent] = useState(0);
   const [showCouponsDropdown, setShowCouponsDropdown] = useState(false);
+  const [conciergeNotes, setConciergeNotes] = useState("");
 
   const [panNumber, setPanNumber] = useState("");
   const [panVerified, setPanVerified] = useState(false);
@@ -84,7 +85,7 @@ export default function CheckoutPage() {
       setLoading(false);
       const randomOrderId = "PRNC-" + Math.floor(100000 + Math.random() * 900000);
       clearCart();
-      router.push(`/checkout/success?orderId=${randomOrderId}`);
+      router.push(`/checkout/success?orderId=${randomOrderId}&notes=${encodeURIComponent(conciergeNotes.trim())}`);
     }, 1800);
   };
 
@@ -229,10 +230,29 @@ export default function CheckoutPage() {
                   </div>
                 </div>
 
+                {/* Concierge Instructions Section */}
+                <div className="space-y-4">
+                  <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
+                    03. CONCIERGE SPECIAL INSTRUCTIONS (OPTIONAL)
+                  </h3>
+                  <div>
+                    <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
+                      DELIVERY NOTES OR SPECIAL PROTOCOL CODES
+                    </label>
+                    <textarea
+                      name="conciergeNotes"
+                      value={conciergeNotes}
+                      onChange={(e) => setConciergeNotes(e.target.value)}
+                      placeholder="ENTER SPECIAL INSTRUCTIONS (E.G. LEAVE AT FRONT CONCIERGE DESK)..."
+                      className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-xs text-text-primary transition-colors h-20 uppercase font-mono resize-none"
+                    />
+                  </div>
+                </div>
+
                 {/* Tax Compliance Section */}
                 <div className="space-y-4">
                   <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
-                    03. TAX COMPLIANCE (PAN VERIFICATION)
+                    04. TAX COMPLIANCE (PAN VERIFICATION)
                   </h3>
                   <div className="space-y-3">
                     <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
@@ -289,7 +309,7 @@ export default function CheckoutPage() {
                 {/* Payment Section */}
                 <div className="space-y-4">
                   <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
-                    04. PAYMENT DETAIL
+                    05. PAYMENT DETAIL
                   </h3>
                   <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
                     <div className="sm:col-span-3">
