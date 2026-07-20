@@ -232,19 +232,32 @@ export default function ProfilePage() {
                   className="flex-1 bg-bg-surface border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
                 />
                 <div className="flex gap-2">
-                  {(["ALL", "DELIVERED", "IN TRANSIT"] as const).map((status) => (
-                    <button
-                      key={status}
-                      onClick={() => setStatusFilter(status)}
-                      className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider border transition-colors cursor-pointer ${
-                        statusFilter === status
-                          ? "bg-accent border-accent text-white"
-                          : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
-                      }`}
-                    >
-                      {status}
-                    </button>
-                  ))}
+                  {(["ALL", "DELIVERED", "IN TRANSIT"] as const).map((status) => {
+                    const getCount = (st: "ALL" | "DELIVERED" | "IN TRANSIT") => {
+                      if (st === "ALL") return orders.length;
+                      return orders.filter(o => o.status === st).length;
+                    };
+                    return (
+                      <button
+                        key={status}
+                        onClick={() => setStatusFilter(status)}
+                        className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                          statusFilter === status
+                            ? "bg-accent border-accent text-white"
+                            : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
+                        }`}
+                      >
+                        <span>{status}</span>
+                        <span className={`px-1.5 py-0.5 rounded-full text-[8.5px] font-mono font-bold leading-none ${
+                          statusFilter === status
+                            ? "bg-white text-accent animate-pulse"
+                            : "bg-bg-surface border border-border-subtle/50 text-chrome"
+                        }`}>
+                          {getCount(status)}
+                        </span>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 
