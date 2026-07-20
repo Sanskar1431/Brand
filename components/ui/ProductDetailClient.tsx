@@ -102,6 +102,17 @@ export default function ProductDetailClient({
     }, 800);
   };
 
+  const [restockEmail, setRestockEmail] = useState("");
+
+  const handleRestockSubmit = () => {
+    if (!restockEmail.trim() || !restockEmail.includes("@")) {
+      addToast("PLEASE ENTER A VALID EMAIL ADDRESS", "error");
+      return;
+    }
+    addToast(`RESTOCK PROMPT CACHED FOR ${selectedColor.name} / ${selectedSize}`, "success");
+    setRestockEmail("");
+  };
+
   const [isPlayingLoop, setIsPlayingLoop] = useState(false);
   const [timecode, setTimecode] = useState(0);
 
@@ -421,6 +432,31 @@ export default function ProductDetailClient({
                 </button>
               </div>
             </div>
+
+            {/* Out of stock notifications */}
+            {isOutOfStock(selectedColor.name, selectedSize) && (
+              <div className="border border-border-subtle/40 p-4 bg-bg-surface/20 space-y-3 mt-4 text-left select-none">
+                <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block uppercase">
+                  OUT OF STOCK PROTOCOL: RESTOCK REQUEST
+                </span>
+                <div className="flex gap-2">
+                  <input
+                    type="email"
+                    placeholder="ENTER EMAIL FOR RESTOCK ALERT..."
+                    value={restockEmail}
+                    onChange={(e) => setRestockEmail(e.target.value)}
+                    className="flex-1 bg-bg-surface border border-border-subtle p-2.5 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono"
+                  />
+                  <button
+                    type="button"
+                    onClick={handleRestockSubmit}
+                    className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                  >
+                    SUBMIT
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Delivery protocol checker */}
             <div className="pt-6 border-t border-border-subtle/30 space-y-3">
