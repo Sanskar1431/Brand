@@ -26,6 +26,24 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
   // Initialize selected color when modal opens
   const activeColor = selectedColor || (product ? product.colors[0] : null);
 
+  const [restockEmail, setRestockEmail] = useState("");
+
+  const isOutOfStock = (colorName: string, sz: string) => {
+    if (!product) return false;
+    const key = `${colorName}-${sz}`;
+    return product.stock && product.stock[key] === 0;
+  };
+
+  const handleRestockSubmit = () => {
+    if (!activeColor) return;
+    if (!restockEmail.trim() || !restockEmail.includes("@")) {
+      addToast("PLEASE ENTER A VALID EMAIL ADDRESS", "error");
+      return;
+    }
+    addToast(`RESTOCK PROMPT CACHED FOR ${activeColor.name} / ${selectedSize}`, "success");
+    setRestockEmail("");
+  };
+
   const handleAddToCart = () => {
     if (!product || !activeColor) return;
     addItem(product, activeColor.name, selectedSize, 1);
@@ -123,31 +141,64 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                   Select Size
                 </label>
                 <div className="flex gap-2.5">
-                  {product.sizes.map((s) => (
-                    <button
-                      key={s}
-                      onClick={() => setSelectedSize(s as any)}
-                      className={`w-10 h-10 text-xs font-bold border transition-all cursor-pointer ${
-                        selectedSize === s
-                          ? "bg-accent border-accent text-white shadow-md shadow-accent/10"
-                          : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
-                      }`}
-                    >
-                      {s}
-                    </button>
-                  ))}
+                  {product.sizes.map((s) => {
+                    const oos = isOutOfStock(activeColor.name, s);
+                    return (
+                      <button
+                        key={s}
+                        disabled={oos}
+                        onClick={() => !oos && setSelectedSize(s as any)}
+                        className={`w-10 h-10 text-xs font-bold border transition-all cursor-pointer relative ${
+                          oos
+                            ? "border-border-subtle/30 text-chrome/30 line-through cursor-not-allowed bg-bg-surface/20"
+                            : selectedSize === s
+                            ? "bg-accent border-accent text-white shadow-md shadow-accent/10"
+                            : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
+                        }`}
+                      >
+                        {s}
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
             </div>
 
             {/* CTA action */}
             <div className="pt-6 border-t border-border-subtle/30 mt-6">
-              <button
-                onClick={handleAddToCart}
-                className="w-full bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer"
-              >
-                ADD TO ARCHIVES
-              </button>
+              {isOutOfStock(activeColor.name, selectedSize) ? (
+                <div className="space-y-3">
+                  <button
+                    disabled
+                    className="w-full bg-border-subtle/50 text-chrome/40 py-4 text-xs font-bold uppercase tracking-[0.2em] cursor-not-allowed border border-border-subtle/20"
+                  >
+                    OUT OF STOCK
+                  </button>
+                  <div className="flex gap-2">
+                    <input
+                      type="email"
+                      placeholder="EMAIL FOR RESTOCK ALERT..."
+                      value={restockEmail}
+                      onChange={(e) => setRestockEmail(e.target.value)}
+                      className="flex-1 bg-bg-surface border border-border-subtle p-2 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono"
+                    />
+                    <button
+                      type="button"
+                      onClick={handleRestockSubmit}
+                      className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                    >
+                      SUBMIT
+                    </button>
+                  </div>
+                </div>
+              ) : (
+                <button
+                  onClick={handleAddToCart}
+                  className="w-full bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer"
+                >
+                  ADD TO ARCHIVES
+                </button>
+              )}
             </div>
           </motion.div>
         </>
