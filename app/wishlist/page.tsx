@@ -15,6 +15,12 @@ export default function WishlistPage() {
   const { setOpenCart } = useUIStore();
   const { addToast } = useToastStore();
   const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
+  const [searchQuery, setSearchQuery] = useState("");
+
+  const filteredItems = items.filter((product) =>
+    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    product.category.toLowerCase().includes(searchQuery.toLowerCase())
+  );
 
 
 
@@ -33,13 +39,26 @@ export default function WishlistPage() {
           </p>
         </div>
 
+        {items.length > 0 && (
+          <div className="mb-8 max-w-md text-left">
+            <input
+              type="text"
+              placeholder="SEARCH WISHLIST ARCHIVES..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full bg-bg-surface border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+            />
+          </div>
+        )}
+
         {items.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            <AnimatePresence mode="popLayout">
-              {items.map((product, index) => (
-                <motion.div
-                  key={product.id}
-                  layout
+          filteredItems.length > 0 ? (
+            <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+              <AnimatePresence mode="popLayout">
+                {filteredItems.map((product, index) => (
+                  <motion.div
+                    key={product.id}
+                    layout
                   initial={{ opacity: 0, scale: 0.9 }}
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
@@ -114,8 +133,15 @@ export default function WishlistPage() {
                   </button>
                 </motion.div>
               ))}
-            </AnimatePresence>
-          </div>
+              </AnimatePresence>
+            </div>
+          ) : (
+            <div className="text-center py-20 border border-dashed border-border-subtle/50 w-full flex flex-col items-center justify-center space-y-4">
+              <p className="text-chrome uppercase tracking-widest text-xs">
+                No matching archives found inside your wishlist.
+              </p>
+            </div>
+          )
         ) : (
           <div className="text-center py-32 border border-dashed border-border-subtle/50 rounded-2xl flex flex-col items-center justify-center space-y-6">
             <p className="text-chrome uppercase tracking-widest text-sm">
