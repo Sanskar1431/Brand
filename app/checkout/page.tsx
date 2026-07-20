@@ -378,6 +378,23 @@ export default function CheckoutPage() {
                   ORDER SUMMARY
                 </h3>
 
+                {/* Gift Wrap Verification Panel */}
+                {giftWrap && (
+                  <div className="border border-accent/30 p-3 bg-accent/5 flex items-center justify-between text-left select-none animate-pulse">
+                    <div className="flex flex-col">
+                      <span className="text-[9px] text-accent tracking-[0.15em] font-mono font-bold uppercase">
+                        ✓ SIGNATURE PACKAGING ACTIVE
+                      </span>
+                      <span className="text-[8px] text-chrome font-mono uppercase tracking-widest mt-0.5">
+                        PREMIUM BOX & CUSTOM TICKET INCLUDED
+                      </span>
+                    </div>
+                    <span className="text-[10px] text-accent font-mono font-bold">
+                      {formatPrice(25000)}
+                    </span>
+                  </div>
+                )}
+
                 {/* Items List */}
                 <div className="divide-y divide-border-subtle/30 overflow-y-auto max-h-[300px] pr-2">
                   {items.map((item) => (
