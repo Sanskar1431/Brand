@@ -57,6 +57,11 @@ function SuccessContent() {
           <p className="text-chrome/75 text-sm leading-relaxed tracking-wide max-w-sm mx-auto font-sans uppercase">
             Your transaction has been finalized. Order Reference: <span className="font-mono font-bold text-accent select-all">{orderId}</span>
           </p>
+          {conciergeNotes && (
+            <p className="text-[9px] text-accent tracking-[0.2em] font-mono font-bold uppercase flex items-center justify-center gap-1 mt-2 animate-pulse">
+              <span>✓ CONCIERGE PROTOCOL ATTACHED</span>
+            </p>
+          )}
         </div>
 
         {conciergeNotes && (
