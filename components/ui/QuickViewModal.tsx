@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Product, ProductColor } from "@/lib/products/schema";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useUIStore } from "@/lib/store/uiStore";
@@ -22,6 +22,17 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
 
   const [selectedColor, setSelectedColor] = useState<ProductColor | null>(null);
   const [selectedSize, setSelectedSize] = useState<"S" | "M" | "L" | "XL">("M");
+  const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (isOpen && typeof window !== "undefined") {
+      const savedRec = localStorage.getItem("prince-fit-size");
+      if (savedRec) {
+        setSelectedSize(savedRec as any);
+        setRecommendedSize(savedRec);
+      }
+    }
+  }, [isOpen]);
 
   // Initialize selected color when modal opens
   const activeColor = selectedColor || (product ? product.colors[0] : null);
@@ -137,8 +148,8 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
 
               {/* Sizes */}
               <div className="space-y-2">
-                <label className="text-[9px] text-chrome tracking-[0.15em] font-bold uppercase block">
-                  Select Size
+                <label className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block">
+                  Select Size {recommendedSize && `(Fit profile: ${recommendedSize})`}
                 </label>
                 <div className="flex gap-2.5">
                   {product.sizes.map((s) => {
