@@ -134,6 +134,33 @@ export default function WishlistPage() {
                 </motion.div>
               ))}
               </AnimatePresence>
+
+              {/* Direct Checkout Banner */}
+              <div className="col-span-full mt-12 pt-8 border-t border-border-subtle/30 flex flex-col sm:flex-row items-center justify-between gap-6 w-full">
+                <div className="text-left">
+                  <span className="text-[9px] text-accent tracking-[0.2em] font-mono font-bold block uppercase">
+                    DIRECT CHECKOUT SHORTCUT ACTIVE
+                  </span>
+                  <p className="text-[10px] text-chrome font-mono uppercase tracking-widest mt-1">
+                    PROCEED STRAIGHT TO TRANSACTIONS STAGE WITH FAVORITED ITEMS
+                  </p>
+                </div>
+                <button
+                  onClick={() => {
+                    items.forEach((it) => {
+                      const activeColor = selectedColors[it.id] || it.colors[0].name;
+                      addItem(it, activeColor, "M", 1);
+                    });
+                    addToast("ARCHIVES PACKAGED: ROUTING TO SECURE TRANSACTION", "success");
+                    setTimeout(() => {
+                      window.location.href = "/checkout";
+                    }, 800);
+                  }}
+                  className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg w-full sm:w-auto text-center"
+                >
+                  PROCEED TO CHECKOUT
+                </button>
+              </div>
             </div>
           ) : (
             <div className="text-center py-20 border border-dashed border-border-subtle/50 w-full flex flex-col items-center justify-center space-y-4">
