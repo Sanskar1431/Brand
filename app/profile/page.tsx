@@ -261,6 +261,12 @@ export default function ProfilePage() {
                 </div>
               </div>
 
+              {orderSearchQuery.trim() && (
+                <div className="text-[9px] text-accent font-mono font-bold tracking-widest uppercase text-left py-1">
+                  FOUND {filteredOrders.length} ARCHIVE {filteredOrders.length === 1 ? "TRANSACTION" : "TRANSACTIONS"} MATCHING "{orderSearchQuery}"
+                </div>
+              )}
+
               {filteredOrders.length > 0 ? (
                 filteredOrders.map((order) => (
                   <div
