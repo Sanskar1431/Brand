@@ -53,6 +53,18 @@ export default function ProfilePage() {
   const [statusFilter, setStatusFilter] = useState<"ALL" | "DELIVERED" | "IN TRANSIT">("ALL");
   const { addToast } = useToastStore();
   const [refreshingOrderId, setRefreshingOrderId] = useState<string | null>(null);
+  const [refreshLatency, setRefreshLatency] = useState(1.2);
+
+  useEffect(() => {
+    let interval: any;
+    if (refreshingOrderId) {
+      setRefreshLatency(1.2);
+      interval = setInterval(() => {
+        setRefreshLatency((prev) => Math.max(0, prev - 0.1));
+      }, 100);
+    }
+    return () => clearInterval(interval);
+  }, [refreshingOrderId]);
 
   const handleRefreshLogistics = (orderId: string) => {
     setRefreshingOrderId(orderId);
@@ -349,27 +361,34 @@ export default function ProfilePage() {
                         {order.status !== "DELIVERED" && order.status !== "CANCELLED" && (
                           <div className="flex flex-col sm:flex-row items-center justify-between border border-border-subtle/30 p-4 bg-bg-surface/20 gap-3">
                             <OrderCountdown status={order.status} />
-                            <button
-                              type="button"
-                              onClick={() => handleRefreshLogistics(order.id)}
-                              className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-accent p-2 rounded-full transition-all cursor-pointer flex items-center justify-center shadow-sm"
-                              title="REFRESH LOGISTICS STATUS"
-                            >
-                              <svg
-                                xmlns="http://www.w3.org/2000/svg"
-                                fill="none"
-                                viewBox="0 0 24 24"
-                                strokeWidth="2"
-                                stroke="currentColor"
-                                className={`w-4 h-4 ${refreshingOrderId === order.id ? "animate-spin text-accent" : ""}`}
+                            <div className="flex items-center gap-3">
+                              {refreshingOrderId === order.id && (
+                                <span className="text-[9px] text-accent tracking-widest font-mono font-bold animate-pulse">
+                                  CONNECTING APIS ({refreshLatency.toFixed(1)}S)
+                                </span>
+                              )}
+                              <button
+                                type="button"
+                                onClick={() => handleRefreshLogistics(order.id)}
+                                className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-accent p-2 rounded-full transition-all cursor-pointer flex items-center justify-center shadow-sm"
+                                title="REFRESH LOGISTICS STATUS"
                               >
-                                <path
-                                  strokeLinecap="round"
-                                  strokeLinejoin="round"
-                                  d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
-                                />
-                              </svg>
-                            </button>
+                                <svg
+                                  xmlns="http://www.w3.org/2000/svg"
+                                  fill="none"
+                                  viewBox="0 0 24 24"
+                                  strokeWidth="2"
+                                  stroke="currentColor"
+                                  className={`w-4 h-4 ${refreshingOrderId === order.id ? "animate-spin text-accent" : ""}`}
+                                >
+                                  <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    d="M16.023 9.348h4.992v-.001M2.985 19.644v-4.992m0 0h4.992m-4.993 0 3.181 3.183a8.25 8.25 0 0 0 13.803-3.7M4.031 9.865a8.25 8.25 0 0 1 13.803-3.7l3.181 3.182m0-4.991v4.99"
+                                  />
+                                </svg>
+                              </button>
+                            </div>
                           </div>
                         )}
 
