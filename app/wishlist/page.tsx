@@ -40,14 +40,23 @@ export default function WishlistPage() {
         </div>
 
         {items.length > 0 && (
-          <div className="mb-8 max-w-md text-left">
+          <div className="mb-8 max-w-md text-left relative">
             <input
               type="text"
               placeholder="SEARCH WISHLIST ARCHIVES..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-bg-surface border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+              className="w-full bg-bg-surface border border-border-subtle p-3 pr-10 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
             />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] font-bold uppercase transition-colors cursor-pointer p-1"
+                title="CLEAR SEARCH"
+              >
+                ✕
+              </button>
+            )}
           </div>
         )}
 
