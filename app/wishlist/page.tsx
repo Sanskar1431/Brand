@@ -79,6 +79,13 @@ export default function WishlistPage() {
                     variant="standard"
                     aspectRatio="aspect-[3/4]"
                   />
+                  {/* Category Tag Badge */}
+                  <div className="absolute top-4 left-4 z-10 bg-bg-surface/90 border border-border-subtle/50 px-2 py-0.5 select-none backdrop-blur-[2px]">
+                    <span className="text-[7.5px] font-mono font-bold tracking-widest text-accent uppercase">
+                      {product.category}
+                    </span>
+                  </div>
+
                   {/* Quick Configuration Panel on hover */}
                   <div className="absolute inset-x-4 bottom-[84px] z-20 bg-bg-surface/95 backdrop-blur-sm border border-border-subtle p-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-y-2 group-hover:translate-y-0 shadow-lg select-none">
                     {/* Color swatches choice */}
