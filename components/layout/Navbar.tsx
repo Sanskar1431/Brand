@@ -10,6 +10,7 @@ import { useAmbientAudio } from "@/hooks/useAmbientAudio";
 import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { useRouter } from "next/navigation";
 import { useCurrencyStore } from "@/lib/store/currencyStore";
+import { useToastStore } from "@/lib/store/toastStore";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -23,6 +24,7 @@ export default function Navbar() {
   const { items: wishlistItems } = useWishlistStore();
   const wishlistCount = wishlistItems.length;
   const { currency, setCurrency } = useCurrencyStore();
+  const { addToast } = useToastStore();
   const router = useRouter();
   
   const [hasBg, setHasBg] = useState(false);
@@ -145,7 +147,11 @@ export default function Navbar() {
 
             {/* Currency Switcher */}
             <button
-              onClick={() => setCurrency(currency === "INR" ? "USD" : "INR")}
+              onClick={() => {
+                const nextCurrency = currency === "INR" ? "USD" : "INR";
+                setCurrency(nextCurrency);
+                addToast(`CONVERTING COLLECTION VALUE METRICS TO ${nextCurrency}`, "success");
+              }}
               className="px-2 py-1 text-[9px] font-bold font-mono tracking-widest border border-border-subtle/30 hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer mr-1"
               aria-label={`Toggle currency, currently ${currency}`}
             >
