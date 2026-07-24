@@ -235,15 +235,21 @@ export default function CheckoutPage() {
                   <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
                     03. CONCIERGE SPECIAL INSTRUCTIONS (OPTIONAL)
                   </h3>
-                  <div>
-                    <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
-                      DELIVERY NOTES OR SPECIAL PROTOCOL CODES
-                    </label>
+                  <div className="space-y-2">
+                    <div className="flex justify-between items-center">
+                      <label className="text-[10px] text-chrome uppercase tracking-widest block">
+                        DELIVERY NOTES OR SPECIAL PROTOCOL CODES
+                      </label>
+                      <span className="text-[9px] text-chrome/50 font-mono tracking-widest uppercase">
+                        {conciergeNotes.length} / 200 CHARS
+                      </span>
+                    </div>
                     <textarea
                       name="conciergeNotes"
                       value={conciergeNotes}
-                      onChange={(e) => setConciergeNotes(e.target.value)}
+                      onChange={(e) => setConciergeNotes(e.target.value.slice(0, 200))}
                       placeholder="ENTER SPECIAL INSTRUCTIONS (E.G. LEAVE AT FRONT CONCIERGE DESK)..."
+                      maxLength={200}
                       className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-xs text-text-primary transition-colors h-20 uppercase font-mono resize-none"
                     />
                   </div>
