@@ -16,6 +16,7 @@ export default function WishlistPage() {
   const { addToast } = useToastStore();
   const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
+  const [loadingPill, setLoadingPill] = useState<string | null>(null);
 
   const filteredItems = items.filter((product) =>
     product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -115,21 +116,36 @@ export default function WishlistPage() {
 
                     <div className="flex justify-around items-center">
                       <span className="text-[8px] text-chrome tracking-widest uppercase font-bold">QUICK ADD:</span>
-                      {["S", "M", "L", "XL"].map((sz) => (
-                        <button
-                          key={sz}
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            const activeColor = selectedColors[product.id] || product.colors[0].name;
-                            addItem(product, activeColor, sz as any, 1);
-                            addToast(`${product.name} (${activeColor} / ${sz}) QUICK ADDED`, "success");
-                            setOpenCart(true);
-                          }}
-                          className="text-[10px] font-bold font-mono text-chrome hover:text-accent p-1 cursor-pointer transition-colors"
-                        >
-                          {sz}
-                        </button>
-                      ))}
+                      {["S", "M", "L", "XL"].map((sz) => {
+                        const isThisLoading = loadingPill === `${product.id}-${sz}`;
+                        return (
+                          <button
+                            key={sz}
+                            disabled={!!loadingPill}
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              if (loadingPill) return;
+                              const key = `${product.id}-${sz}`;
+                              setLoadingPill(key);
+                              const activeColor = selectedColors[product.id] || product.colors[0].name;
+                              
+                              setTimeout(() => {
+                                addItem(product, activeColor, sz as any, 1);
+                                addToast(`${product.name} (${activeColor} / ${sz}) QUICK ADDED`, "success");
+                                setOpenCart(true);
+                                setLoadingPill(null);
+                              }, 600);
+                            }}
+                            className="text-[10px] font-bold font-mono text-chrome hover:text-accent p-1 cursor-pointer transition-colors min-w-[20px] flex items-center justify-center"
+                          >
+                            {isThisLoading ? (
+                              <div className="w-2.5 h-2.5 border border-accent border-t-transparent rounded-full animate-spin" />
+                            ) : (
+                              sz
+                            )}
+                          </button>
+                        );
+                      })}
                     </div>
                   </div>
 
