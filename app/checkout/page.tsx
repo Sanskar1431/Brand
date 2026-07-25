@@ -240,7 +240,9 @@ export default function CheckoutPage() {
                       <label className="text-[10px] text-chrome uppercase tracking-widest block">
                         DELIVERY NOTES OR SPECIAL PROTOCOL CODES
                       </label>
-                      <span className="text-[9px] text-chrome/50 font-mono tracking-widest uppercase">
+                      <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                        conciergeNotes.length >= 180 ? "text-error font-bold" : "text-chrome/50"
+                      }`}>
                         {conciergeNotes.length} / 200 CHARS
                       </span>
                     </div>
