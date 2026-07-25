@@ -109,6 +109,10 @@ export default function ProductDetailClient({
       addToast("PLEASE ENTER A VALID EMAIL ADDRESS", "error");
       return;
     }
+    if (restockEmail.length > 50) {
+      addToast("EMAIL EXCEEDS MAXIMUM DURATION LENGTH (50)", "error");
+      return;
+    }
     addToast(`RESTOCK PROMPT CACHED FOR ${selectedColor.name} / ${selectedSize}`, "success");
     setRestockEmail("");
   };
@@ -444,7 +448,8 @@ export default function ProductDetailClient({
                     type="email"
                     placeholder="ENTER EMAIL FOR RESTOCK ALERT..."
                     value={restockEmail}
-                    onChange={(e) => setRestockEmail(e.target.value)}
+                    onChange={(e) => setRestockEmail(e.target.value.slice(0, 50))}
+                    maxLength={50}
                     className="flex-1 bg-bg-surface border border-border-subtle p-2.5 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono"
                   />
                   <button
