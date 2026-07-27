@@ -274,8 +274,19 @@ export default function ProfilePage() {
               </div>
 
               {orderSearchQuery.trim() && (
-                <div className="text-[9px] text-accent font-mono font-bold tracking-widest uppercase text-left py-1">
-                  FOUND {filteredOrders.length} ARCHIVE {filteredOrders.length === 1 ? "TRANSACTION" : "TRANSACTIONS"} MATCHING "{orderSearchQuery}"
+                <div className="flex items-center justify-between py-1 select-none">
+                  <div className="text-[9px] text-accent font-mono font-bold tracking-widest uppercase text-left">
+                    FOUND {filteredOrders.length} ARCHIVE {filteredOrders.length === 1 ? "TRANSACTION" : "TRANSACTIONS"} MATCHING "{orderSearchQuery}"
+                  </div>
+                  <button
+                    onClick={() => {
+                      setOrderSearchQuery("");
+                      addToast("SEARCH QUERY PROTOCOL RESET", "info");
+                    }}
+                    className="text-[9px] text-chrome hover:text-accent font-mono font-bold uppercase tracking-widest cursor-pointer border border-border-subtle/50 px-2 py-0.5 hover:border-accent transition-all duration-200"
+                  >
+                    ✕ CLEAR
+                  </button>
                 </div>
               )}
 
