@@ -51,6 +51,10 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
       addToast("PLEASE ENTER A VALID EMAIL ADDRESS", "error");
       return;
     }
+    if (restockEmail.length > 50) {
+      addToast("EMAIL EXCEEDS MAXIMUM DURATION LENGTH (50)", "error");
+      return;
+    }
     addToast(`RESTOCK PROMPT CACHED FOR ${activeColor.name} / ${selectedSize}`, "success");
     setRestockEmail("");
   };
@@ -190,7 +194,8 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                       type="email"
                       placeholder="EMAIL FOR RESTOCK ALERT..."
                       value={restockEmail}
-                      onChange={(e) => setRestockEmail(e.target.value)}
+                      onChange={(e) => setRestockEmail(e.target.value.slice(0, 50))}
+                      maxLength={50}
                       className="flex-1 bg-bg-surface border border-border-subtle p-2 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono"
                     />
                     <button
