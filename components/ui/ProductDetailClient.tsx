@@ -440,9 +440,16 @@ export default function ProductDetailClient({
             {/* Out of stock notifications */}
             {isOutOfStock(selectedColor.name, selectedSize) && (
               <div className="border border-border-subtle/40 p-4 bg-bg-surface/20 space-y-3 mt-4 text-left select-none">
-                <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block uppercase">
-                  OUT OF STOCK PROTOCOL: RESTOCK REQUEST
-                </span>
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block uppercase">
+                    OUT OF STOCK PROTOCOL: RESTOCK REQUEST
+                  </span>
+                  <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                    restockEmail.length >= 40 ? "text-error font-bold" : "text-chrome/50"
+                  }`}>
+                    {restockEmail.length} / 50 CHARS
+                  </span>
+                </div>
                 <div className="flex gap-2">
                   <input
                     type="email"
