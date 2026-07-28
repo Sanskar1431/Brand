@@ -189,6 +189,16 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                   >
                     OUT OF STOCK
                   </button>
+                  <div className="flex justify-between items-center select-none">
+                    <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold uppercase">
+                      RESTOCK REQUEST
+                    </span>
+                    <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                      restockEmail.length >= 40 ? "text-error font-bold" : "text-chrome/50"
+                    }`}>
+                      {restockEmail.length} / 50 CHARS
+                    </span>
+                  </div>
                   <div className="flex gap-2">
                     <input
                       type="email"
