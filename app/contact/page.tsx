@@ -48,6 +48,7 @@ export default function ContactPage() {
   });
 
   const emailValue = watch("email", "");
+  const messageValue = watch("message", "");
 
   const onSubmit = async (data: ContactFormValues) => {
     setSubmitStatus("loading");
@@ -211,13 +212,21 @@ export default function ContactPage() {
 
               {/* Message */}
               <div className="space-y-1 text-left">
-                <label className="text-[9px] text-chrome tracking-wider uppercase block">
-                  MESSAGE BODY
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-[9px] text-chrome tracking-wider uppercase block">
+                    MESSAGE BODY
+                  </label>
+                  <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                    messageValue.length >= 250 ? "text-error font-bold" : "text-chrome/50"
+                  }`}>
+                    {messageValue.length} / 300 CHARS
+                  </span>
+                </div>
                 <textarea
                   rows={4}
                   {...register("message")}
                   placeholder="ENTER INQUIRY DESCRIPTION..."
+                  maxLength={300}
                   className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase resize-none"
                 />
                 {errors.message && (
