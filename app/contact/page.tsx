@@ -41,10 +41,13 @@ export default function ContactPage() {
     register,
     handleSubmit,
     reset,
+    watch,
     formState: { errors },
   } = useForm<ContactFormValues>({
     resolver: zodResolver(contactSchema),
   });
+
+  const emailValue = watch("email", "");
 
   const onSubmit = async (data: ContactFormValues) => {
     setSubmitStatus("loading");
@@ -164,13 +167,21 @@ export default function ContactPage() {
 
               {/* Email */}
               <div className="space-y-1 text-left">
-                <label className="text-[9px] text-chrome tracking-wider uppercase block">
-                  EMAIL ADDRESS
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-[9px] text-chrome tracking-wider uppercase block">
+                    EMAIL ADDRESS
+                  </label>
+                  <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                    emailValue.length >= 40 ? "text-error font-bold" : "text-chrome/50"
+                  }`}>
+                    {emailValue.length} / 50 CHARS
+                  </span>
+                </div>
                 <input
                   type="email"
                   {...register("email")}
                   placeholder="ENTER EMAIL ADDRESS"
+                  maxLength={50}
                   className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase"
                 />
                 {errors.email && (
