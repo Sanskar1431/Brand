@@ -48,6 +48,7 @@ function AccordionItem({ title, content, isOpen, onToggle }: AccordionItemProps)
 
 export default function SupportPage() {
   const [openIndex, setOpenIndex] = useState<number | null>(0);
+  const [searchQuery, setSearchQuery] = useState("");
 
   const faqs = [
     {
@@ -79,11 +80,17 @@ export default function SupportPage() {
     },
   ];
 
+  const filteredFaqs = faqs.filter(
+    (faq) =>
+      faq.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      faq.content.toLowerCase().includes(searchQuery.toLowerCase())
+  );
+
   return (
     <div className="min-h-screen w-full bg-bg-primary text-text-primary pt-32 pb-24 px-6 md:px-12 select-none relative">
       <div className="absolute inset-0 bg-grid-pattern opacity-[0.03] pointer-events-none" />
 
-      <div className="max-w-[800px] mx-auto space-y-12 z-10 relative text-left">
+      <div className="max-w-[800px] mx-auto space-y-8 z-10 relative text-left">
         {/* Header */}
         <div className="border-b border-border-subtle/30 pb-6">
           <span className="text-xs text-accent tracking-[0.25em] font-bold uppercase block mb-1">
@@ -94,17 +101,51 @@ export default function SupportPage() {
           </h1>
         </div>
 
+        {/* Search Input Box */}
+        <div className="relative">
+          <input
+            type="text"
+            placeholder="SEARCH FAQ ARCHIVES (E.G. SIZING, REFUNDS)..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full bg-bg-surface border border-border-subtle focus:border-accent px-4 py-3 outline-none text-[10px] sm:text-xs text-text-primary transition-all uppercase font-mono tracking-widest pr-10 rounded-none"
+          />
+          {searchQuery && (
+            <button
+              onClick={() => setSearchQuery("")}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] font-bold uppercase transition-colors cursor-pointer p-1"
+              title="CLEAR SEARCH"
+            >
+              ✕
+            </button>
+          )}
+        </div>
+
+        {searchQuery.trim() && (
+          <div className="flex items-center justify-between py-1 select-none">
+            <span className="text-[9px] text-accent font-mono font-bold tracking-widest uppercase">
+              FOUND {filteredFaqs.length} MATCHING {filteredFaqs.length === 1 ? "ARTICLE" : "ARTICLES"}
+            </span>
+          </div>
+        )}
+
         {/* FAQ Accordions */}
-        <div className="space-y-2">
-          {faqs.map((faq, index) => (
-            <AccordionItem
-              key={index}
-              title={faq.title}
-              content={faq.content}
-              isOpen={openIndex === index}
-              onToggle={() => setOpenIndex(openIndex === index ? null : index)}
-            />
-          ))}
+        <div className="space-y-2 pt-4">
+          {filteredFaqs.length > 0 ? (
+            filteredFaqs.map((faq, index) => (
+              <AccordionItem
+                key={index}
+                title={faq.title}
+                content={faq.content}
+                isOpen={openIndex === index}
+                onToggle={() => setOpenIndex(openIndex === index ? null : index)}
+              />
+            ))
+          ) : (
+            <p className="text-xs text-chrome/50 font-mono tracking-widest uppercase py-8 text-center border border-dashed border-border-subtle/30">
+              NO MATCHING FAQ ARTICLES FOUND IN PROTOCOL QUEUES
+            </p>
+          )}
         </div>
       </div>
     </div>
