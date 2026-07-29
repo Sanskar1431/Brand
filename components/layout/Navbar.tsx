@@ -319,26 +319,33 @@ export default function Navbar() {
             className="fixed inset-0 bg-black/80 backdrop-blur-md z-[60] flex flex-col justify-start pt-32 px-6 md:px-12"
           >
             <div className="max-w-2xl mx-auto w-full relative">
-              {/* Close Button */}
-              <button
-                onClick={() => {
-                  setIsSearchOpen(false);
-                  setSearchQuery("");
-                }}
-                className="absolute -top-16 right-0 text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer"
-                aria-label="Close search"
-              >
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  strokeWidth="1.5"
-                  stroke="currentColor"
-                  className="w-6 h-6"
+              {/* Close Button & Character Counter */}
+              <div className="absolute -top-16 left-0 right-0 flex items-center justify-between pointer-events-none">
+                <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                  searchQuery.length >= 30 ? "text-error font-bold" : "text-chrome/50"
+                }`}>
+                  {searchQuery.length} / 40 CHARS
+                </span>
+                <button
+                  onClick={() => {
+                    setIsSearchOpen(false);
+                    setSearchQuery("");
+                  }}
+                  className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer pointer-events-auto"
+                  aria-label="Close search"
                 >
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                </svg>
-              </button>
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    strokeWidth="1.5"
+                    stroke="currentColor"
+                    className="w-6 h-6"
+                  >
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                  </svg>
+                </button>
+              </div>
 
               {/* Form */}
               <form
@@ -356,7 +363,8 @@ export default function Navbar() {
                   type="text"
                   placeholder="SEARCH ARCHIVES..."
                   value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
+                  onChange={(e) => setSearchQuery(e.target.value.slice(0, 40))}
+                  maxLength={40}
                   autoFocus
                   className="w-full bg-transparent text-xl sm:text-2xl tracking-[0.1em] text-text-primary placeholder:text-chrome/30 outline-none uppercase font-semibold font-display"
                 />
