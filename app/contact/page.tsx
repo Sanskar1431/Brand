@@ -49,6 +49,7 @@ export default function ContactPage() {
 
   const emailValue = watch("email", "");
   const messageValue = watch("message", "");
+  const subjectValue = watch("subject", "");
 
   const onSubmit = async (data: ContactFormValues) => {
     setSubmitStatus("loading");
@@ -194,13 +195,21 @@ export default function ContactPage() {
 
               {/* Subject */}
               <div className="space-y-1 text-left">
-                <label className="text-[9px] text-chrome tracking-wider uppercase block">
-                  SUBJECT
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-[9px] text-chrome tracking-wider uppercase block">
+                    SUBJECT
+                  </label>
+                  <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                    subjectValue.length >= 30 ? "text-error font-bold" : "text-chrome/50"
+                  }`}>
+                    {subjectValue.length} / 40 CHARS
+                  </span>
+                </div>
                 <input
                   type="text"
                   {...register("subject")}
                   placeholder="ENTER SUBJECT"
+                  maxLength={40}
                   className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase"
                 />
                 {errors.subject && (
