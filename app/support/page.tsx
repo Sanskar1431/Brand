@@ -102,23 +102,36 @@ export default function SupportPage() {
         </div>
 
         {/* Search Input Box */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder="SEARCH FAQ ARCHIVES (E.G. SIZING, REFUNDS)..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full bg-bg-surface border border-border-subtle focus:border-accent px-4 py-3 outline-none text-[10px] sm:text-xs text-text-primary transition-all uppercase font-mono tracking-widest pr-10 rounded-none"
-          />
-          {searchQuery && (
-            <button
-              onClick={() => setSearchQuery("")}
-              className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] font-bold uppercase transition-colors cursor-pointer p-1"
-              title="CLEAR SEARCH"
-            >
-              ✕
-            </button>
-          )}
+        <div className="space-y-2">
+          <div className="flex justify-between items-center select-none">
+            <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold uppercase">
+              FAQ ARCHIVE SEARCH
+            </span>
+            <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+              searchQuery.length >= 22 ? "text-error font-bold" : "text-chrome/50"
+            }`}>
+              {searchQuery.length} / 30 CHARS
+            </span>
+          </div>
+          <div className="relative">
+            <input
+              type="text"
+              placeholder="SEARCH FAQ ARCHIVES (E.G. SIZING, REFUNDS)..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value.slice(0, 30))}
+              maxLength={30}
+              className="w-full bg-bg-surface border border-border-subtle focus:border-accent px-4 py-3 outline-none text-[10px] sm:text-xs text-text-primary transition-all uppercase font-mono tracking-widest pr-10 rounded-none"
+            />
+            {searchQuery && (
+              <button
+                onClick={() => setSearchQuery("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] font-bold uppercase transition-colors cursor-pointer p-1"
+                title="CLEAR SEARCH"
+              >
+                ✕
+              </button>
+            )}
+          </div>
         </div>
 
         {searchQuery.trim() && (
