@@ -215,15 +215,28 @@ export default function CheckoutPage() {
                       />
                     </div>
                     <div>
-                      <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
-                        Postal Code
-                      </label>
+                      <div className="flex justify-between items-center mb-1 select-none">
+                        <label className="text-[10px] text-chrome uppercase tracking-widest block">
+                          Postal Code
+                        </label>
+                        {formData.postalCode.length > 0 && (
+                          <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                            formData.postalCode.length < 6 ? "text-error font-bold" : "text-accent font-bold"
+                          }`}>
+                            {formData.postalCode.length < 6 ? "INCOMPLETE (6 REQ)" : "MATCHED"}
+                          </span>
+                        )}
+                      </div>
                       <input
                         type="text"
                         name="postalCode"
                         required
                         value={formData.postalCode}
-                        onChange={handleInputChange}
+                        onChange={(e) => {
+                          const val = e.target.value.replace(/\D/g, "").slice(0, 6);
+                          handleInputChange({ target: { name: "postalCode", value: val } } as any);
+                        }}
+                        maxLength={6}
                         className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono"
                       />
                     </div>
