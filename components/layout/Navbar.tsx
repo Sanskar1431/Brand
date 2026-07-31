@@ -357,7 +357,7 @@ export default function Navbar() {
                     setSearchQuery("");
                   }
                 }}
-                className="w-full flex items-center border-b border-border-subtle py-4"
+                className="w-full flex items-center border-b border-border-subtle focus-within:border-accent py-4 transition-colors duration-300"
               >
                 <input
                   type="text"
@@ -366,7 +366,7 @@ export default function Navbar() {
                   onChange={(e) => setSearchQuery(e.target.value.slice(0, 40))}
                   maxLength={40}
                   autoFocus
-                  className="w-full bg-transparent text-xl sm:text-2xl tracking-[0.1em] text-text-primary placeholder:text-chrome/30 outline-none uppercase font-semibold font-display"
+                  className="w-full bg-transparent text-xl sm:text-2xl tracking-[0.1em] text-text-primary placeholder:text-chrome/30 outline-none uppercase font-semibold font-display focus:text-accent transition-colors duration-300"
                 />
                 <button
                   type="submit"
