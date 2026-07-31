@@ -265,7 +265,7 @@ export default function CheckoutPage() {
                       onChange={(e) => setConciergeNotes(e.target.value.slice(0, 200))}
                       placeholder="ENTER SPECIAL INSTRUCTIONS (E.G. LEAVE AT FRONT CONCIERGE DESK)..."
                       maxLength={200}
-                      className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-xs text-text-primary transition-colors h-20 uppercase font-mono resize-none"
+                      className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-xs text-text-primary transition-colors h-20 uppercase font-mono resize-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                     />
                   </div>
                 </div>
