@@ -120,7 +120,7 @@ export default function SupportPage() {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value.slice(0, 30))}
               maxLength={30}
-              className="w-full bg-bg-surface border border-border-subtle focus:border-accent px-4 py-3 outline-none text-[10px] sm:text-xs text-text-primary transition-all uppercase font-mono tracking-widest pr-10 rounded-none"
+              className="w-full bg-bg-surface border border-border-subtle focus:border-accent px-4 py-3 outline-none text-[10px] sm:text-xs text-text-primary transition-all uppercase font-mono tracking-widest pr-10 rounded-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
             />
             {searchQuery && (
               <button
