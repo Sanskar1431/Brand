@@ -50,6 +50,7 @@ export default function ContactPage() {
   const emailValue = watch("email", "");
   const messageValue = watch("message", "");
   const subjectValue = watch("subject", "");
+  const nameValue = watch("name", "");
 
   const onSubmit = async (data: ContactFormValues) => {
     setSubmitStatus("loading");
@@ -151,13 +152,21 @@ export default function ContactPage() {
               
               {/* Name */}
               <div className="space-y-1 text-left">
-                <label className="text-[9px] text-chrome tracking-wider uppercase block">
-                  NAME
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-[9px] text-chrome tracking-wider uppercase block">
+                    NAME
+                  </label>
+                  <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                    nameValue.length >= 22 ? "text-error font-bold" : "text-chrome/50"
+                  }`}>
+                    {nameValue.length} / 30 CHARS
+                  </span>
+                </div>
                 <input
                   type="text"
                   {...register("name")}
                   placeholder="ENTER NAME"
+                  maxLength={30}
                   className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase"
                 />
                 {errors.name && (
