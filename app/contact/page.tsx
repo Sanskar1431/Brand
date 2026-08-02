@@ -219,7 +219,7 @@ export default function ContactPage() {
                   {...register("subject")}
                   placeholder="ENTER SUBJECT"
                   maxLength={40}
-                  className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase"
+                  className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                 />
                 {errors.subject && (
                   <p className="text-[10px] text-error uppercase font-semibold tracking-wider mt-1">
