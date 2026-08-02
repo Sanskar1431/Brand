@@ -21,11 +21,17 @@ export default function NewsletterModal() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (email.trim()) {
-      localStorage.setItem("prince-newsletter-subscribed", "true");
-      addToast("WELCOME TO THE PRINCE ARCHIVE SYNDICATE", "success");
-      setIsOpen(false);
+    if (!email.trim() || !email.includes("@")) {
+      addToast("PLEASE ENTER A VALID EMAIL ADDRESS", "error");
+      return;
     }
+    if (email.length > 50) {
+      addToast("EMAIL EXCEEDS MAXIMUM DURATION LENGTH (50)", "error");
+      return;
+    }
+    localStorage.setItem("prince-newsletter-subscribed", "true");
+    addToast("WELCOME TO THE PRINCE ARCHIVE SYNDICATE", "success");
+    setIsOpen(false);
   };
 
   return (
@@ -81,16 +87,26 @@ export default function NewsletterModal() {
 
               <form onSubmit={handleSubmit} className="space-y-4 pt-4 border-t border-border-subtle/30">
                 <div className="space-y-1.5">
-                  <label className="text-[9px] text-chrome tracking-wider uppercase block">
-                    EMAIL ADDRESS
-                  </label>
+                  <div className="flex justify-between items-center">
+                    <label className="text-[9px] text-chrome tracking-wider uppercase block">
+                      EMAIL ADDRESS
+                    </label>
+                    {email.length > 0 && (
+                      <span className={`text-[9px] font-mono tracking-widest uppercase transition-colors duration-200 ${
+                        email.length >= 40 ? "text-error font-bold" : "text-chrome/50"
+                      }`}>
+                        {email.length} / 50 CHARS
+                      </span>
+                    )}
+                  </div>
                   <input
                     type="email"
                     required
                     value={email}
-                    onChange={(e) => setEmail(e.target.value)}
+                    onChange={(e) => setEmail(e.target.value.slice(0, 50))}
+                    maxLength={50}
                     placeholder="ENTER YOUR EMAIL..."
-                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                   />
                 </div>
 
