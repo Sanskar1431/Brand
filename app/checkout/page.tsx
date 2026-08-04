@@ -185,7 +185,7 @@ export default function CheckoutPage() {
                         required
                         value={formData.name}
                         onChange={handleInputChange}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors uppercase"
+                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors uppercase focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                       />
                     </div>
                     <div className="sm:col-span-2">
