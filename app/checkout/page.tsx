@@ -237,7 +237,7 @@ export default function CheckoutPage() {
                           handleInputChange({ target: { name: "postalCode", value: val } } as any);
                         }}
                         maxLength={6}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono"
+                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                       />
                     </div>
                   </div>
