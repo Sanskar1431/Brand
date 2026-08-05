@@ -290,12 +290,12 @@ export default function CheckoutPage() {
                           setPanError("");
                         }}
                         disabled={panVerified || isVerifyingPan}
-                        className={`flex-1 bg-bg-surface border p-3 outline-none text-sm text-text-primary transition-colors font-mono uppercase ${
+                        className={`flex-1 bg-bg-surface border p-3 outline-none text-sm text-text-primary transition-colors font-mono uppercase focus:ring-1 ${
                           panVerified
-                            ? "border-success/40 focus:border-success/40"
+                            ? "border-success/40 focus:border-success/40 focus:ring-success/30 focus:shadow-[0_0_12px_rgba(16,185,129,0.15)]"
                             : panError
-                            ? "border-error/40 focus:border-error/40"
-                            : "border-border-subtle focus:border-accent"
+                            ? "border-error/40 focus:border-error/40 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
+                            : "border-border-subtle focus:border-accent focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                         }`}
                       />
                       <button
