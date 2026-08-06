@@ -446,7 +446,7 @@ export default function CheckoutPage() {
                       placeholder="PROMO CODE"
                       value={promoInput}
                       onChange={(e) => setPromoInput(e.target.value)}
-                      className="flex-1 bg-bg-primary border border-border-subtle p-2 text-[10px] tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono"
+                      className="flex-1 bg-bg-primary border border-border-subtle p-2 text-[10px] tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                     />
                     <button
                       type="button"
