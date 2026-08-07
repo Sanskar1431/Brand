@@ -206,7 +206,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                       value={restockEmail}
                       onChange={(e) => setRestockEmail(e.target.value.slice(0, 50))}
                       maxLength={50}
-                      className="flex-1 bg-bg-surface border border-border-subtle p-2 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono"
+                      className="flex-1 bg-bg-surface border border-border-subtle p-2 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                     />
                     <button
                       type="button"
