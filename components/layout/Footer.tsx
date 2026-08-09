@@ -91,7 +91,7 @@ export default function Footer() {
           </p>
           <form
             onSubmit={handleSubscribe}
-            className="flex items-center gap-2 border-b border-chrome/30 py-2 focus-within:border-accent transition-colors"
+            className="flex items-center gap-2 border-b border-chrome/30 py-2 focus-within:border-accent focus-within:shadow-[0_4px_12px_rgba(212,163,89,0.15)] transition-all duration-300"
           >
             <input
               type="email"
