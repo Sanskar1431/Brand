@@ -152,7 +152,7 @@ export default function Navbar() {
                 setCurrency(nextCurrency);
                 addToast(`CONVERTING COLLECTION VALUE METRICS TO ${nextCurrency}`, "success");
               }}
-              className="px-2 py-1 text-[9px] font-bold font-mono tracking-widest border border-border-subtle/30 hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer mr-1"
+              className="px-2 py-1 text-[9px] font-bold font-mono tracking-widest border border-border-subtle/30 hover:border-accent text-chrome hover:text-accent transition-all cursor-pointer mr-1 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
               aria-label={`Toggle currency, currently ${currency}`}
             >
               {currency}
