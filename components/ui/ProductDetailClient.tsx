@@ -761,7 +761,7 @@ export default function ProductDetailClient({
                     onChange={(e) => setHeightInput(e.target.value)}
                     placeholder="E.G. 180"
                     required
-                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase"
+                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                   />
                 </div>
 
