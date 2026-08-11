@@ -1,7 +1,7 @@
 "use client";
 
 import { Suspense, useEffect, useState } from "react";
-import { useSearchParams } from "next/navigation";
+import { useSearchParams, useRouter } from "next/navigation";
 import { Product } from "@/lib/products/schema";
 import { fetchProducts } from "@/lib/products/fetchProducts";
 import { motion, AnimatePresence } from "framer-motion";
@@ -10,11 +10,14 @@ import Link from "next/link";
 
 function SearchResultsContent() {
   const searchParams = useSearchParams();
+  const router = useRouter();
   const query = searchParams.get("q") || "";
+  const [inputVal, setInputVal] = useState(query);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    setInputVal(query);
     setLoading(true);
     fetchProducts({ search: query, limit: 100 }).then((res) => {
       setProducts(res.products);
@@ -25,7 +28,7 @@ function SearchResultsContent() {
   return (
     <div className="w-full min-h-screen bg-bg-primary pt-32 pb-24 px-6 md:px-12">
       <div className="max-w-[1600px] mx-auto">
-        <div className="text-left mb-12">
+        <div className="text-left mb-8">
           <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block mb-1">
             SEARCH RESULTS FOR
           </span>
@@ -35,6 +38,37 @@ function SearchResultsContent() {
           <p className="text-chrome/50 text-xs sm:text-sm tracking-wider uppercase mt-2">
             {loading ? "SEARCHING ARCHIVES..." : `FOUND ${products.length} PRODUCTS`}
           </p>
+        </div>
+
+        {/* Inline Search Refinement */}
+        <div className="mb-10 max-w-md text-left relative">
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              if (inputVal.trim()) {
+                router.push(`/search?q=${encodeURIComponent(inputVal.trim())}`);
+              }
+            }}
+            className="relative"
+          >
+            <input
+              type="text"
+              placeholder="REFINE SEARCH ARCHIVES..."
+              value={inputVal}
+              onChange={(e) => setInputVal(e.target.value)}
+              className="w-full bg-bg-surface border border-border-subtle p-3 pr-10 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+            />
+            {inputVal && (
+              <button
+                type="button"
+                onClick={() => setInputVal("")}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] font-bold uppercase transition-colors cursor-pointer p-1"
+                title="CLEAR SEARCH"
+              >
+                ✕
+              </button>
+            )}
+          </form>
         </div>
 
         {loading ? (
