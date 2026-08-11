@@ -81,7 +81,7 @@ export default function CartDrawer() {
                 {items.length > 0 && (
                   <button
                     onClick={handleClearCart}
-                    className="text-[9px] tracking-wider uppercase font-mono border border-border-subtle/50 px-2.5 py-1 hover:border-error hover:text-error transition-all cursor-pointer bg-bg-primary/20 mr-2"
+                    className="text-[9px] tracking-wider uppercase font-mono border border-border-subtle/50 px-2.5 py-1 hover:border-error hover:text-error transition-all cursor-pointer bg-bg-primary/20 mr-2 outline-none focus:border-error focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
                   >
                     CLEAR ALL
                   </button>
