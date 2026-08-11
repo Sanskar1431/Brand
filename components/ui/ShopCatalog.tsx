@@ -169,7 +169,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
               <button
                 key={szVal}
                 onClick={() => setSize(isAll ? "" : szVal as any)}
-                className={`w-9 h-9 text-xs font-bold font-mono border transition-all cursor-pointer rounded-full flex items-center justify-center ${
+                className={`w-9 h-9 text-xs font-bold font-mono border transition-all cursor-pointer rounded-full flex items-center justify-center outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                   isSelected
                     ? "bg-accent border-accent text-white shadow-md shadow-accent/20"
                     : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome bg-bg-surface/10"
