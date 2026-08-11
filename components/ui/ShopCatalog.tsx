@@ -196,7 +196,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
               <button
                 key={colOpt.label}
                 onClick={() => setColor(colOpt.value)}
-                className={`px-4 py-2 border text-[9px] uppercase tracking-wider font-bold transition-all cursor-pointer flex items-center gap-1.5 ${
+                className={`px-4 py-2 border text-[9px] uppercase tracking-wider font-bold transition-all cursor-pointer flex items-center gap-1.5 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                   isSelected
                     ? "bg-text-primary text-bg-primary border-text-primary shadow-md"
                     : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome bg-bg-surface/10"
