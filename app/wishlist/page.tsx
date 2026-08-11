@@ -188,7 +188,7 @@ export default function WishlistPage() {
                       window.location.href = "/checkout";
                     }, 800);
                   }}
-                  className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg w-full sm:w-auto text-center"
+                  className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg w-full sm:w-auto text-center outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   PROCEED TO CHECKOUT
                 </button>
