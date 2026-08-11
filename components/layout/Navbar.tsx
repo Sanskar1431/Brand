@@ -403,7 +403,7 @@ export default function Navbar() {
                     <button
                       key={term}
                       onClick={() => handlePopularSearchClick(term)}
-                      className="text-[10px] tracking-wider uppercase font-mono border border-border-subtle/50 px-3 py-1.5 hover:border-accent hover:text-accent transition-all cursor-pointer bg-bg-surface/30"
+                      className="text-[10px] tracking-wider uppercase font-mono border border-border-subtle/50 px-3 py-1.5 hover:border-accent hover:text-accent transition-all cursor-pointer bg-bg-surface/30 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                     >
                       {term}
                     </button>
