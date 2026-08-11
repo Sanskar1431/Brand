@@ -147,7 +147,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
                     setCategory(catOption.value as any);
                   }
                 }}
-                className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer whitespace-nowrap ${
+                className={`px-6 py-2.5 text-[10px] font-bold uppercase tracking-widest border transition-all cursor-pointer whitespace-nowrap outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                   isSelected
                     ? "bg-text-primary text-bg-primary border-text-primary shadow-lg"
                     : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome bg-bg-surface/20"
