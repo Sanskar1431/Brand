@@ -134,7 +134,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                     <button
                       key={colorway.name}
                       onClick={() => setSelectedColor(colorway)}
-                      className={`w-7 h-7 rounded-full border transition-all cursor-pointer relative ${
+                      className={`w-7 h-7 rounded-full border transition-all cursor-pointer relative outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                         activeColor.name === colorway.name
                           ? "scale-105 border-accent border-2"
                           : "border-white/10 hover:scale-105"
