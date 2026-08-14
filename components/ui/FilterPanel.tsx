@@ -104,7 +104,7 @@ export default function FilterPanel() {
                     value={search}
                     onChange={(e) => setSearch(e.target.value)}
                     placeholder="ENTER QUERY..."
-                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider uppercase outline-none focus:border-accent text-text-primary placeholder:text-chrome/30"
+                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider uppercase outline-none focus:border-accent text-text-primary placeholder:text-chrome/30 focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                   />
                 </div>
 
