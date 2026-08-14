@@ -116,7 +116,7 @@ export default function FilterPanel() {
                   <select
                     value={sortBy}
                     onChange={(e: any) => setSortBy(e.target.value)}
-                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider uppercase outline-none focus:border-accent text-text-primary"
+                    className="w-full bg-bg-primary border border-border-subtle p-3 text-xs tracking-wider uppercase outline-none focus:border-accent text-text-primary focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                   >
                     <option value="newest">NEWEST ARRIVALS</option>
                     <option value="name">ALPHABETICAL (A-Z)</option>
