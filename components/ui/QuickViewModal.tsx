@@ -163,7 +163,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                         key={s}
                         disabled={oos}
                         onClick={() => !oos && setSelectedSize(s as any)}
-                        className={`w-10 h-10 text-xs font-bold border transition-all cursor-pointer relative ${
+                        className={`w-10 h-10 text-xs font-bold border transition-all cursor-pointer relative outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                           oos
                             ? "border-border-subtle/30 text-chrome/30 line-through cursor-not-allowed bg-bg-surface/20"
                             : selectedSize === s
