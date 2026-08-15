@@ -220,7 +220,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
               ) : (
                 <button
                   onClick={handleAddToCart}
-                  className="w-full bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer"
+                  className="w-full bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   ADD TO ARCHIVES
                 </button>
