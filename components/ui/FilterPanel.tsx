@@ -240,13 +240,13 @@ export default function FilterPanel() {
               <div className="border-t border-border-subtle/50 pt-4 mt-6 flex gap-4">
                 <button
                   onClick={reset}
-                  className="flex-1 py-3 border border-border-subtle hover:border-error hover:text-error text-chrome transition-colors text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+                  className="flex-1 py-3 border border-border-subtle hover:border-error hover:text-error text-chrome transition-colors text-[10px] font-bold uppercase tracking-widest cursor-pointer outline-none focus:border-error focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
                 >
                   RESET ALL
                 </button>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="flex-1 py-3 bg-white text-black hover:bg-accent hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest cursor-pointer"
+                  className="flex-1 py-3 bg-white text-black hover:bg-accent hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest cursor-pointer outline-none focus:bg-accent focus:text-white focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.25)]"
                 >
                   APPLY FILTERS
                 </button>
