@@ -164,7 +164,7 @@ export default function FilterPanel() {
                       <button
                         key={s}
                         onClick={() => setSize(size === s ? undefined : s)}
-                        className={`w-10 h-10 text-xs font-semibold rounded-full border transition-all cursor-pointer ${
+                        className={`w-10 h-10 text-xs font-semibold rounded-full border transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                           size === s
                             ? "bg-accent border-accent text-white"
                             : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
