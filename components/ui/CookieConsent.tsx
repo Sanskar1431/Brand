@@ -42,7 +42,7 @@ export default function CookieConsent() {
           </div>
           <button
             onClick={handleAccept}
-            className="w-full sm:w-auto whitespace-nowrap bg-accent hover:bg-accent-hover text-white text-[9px] font-bold uppercase tracking-[0.15em] px-4 py-2.5 transition-colors cursor-pointer shadow-md"
+            className="w-full sm:w-auto whitespace-nowrap bg-accent hover:bg-accent-hover text-white text-[9px] font-bold uppercase tracking-[0.15em] px-4 py-2.5 transition-colors cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.25)]"
           >
             ACCEPT GATEWAY
           </button>
