@@ -199,7 +199,7 @@ export default function FilterPanel() {
                         <button
                           key={c}
                           onClick={() => setColor(isActive ? undefined : c)}
-                          className={`w-7 h-7 rounded-full border relative transition-transform cursor-pointer ${
+                          className={`w-7 h-7 rounded-full border relative transition-transform cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                             isActive ? "scale-110 border-accent border-2" : "border-white/20 hover:scale-105"
                           }`}
                           style={{ backgroundColor: hex }}
