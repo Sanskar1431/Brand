@@ -112,7 +112,7 @@ export default function NewsletterModal() {
 
                 <button
                   type="submit"
-                  className="w-full bg-accent hover:bg-accent-hover text-white py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg shadow-accent/20 cursor-pointer"
+                  className="w-full bg-accent hover:bg-accent-hover text-white py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   SECURE ACCESS
                 </button>
