@@ -86,7 +86,7 @@ export default function FilterPanel() {
                 </h3>
                 <button
                   onClick={() => setIsOpen(false)}
-                  className="text-chrome hover:text-text-primary transition-colors text-xs uppercase tracking-widest font-bold cursor-pointer"
+                  className="text-chrome hover:text-text-primary transition-colors text-xs uppercase tracking-widest font-bold cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                 >
                   CLOSE
                 </button>
