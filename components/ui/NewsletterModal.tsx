@@ -57,7 +57,7 @@ export default function NewsletterModal() {
           >
             <button
               onClick={() => setIsOpen(false)}
-              className="absolute top-4 right-4 text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer"
+              className="absolute top-4 right-4 text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded-full"
               aria-label="Close modal"
             >
               <svg
