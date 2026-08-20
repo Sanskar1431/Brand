@@ -15,7 +15,7 @@ function AccordionItem({ title, content, isOpen, onToggle }: AccordionItemProps)
     <div className="border-b border-border-subtle/30 py-4">
       <button
         onClick={onToggle}
-        className="w-full flex justify-between items-center text-sm uppercase tracking-[0.2em] font-semibold text-text-primary py-2 text-left cursor-pointer"
+        className="w-full flex justify-between items-center text-sm uppercase tracking-[0.2em] font-semibold text-text-primary py-2 text-left cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
       >
         <span>{title}</span>
         <motion.span
