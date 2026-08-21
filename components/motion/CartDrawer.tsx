@@ -299,7 +299,7 @@ export default function CartDrawer() {
                         "info"
                       );
                     }}
-                    className="accent-accent w-4 h-4 cursor-pointer"
+                    className="accent-accent w-4 h-4 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                   />
                 </div>
 
