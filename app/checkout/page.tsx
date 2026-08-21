@@ -302,7 +302,7 @@ export default function CheckoutPage() {
                         type="button"
                         onClick={handleVerifyPan}
                         disabled={panVerified || isVerifyingPan}
-                        className={`px-6 py-3 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border ${
+                        className={`px-6 py-3 text-xs font-bold uppercase tracking-wider transition-colors cursor-pointer border outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                           panVerified
                             ? "bg-success/15 border-success/30 text-success cursor-default"
                             : "bg-bg-surface border-border-subtle hover:border-accent text-text-primary"
