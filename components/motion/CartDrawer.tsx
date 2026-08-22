@@ -213,7 +213,7 @@ export default function CartDrawer() {
                           </button>
                           <button
                             onClick={() => handleTransferToWishlist(item)}
-                            className="text-xs text-chrome hover:text-accent transition-colors uppercase tracking-widest cursor-pointer flex items-center gap-1 font-bold"
+                            className="text-xs text-chrome hover:text-accent transition-colors uppercase tracking-widest cursor-pointer flex items-center gap-1 font-bold outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
