@@ -207,7 +207,7 @@ export default function CartDrawer() {
                             onClick={() =>
                               removeItem(item.product.id, item.selectedColor, item.selectedSize)
                             }
-                            className="text-xs text-error/80 hover:text-error transition-colors uppercase tracking-widest cursor-pointer"
+                            className="text-xs text-error/80 hover:text-error transition-colors uppercase tracking-widest cursor-pointer outline-none focus:text-error focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
                           >
                             Remove
                           </button>
