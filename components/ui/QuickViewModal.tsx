@@ -211,7 +211,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                     <button
                       type="button"
                       onClick={handleRestockSubmit}
-                      className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                      className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-4 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                     >
                       SUBMIT
                     </button>
