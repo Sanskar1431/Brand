@@ -47,7 +47,7 @@ export default function BackToTop() {
           exit={{ opacity: 0, scale: 0.8 }}
           transition={{ duration: 0.3 }}
           onClick={scrollToTop}
-          className="fixed bottom-6 left-6 z-50 w-11 h-11 bg-bg-surface border border-border-subtle rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:border-accent text-chrome hover:text-accent transition-colors"
+          className="fixed bottom-6 left-6 z-50 w-11 h-11 bg-bg-surface border border-border-subtle rounded-full flex items-center justify-center cursor-pointer shadow-lg hover:border-accent text-chrome hover:text-accent transition-colors outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
           aria-label="Scroll back to top"
         >
           {/* Circular Progress Path */}
