@@ -781,7 +781,7 @@ export default function ProductDetailClient({
 
                 <button
                   type="submit"
-                  className="w-full bg-accent text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-accent-hover transition-colors cursor-pointer"
+                  className="w-full bg-accent text-white py-3 text-xs font-bold uppercase tracking-widest hover:bg-accent-hover transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   CALCULATE SIZE
                 </button>
