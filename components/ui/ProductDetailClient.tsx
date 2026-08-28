@@ -416,7 +416,7 @@ export default function ProductDetailClient({
                 </AnimatePresence>
                 <button
                   onClick={handleShare}
-                  className="w-14 border flex items-center justify-center border-border-subtle text-chrome hover:text-text-primary hover:border-chrome transition-all cursor-pointer py-4"
+                  className="w-14 border flex items-center justify-center border-border-subtle text-chrome hover:text-text-primary hover:border-chrome transition-all cursor-pointer py-4 outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                   aria-label="Share product"
                 >
                   <svg
