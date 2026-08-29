@@ -136,7 +136,7 @@ export default function WishlistPage() {
                                 setLoadingPill(null);
                               }, 600);
                             }}
-                            className="text-[10px] font-bold font-mono text-chrome hover:text-accent p-1 cursor-pointer transition-colors min-w-[20px] flex items-center justify-center"
+                            className="text-[10px] font-bold font-mono text-chrome hover:text-accent p-1 cursor-pointer transition-colors min-w-[20px] flex items-center justify-center outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
                           >
                             {isThisLoading ? (
                               <div className="w-2.5 h-2.5 border border-accent border-t-transparent rounded-full animate-spin" />
