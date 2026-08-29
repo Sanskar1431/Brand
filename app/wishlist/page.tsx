@@ -151,7 +151,7 @@ export default function WishlistPage() {
 
                   <button
                     onClick={() => removeItem(product.id)}
-                    className="absolute top-4 right-4 z-10 bg-bg-surface/80 hover:bg-error hover:text-white text-text-primary p-2 border border-border-subtle hover:border-error transition-all duration-300 rounded-full cursor-pointer shadow-md opacity-0 group-hover:opacity-100"
+                    className="absolute top-4 right-4 z-10 bg-bg-surface/80 hover:bg-error hover:text-white text-text-primary p-2 border border-border-subtle hover:border-error transition-all duration-300 rounded-full cursor-pointer shadow-md opacity-0 group-hover:opacity-100 outline-none focus:bg-error focus:text-white focus:border-error focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
                     aria-label={`Remove ${product.name} from wishlist`}
                   >
                     <svg
