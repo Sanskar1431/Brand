@@ -111,13 +111,13 @@ function SuccessContent() {
         <div className="flex flex-col sm:flex-row gap-4 justify-center">
           <Link
             href="/profile"
-            className="px-8 py-4 bg-accent text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/15"
+            className="px-8 py-4 bg-accent text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/15 outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
           >
             TRACK ORDER
           </Link>
           <Link
             href="/shop"
-            className="px-8 py-4 bg-transparent text-text-primary border border-border-subtle hover:border-text-primary text-xs font-bold uppercase tracking-[0.2em] transition-colors"
+            className="px-8 py-4 bg-transparent text-text-primary border border-border-subtle hover:border-text-primary text-xs font-bold uppercase tracking-[0.2em] transition-colors outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
           >
             CONTINUE SHOP
           </Link>
