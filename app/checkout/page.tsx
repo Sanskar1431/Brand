@@ -505,7 +505,7 @@ export default function CheckoutPage() {
                                 addToast("PROMO CODE KINGDOM20 APPLIED: 20% OFF", "success");
                               }
                             }}
-                            className="w-full text-left p-2 hover:bg-bg-surface flex flex-col gap-0.5 border border-border-subtle/20 hover:border-accent transition-colors cursor-pointer"
+                            className="w-full text-left p-2 hover:bg-bg-surface flex flex-col gap-0.5 border border-border-subtle/20 hover:border-accent transition-colors cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                           >
                             <span className="text-[10px] font-bold font-mono text-text-primary">{cp.code}</span>
                             <span className="text-[8px] text-chrome font-mono uppercase tracking-wider">{cp.desc}</span>
