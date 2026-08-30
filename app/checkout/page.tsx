@@ -469,7 +469,7 @@ export default function CheckoutPage() {
                     <button
                       type="button"
                       onClick={() => setShowCouponsDropdown(!showCouponsDropdown)}
-                      className="text-[9px] text-accent hover:underline uppercase tracking-wider font-bold cursor-pointer"
+                      className="text-[9px] text-accent hover:underline uppercase tracking-wider font-bold cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] px-1 rounded"
                     >
                       {showCouponsDropdown ? "HIDE COUPONS" : "VIEW COUPONS"}
                     </button>
