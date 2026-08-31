@@ -253,7 +253,7 @@ export default function ProfilePage() {
                       <button
                         key={status}
                         onClick={() => setStatusFilter(status)}
-                        className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider border transition-colors cursor-pointer flex items-center gap-1.5 ${
+                        className={`px-4 py-3 text-[10px] font-bold uppercase tracking-wider border transition-colors cursor-pointer flex items-center gap-1.5 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                           statusFilter === status
                             ? "bg-accent border-accent text-white"
                             : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
