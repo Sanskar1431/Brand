@@ -283,7 +283,7 @@ export default function ProfilePage() {
                       setOrderSearchQuery("");
                       addToast("SEARCH QUERY PROTOCOL RESET", "info");
                     }}
-                    className="text-[9px] text-chrome hover:text-accent font-mono font-bold uppercase tracking-widest cursor-pointer border border-border-subtle/50 px-2 py-0.5 hover:border-accent transition-all duration-200"
+                    className="text-[9px] text-chrome hover:text-accent font-mono font-bold uppercase tracking-widest cursor-pointer border border-border-subtle/50 px-2 py-0.5 hover:border-accent transition-all duration-200 outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                   >
                     ✕ CLEAR
                   </button>
