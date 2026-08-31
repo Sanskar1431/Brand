@@ -493,7 +493,7 @@ export default function ProfilePage() {
                                 <button
                                   type="button"
                                   onClick={() => handleActionSubmit(order.id, "CANCEL")}
-                                  className="bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer"
+                                  className="bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent px-4 py-2.5 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
                                 >
                                   CANCEL ORDER
                                 </button>
