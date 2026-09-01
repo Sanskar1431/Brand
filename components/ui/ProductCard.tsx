@@ -124,7 +124,7 @@ export default function ProductCard({
           e.stopPropagation();
           setOpenQuickView(true);
         }}
-        className="absolute top-4 left-4 z-30 opacity-0 group-hover:opacity-100 transition-all duration-300 bg-bg-surface/85 hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-[9px] font-bold uppercase tracking-[0.2em] px-3.5 py-2 cursor-pointer shadow-md"
+        className="absolute top-4 left-4 z-30 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all duration-300 bg-bg-surface/85 hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-[9px] font-bold uppercase tracking-[0.2em] px-3.5 py-2 cursor-pointer shadow-md outline-none focus:bg-accent focus:text-white focus:border-accent focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
       >
         QUICK VIEW
       </button>
