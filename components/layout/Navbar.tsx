@@ -161,7 +161,7 @@ export default function Navbar() {
             {/* Search Toggle Button */}
             <button
               onClick={() => setIsSearchOpen(true)}
-              className="p-2 text-chrome hover:text-text-primary transition-colors cursor-pointer"
+              className="p-2 text-chrome hover:text-text-primary transition-colors cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
               aria-label="Search Catalog"
             >
               <svg
@@ -183,7 +183,7 @@ export default function Navbar() {
             {/* Wishlist Link Button */}
             <Link
               href="/wishlist"
-              className="relative p-2 text-chrome hover:text-text-primary transition-colors"
+              className="relative p-2 text-chrome hover:text-text-primary transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
               aria-label={`View Wishlist, ${wishlistCount} items`}
             >
               <svg
@@ -210,7 +210,7 @@ export default function Navbar() {
             {/* Cart Button */}
             <button
               onClick={() => setOpenCart(true)}
-              className="relative p-2 text-chrome hover:text-text-primary transition-colors cursor-pointer"
+              className="relative p-2 text-chrome hover:text-text-primary transition-colors cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
               aria-label={`Open Cart, ${cartItemsCount} items`}
             >
               <svg
@@ -241,7 +241,7 @@ export default function Navbar() {
             {/* Mobile Menu Burger Toggle */}
             <button
               onClick={() => setOpenMenu(!isMenuOpen)}
-              className="md:hidden p-2 text-chrome hover:text-text-primary transition-colors cursor-pointer"
+              className="md:hidden p-2 text-chrome hover:text-text-primary transition-colors cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
               aria-label="Toggle Navigation Options"
             >
               {isMenuOpen ? (
@@ -331,7 +331,7 @@ export default function Navbar() {
                     setIsSearchOpen(false);
                     setSearchQuery("");
                   }}
-                  className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer pointer-events-auto"
+                  className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer pointer-events-auto outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
                   aria-label="Close search"
                 >
                   <svg
@@ -370,7 +370,7 @@ export default function Navbar() {
                 />
                 <button
                   type="submit"
-                  className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer"
+                  className="text-chrome hover:text-text-primary transition-colors p-2 cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
                   aria-label="Submit search"
                 >
                   <svg
