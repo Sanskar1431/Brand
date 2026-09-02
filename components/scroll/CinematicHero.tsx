@@ -133,13 +133,13 @@ export default function CinematicHero() {
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center mt-10">
             <Link
               href="/shop"
-              className="w-full sm:w-auto bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors"
+              className="w-full sm:w-auto bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
             >
               EXPLORE COLLECTION
             </Link>
             <Link
               href="/about"
-              className="w-full sm:w-auto border border-chrome/30 text-chrome hover:text-text-primary hover:border-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all"
+              className="w-full sm:w-auto border border-chrome/30 text-chrome hover:text-text-primary hover:border-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
             >
               OUR PHILOSOPHY
             </Link>
@@ -192,13 +192,13 @@ export default function CinematicHero() {
         <div ref={ctaRef} className="flex gap-4 mt-12 opacity-0">
           <Link
             href="/shop"
-            className="hero-cta-btn bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer"
+            className="hero-cta-btn bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
           >
             ENTER THE SHOP
           </Link>
           <Link
             href="/about"
-            className="hero-cta-btn border border-chrome/30 text-chrome hover:text-text-primary hover:border-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer"
+            className="hero-cta-btn border border-chrome/30 text-chrome hover:text-text-primary hover:border-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
           >
             THE BRAND STORY
           </Link>
