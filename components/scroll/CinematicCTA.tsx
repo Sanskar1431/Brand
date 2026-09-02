@@ -71,7 +71,7 @@ export default function CinematicCTA() {
           <div>
             <Link
               href="/shop"
-              className="inline-block bg-white text-black hover:bg-accent hover:text-white px-10 py-5 text-xs font-bold uppercase tracking-[0.25em] transition-colors"
+              className="inline-block bg-white text-black hover:bg-accent hover:text-white px-10 py-5 text-xs font-bold uppercase tracking-[0.25em] transition-colors outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
             >
               ENTER THE KINGDOM
             </Link>
@@ -107,7 +107,7 @@ export default function CinematicCTA() {
       <div ref={btnRef} className="relative z-20 mt-[35vh] opacity-0">
         <Link
           href="/shop"
-          className="bg-accent hover:bg-accent-hover text-white px-12 py-5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl shadow-accent/20 cursor-pointer"
+          className="bg-accent hover:bg-accent-hover text-white px-12 py-5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
         >
           ENTER THE KINGDOM
         </Link>

@@ -141,7 +141,7 @@ export default function SignatureProducts() {
             </p>
             <Link
               href={`/product/${sigJogger.slug}`}
-              className="inline-block bg-white text-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent hover:text-white transition-colors"
+              className="inline-block bg-white text-black px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent hover:text-white transition-colors outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
             >
               SHOP NOW
             </Link>
@@ -204,7 +204,7 @@ export default function SignatureProducts() {
             <div className="mt-8">
               <Link
                 href={`/product/${sigTee.slug}`}
-                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
+                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
               >
                 SHOP THE LAUNCH
               </Link>
@@ -233,7 +233,7 @@ export default function SignatureProducts() {
             <div className="mt-8">
               <Link
                 href={`/product/${sigJogger.slug}`}
-                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer"
+                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
               >
                 SHOP THE LAUNCH
               </Link>
