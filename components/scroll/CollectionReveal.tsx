@@ -150,14 +150,14 @@ export default function CollectionReveal() {
           <div className="flex gap-4">
             <button
               onClick={() => handleArrowNav("prev")}
-              className="p-3 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer"
+              className="p-3 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
               aria-label="Previous category"
             >
               ←
             </button>
             <button
               onClick={() => handleArrowNav("next")}
-              className="p-3 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer"
+              className="p-3 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
               aria-label="Next category"
             >
               →
@@ -186,7 +186,7 @@ export default function CollectionReveal() {
                 <span className="font-sans font-bold text-accent">{cat.priceText}</span>
                 <Link
                   href={cat.link}
-                  className="text-xs uppercase tracking-widest font-bold underline hover:text-accent transition-colors"
+                  className="text-xs uppercase tracking-widest font-bold underline hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] px-1 rounded"
                 >
                   {cat.btnText}
                 </Link>
@@ -256,7 +256,7 @@ export default function CollectionReveal() {
                 </span>
                 <Link
                   href={cat.link}
-                  className="text-xs bg-accent text-white hover:bg-accent-hover px-5 py-3 font-bold uppercase tracking-widest transition-colors"
+                  className="text-xs bg-accent text-white hover:bg-accent-hover px-5 py-3 font-bold uppercase tracking-widest transition-colors outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   {cat.btnText}
                 </Link>
@@ -284,7 +284,7 @@ export default function CollectionReveal() {
           <button
             onClick={() => handleArrowNav("prev")}
             disabled={activeIdx === 0}
-            className={`p-4 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer ${
+            className={`p-4 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
               activeIdx === 0 ? "opacity-30 pointer-events-none" : ""
             }`}
             aria-label="Previous category"
@@ -294,7 +294,7 @@ export default function CollectionReveal() {
           <button
             onClick={() => handleArrowNav("next")}
             disabled={activeIdx === categories.length - 1}
-            className={`p-4 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer ${
+            className={`p-4 border border-chrome/30 hover:border-accent text-chrome hover:text-text-primary transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
               activeIdx === categories.length - 1 ? "opacity-30 pointer-events-none" : ""
             }`}
             aria-label="Next category"
