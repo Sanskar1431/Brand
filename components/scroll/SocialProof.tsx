@@ -128,14 +128,14 @@ export default function SocialProof() {
             <div className="flex gap-4 items-center">
               <button
                 onClick={() => handleArrowClick("prev")}
-                className="p-3 border border-chrome/20 hover:border-accent text-chrome hover:text-text-primary transition-colors cursor-pointer"
+                className="p-3 border border-chrome/20 hover:border-accent text-chrome hover:text-text-primary transition-colors cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                 aria-label="Previous testimonial"
               >
                 ←
               </button>
               <button
                 onClick={() => handleArrowClick("next")}
-                className="p-3 border border-chrome/20 hover:border-accent text-chrome hover:text-text-primary transition-colors cursor-pointer"
+                className="p-3 border border-chrome/20 hover:border-accent text-chrome hover:text-text-primary transition-colors cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                 aria-label="Next testimonial"
               >
                 →
