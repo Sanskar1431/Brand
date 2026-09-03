@@ -62,13 +62,13 @@ export default function NotFound() {
         >
           <Link
             href="/shop"
-            className="w-full sm:w-auto px-8 py-3 bg-accent text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors duration-300 shadow-lg shadow-accent/15 border border-transparent"
+            className="w-full sm:w-auto px-8 py-3 bg-accent text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors duration-300 shadow-lg shadow-accent/15 border border-transparent outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
           >
             VIEW COLLECTIONS
           </Link>
           <Link
             href="/"
-            className="w-full sm:w-auto px-8 py-3 bg-transparent text-text-primary text-xs font-bold uppercase tracking-[0.2em] border border-border-subtle hover:border-text-primary transition-colors duration-300"
+            className="w-full sm:w-auto px-8 py-3 bg-transparent text-text-primary text-xs font-bold uppercase tracking-[0.2em] border border-border-subtle hover:border-text-primary transition-colors duration-300 outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
           >
             RETURN HOME
           </Link>
