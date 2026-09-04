@@ -35,17 +35,17 @@ export default function Footer() {
           </h4>
           <ul className="flex flex-col gap-2 text-sm text-text-muted">
             <li>
-              <Link href="/shop" className="hover:text-accent transition-colors">
+              <Link href="/shop" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
                 Shop All
               </Link>
             </li>
             <li>
-              <Link href="/shop/tshirt" className="hover:text-accent transition-colors">
+              <Link href="/shop/tshirt" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
                 Signature Tees
               </Link>
             </li>
             <li>
-              <Link href="/shop/jogger" className="hover:text-accent transition-colors">
+              <Link href="/shop/jogger" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
                 Premium Joggers
               </Link>
             </li>
@@ -59,17 +59,17 @@ export default function Footer() {
           </h4>
           <ul className="flex flex-col gap-2 text-sm text-text-muted">
             <li>
-              <Link href="/about" className="hover:text-accent transition-colors">
+              <Link href="/about" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
                 About / Brand Story
               </Link>
             </li>
             <li>
-              <Link href="/profile" className="hover:text-accent transition-colors">
+              <Link href="/profile" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
                 My Profile / Orders
               </Link>
             </li>
             <li>
-              <Link href="/support" className="hover:text-accent transition-colors">
+              <Link href="/support" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
                 Support & FAQ
               </Link>
             </li>
@@ -103,7 +103,7 @@ export default function Footer() {
             />
             <button
               type="submit"
-              className="text-chrome hover:text-accent transition-colors text-xs uppercase font-bold tracking-widest cursor-pointer"
+              className="text-chrome hover:text-accent transition-colors text-xs uppercase font-bold tracking-widest cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] px-2 py-0.5 rounded"
             >
               SUBMIT
             </button>
