@@ -372,14 +372,14 @@ export default function ProductDetailClient({
               ) : (
                 <button
                   onClick={handleAddToCart}
-                  className="flex-1 bg-accent text-white hover:bg-accent-hover py-4.5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl cursor-pointer"
+                  className="flex-1 bg-accent text-white hover:bg-accent-hover py-4.5 text-xs font-bold uppercase tracking-[0.25em] transition-colors shadow-xl cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   ADD TO ARCHIVES
                 </button>
               )}
               <button
                 onClick={toggleWishlist}
-                className={`w-14 border flex items-center justify-center transition-all cursor-pointer ${
+                className={`w-14 border flex items-center justify-center transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                   isWishlisted
                     ? "bg-text-primary text-bg-primary border-text-primary"
                     : "border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
