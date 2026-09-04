@@ -295,7 +295,7 @@ export default function ProductDetailClient({
                   <button
                     key={colorway.name}
                     onClick={() => setSelectedColor(colorway)}
-                    className={`w-8 h-8 rounded-full border transition-all cursor-pointer relative ${
+                    className={`w-8 h-8 rounded-full border transition-all cursor-pointer relative outline-none focus:ring-2 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.35)] ${
                       selectedColor.name === colorway.name
                         ? "scale-110 border-accent border-2"
                         : "border-white/20 hover:scale-105"
@@ -332,7 +332,7 @@ export default function ProductDetailClient({
                     <button
                       key={s}
                       onClick={() => !oos && setSelectedSize(s as any)}
-                      className={`w-12 h-12 text-xs font-bold border transition-all cursor-pointer relative ${
+                      className={`w-12 h-12 text-xs font-bold border transition-all cursor-pointer relative outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                         oos
                           ? "border-border-subtle/30 text-chrome/30 line-through cursor-not-allowed bg-bg-surface/20"
                           : selectedSize === s
