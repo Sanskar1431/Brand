@@ -506,7 +506,7 @@ export default function ProductDetailClient({
             <div className="border-t border-border-subtle/40 pt-4">
               <button
                 onClick={() => setIsCareOpen(!isCareOpen)}
-                className="w-full flex justify-between items-center text-xs uppercase tracking-[0.2em] text-text-primary font-bold py-2 cursor-pointer"
+                className="w-full flex justify-between items-center text-xs uppercase tracking-[0.2em] text-text-primary font-bold py-2 cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1"
               >
                 <span>CARE & HANDLING</span>
                 <span>{isCareOpen ? "−" : "+"}</span>
@@ -535,7 +535,7 @@ export default function ProductDetailClient({
             <div className="border-t border-b border-border-subtle/40 py-4">
               <button
                 onClick={() => setIsReviewsOpen(!isReviewsOpen)}
-                className="w-full flex justify-between items-center text-xs uppercase tracking-[0.2em] text-text-primary font-bold py-2 cursor-pointer"
+                className="w-full flex justify-between items-center text-xs uppercase tracking-[0.2em] text-text-primary font-bold py-2 cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1"
               >
                 <span>CLIENT REVIEWS ({42})</span>
                 <span>{isReviewsOpen ? "−" : "+"}</span>
@@ -664,7 +664,7 @@ export default function ProductDetailClient({
                     </span>
                     <button
                       onClick={() => setIsPlayingLoop(false)}
-                      className="bg-bg-primary border border-border-subtle px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-chrome hover:text-accent hover:border-accent transition-colors cursor-pointer"
+                      className="bg-bg-primary border border-border-subtle px-3 py-1.5 text-[9px] font-bold uppercase tracking-wider text-chrome hover:text-accent hover:border-accent transition-colors cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                     >
                       PAUSE LOOP
                     </button>
@@ -676,7 +676,7 @@ export default function ProductDetailClient({
                     </span>
                     <button
                       onClick={() => setIsPlayingLoop(true)}
-                      className="bg-accent text-white px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors cursor-pointer shadow-md"
+                      className="bg-accent text-white px-4 py-2 text-[9px] font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                     >
                       PLAY CINEMATIC REVEAL
                     </button>
