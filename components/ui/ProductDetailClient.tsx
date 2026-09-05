@@ -182,7 +182,7 @@ export default function ProductDetailClient({
         <div className="mb-8">
           <Link
             href="/shop"
-            className="text-xs uppercase tracking-widest text-chrome hover:text-text-primary transition-colors flex items-center gap-2"
+            className="text-xs uppercase tracking-widest text-chrome hover:text-text-primary transition-colors flex items-center gap-2 outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1.5 py-0.5 -ml-1.5"
           >
             ← BACK TO ARCHIVES
           </Link>
@@ -200,7 +200,7 @@ export default function ProductDetailClient({
                 <button
                   key={idx}
                   onClick={() => setActiveAngle(angleUrl)}
-                  className={`w-16 h-20 bg-bg-surface border flex-shrink-0 flex items-center justify-center cursor-pointer transition-all ${
+                  className={`w-16 h-20 bg-bg-surface border flex-shrink-0 flex items-center justify-center cursor-pointer transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                     activeAngle === angleUrl ? "border-accent" : "border-border-subtle hover:border-chrome"
                   }`}
                 >
@@ -248,7 +248,7 @@ export default function ProductDetailClient({
                 
                 <button
                   onClick={scrollToReviews}
-                  className="flex items-center gap-1.5 hover:text-accent transition-colors text-chrome cursor-pointer"
+                  className="flex items-center gap-1.5 hover:text-accent transition-colors text-chrome cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -mr-1"
                 >
                   <div className="flex text-accent">
                     {[...Array(5)].map((_, i) => (
