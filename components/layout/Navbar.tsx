@@ -67,7 +67,7 @@ export default function Navbar() {
       >
         <div className="max-w-[1600px] mx-auto px-6 md:px-12 h-14 flex items-center justify-between">
           {/* Logo */}
-          <Link href="/" className="group flex items-center gap-2" onClick={() => setOpenMenu(false)}>
+          <Link href="/" className="group flex items-center gap-2 outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1.5 py-0.5 -ml-1.5" onClick={() => setOpenMenu(false)}>
             <span className="font-display text-2xl tracking-[0.2em] font-semibold text-text-primary uppercase transition-colors group-hover:text-accent duration-300">
               Prince
             </span>
@@ -77,35 +77,35 @@ export default function Navbar() {
           <nav className="hidden md:flex items-center gap-8">
             <Link
               href="/shop"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
             >
               Shop
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
             </Link>
             <Link
               href="/shop/tshirt"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
             >
               T-Shirts
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
             </Link>
             <Link
               href="/shop/jogger"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
             >
               Joggers
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
             </Link>
             <Link
               href="/about"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
             >
               About
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
             </Link>
             <Link
               href="/contact"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
             >
               Contact
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
@@ -272,35 +272,35 @@ export default function Navbar() {
               <Link
                 href="/shop"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
               >
                 Shop All
               </Link>
               <Link
                 href="/shop/tshirt"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
               >
                 Signature Tees
               </Link>
               <Link
                 href="/shop/jogger"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
               >
                 Premium Joggers
               </Link>
               <Link
                 href="/about"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
               >
                 About Story
               </Link>
               <Link
                 href="/contact"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
               >
                 Contact Concierge
               </Link>
