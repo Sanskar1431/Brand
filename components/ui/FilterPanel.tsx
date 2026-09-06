@@ -38,7 +38,7 @@ export default function FilterPanel() {
       <div className="fixed bottom-6 left-1/2 -translate-x-1/2 md:absolute md:top-24 md:right-12 md:left-auto md:translate-x-0 z-35">
         <button
           onClick={() => setIsOpen(true)}
-          className="bg-accent text-white px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] shadow-lg shadow-accent/30 hover:bg-accent-hover transition-colors flex items-center gap-2 border border-accent-hover cursor-pointer"
+          className="bg-accent text-white px-6 py-3.5 rounded-full text-xs font-bold uppercase tracking-[0.2em] shadow-lg shadow-accent/30 hover:bg-accent-hover transition-colors flex items-center gap-2 border border-accent-hover cursor-pointer outline-none focus:ring-2 focus:ring-accent focus:shadow-[0_0_18px_rgba(212,163,89,0.45)]"
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
