@@ -41,7 +41,7 @@ export default function ProductCard({
           isFeature ? "md:col-span-2 md:row-span-2" : "col-span-1"
         }`}
       >
-      <Link href={`/product/${product.slug}`} className="w-full h-full flex flex-col justify-between">
+      <Link href={`/product/${product.slug}`} className="w-full h-full flex flex-col justify-between outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]">
         {/* Product Image Frame */}
         <div className={`relative w-full ${isFeature ? "aspect-[4/3] md:h-full" : aspectRatio} bg-bg-elevated overflow-hidden`}>
           {/* Badge Overlay */}
