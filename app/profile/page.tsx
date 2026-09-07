@@ -381,7 +381,7 @@ export default function ProfilePage() {
                               <button
                                 type="button"
                                 onClick={() => handleRefreshLogistics(order.id)}
-                                className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-accent p-2 rounded-full transition-all cursor-pointer flex items-center justify-center shadow-sm"
+                                className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-accent p-2 rounded-full transition-all cursor-pointer flex items-center justify-center shadow-sm outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                                 title="REFRESH LOGISTICS STATUS"
                               >
                                 <svg
@@ -434,7 +434,7 @@ export default function ProfilePage() {
                           <button
                             type="button"
                             onClick={() => handleDownloadInvoice(order.id)}
-                            className="w-full bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent py-3 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2"
+                            className="w-full bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent py-3 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"

@@ -118,7 +118,7 @@ export default function CheckoutPage() {
         </h1>
         <Link
           href="/shop"
-          className="bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer"
+          className="bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
         >
           GO TO SHOP
         </Link>
@@ -344,11 +344,11 @@ export default function CheckoutPage() {
                         placeholder="•••• •••• •••• ••••"
                         value={formData.cardNumber}
                         onChange={handleInputChange}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono"
+                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                       />
                     </div>
                     <div className="sm:col-span-2">
-                      <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
+                       <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
                         Expiry Date
                       </label>
                       <input
@@ -358,7 +358,7 @@ export default function CheckoutPage() {
                         placeholder="MM/YY"
                         value={formData.cardExpiry}
                         onChange={handleInputChange}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono"
+                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                       />
                     </div>
                     <div>
@@ -373,7 +373,7 @@ export default function CheckoutPage() {
                         maxLength={4}
                         value={formData.cardCvc}
                         onChange={handleInputChange}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono"
+                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                       />
                     </div>
                   </div>
@@ -383,7 +383,7 @@ export default function CheckoutPage() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer flex items-center justify-center"
+                  className="w-full bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer flex items-center justify-center outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
@@ -605,7 +605,7 @@ export default function CheckoutPage() {
               <div>
                 <Link
                   href="/shop"
-                  className="inline-block px-8 py-4 bg-accent text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/15"
+                  className="inline-block px-8 py-4 bg-accent text-white text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/15 outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   CONTINUE SHOPPING
                 </Link>
