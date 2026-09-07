@@ -254,7 +254,11 @@ export default function CartDrawer() {
                             key={prod.id}
                             className="group cursor-pointer border border-border-subtle/50 p-3 bg-bg-primary hover:border-accent transition-colors"
                           >
-                            <Link href={`/product/${prod.slug}`} onClick={() => setOpenCart(false)}>
+                            <Link
+                              href={`/product/${prod.slug}`}
+                              onClick={() => setOpenCart(false)}
+                              className="block outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
+                            >
                               <div className="aspect-[3/4] bg-bg-elevated mb-2 flex items-center justify-center">
                                 <span className="text-[10px] text-chrome font-bold uppercase">HERO</span>
                               </div>
@@ -314,7 +318,7 @@ export default function CartDrawer() {
                 </p>
                 <button
                   onClick={handleCheckout}
-                  className="w-full bg-accent text-white py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer"
+                  className="w-full bg-accent text-white py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
                 >
                   SECURE CHECKOUT
                 </button>
