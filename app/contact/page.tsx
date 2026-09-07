@@ -91,7 +91,7 @@ export default function ContactPage() {
                   key={s}
                   href="#"
                   whileHover={{ y: -3, scale: 1.05 }}
-                  className="text-xs font-bold tracking-widest text-chrome hover:text-accent border border-border-subtle hover:border-accent px-4 py-2.5 bg-bg-surface transition-all cursor-pointer"
+                  className="text-xs font-bold tracking-widest text-chrome hover:text-accent border border-border-subtle hover:border-accent px-4 py-2.5 bg-bg-surface transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                 >
                   {s}
                 </motion.a>
@@ -110,7 +110,7 @@ export default function ContactPage() {
                 <div key={idx} className="border-b border-border-subtle/20 pb-4">
                   <button
                     onClick={() => setActiveFaq(isOpen ? null : idx)}
-                    className="w-full flex justify-between items-center text-left text-xs font-bold uppercase tracking-wider text-text-primary hover:text-accent transition-colors py-2 cursor-pointer"
+                    className="w-full flex justify-between items-center text-left text-xs font-bold uppercase tracking-wider text-text-primary hover:text-accent transition-colors py-2 cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -mx-1"
                   >
                     <span>{faq.question}</span>
                     <span className="text-base">{isOpen ? "−" : "+"}</span>
