@@ -41,7 +41,7 @@ export default function ToastContainer() {
             
             <button
               onClick={() => removeToast(toast.id)}
-              className="text-chrome hover:text-text-primary transition-colors cursor-pointer p-1"
+              className="text-chrome hover:text-text-primary transition-colors cursor-pointer p-1 outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded-full"
               aria-label="Dismiss notification"
             >
               <svg
