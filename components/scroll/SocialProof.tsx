@@ -153,7 +153,8 @@ export default function SocialProof() {
                 key={i}
                 whileHover={{ y: -8, scale: 1.02 }}
                 transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
-                className="aspect-[3/4] bg-bg-surface border border-border-subtle/40 p-3 flex flex-col justify-between hover:border-accent/40 transition-colors cursor-pointer"
+                tabIndex={0}
+                className="aspect-[3/4] bg-bg-surface border border-border-subtle/40 p-3 flex flex-col justify-between hover:border-accent/40 transition-colors cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
               >
                 <div className="flex-1 bg-bg-elevated flex items-center justify-center relative overflow-hidden">
                   <span className="text-[10px] text-chrome/30 uppercase tracking-widest font-mono">
