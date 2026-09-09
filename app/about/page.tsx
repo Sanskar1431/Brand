@@ -1,6 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
+import Link from "next/link";
 
 export default function AboutPage() {
   const textVariants = {
@@ -188,6 +189,35 @@ export default function AboutPage() {
                 </p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 6: Gateway Action CTAs */}
+      <section className="relative w-full py-24 bg-bg-surface border-t border-border-subtle/20 text-center">
+        <div className="max-w-4xl mx-auto px-6 space-y-8">
+          <span className="text-xs text-accent tracking-[0.3em] font-bold uppercase block">
+            THE NEXT GATEWAY
+          </span>
+          <h2 className="font-display text-3xl sm:text-5xl tracking-widest font-semibold uppercase text-text-primary">
+            DISCOVER THE ACTIVE RELEASES
+          </h2>
+          <p className="text-chrome text-xs sm:text-sm max-w-xl mx-auto uppercase tracking-wider font-mono">
+            Explore architectural cuts in heavyweight cotton or access our direct concierge lines.
+          </p>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center pt-4">
+            <Link
+              href="/shop"
+              className="w-full sm:w-auto bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+            >
+              EXPLORE COLLECTION
+            </Link>
+            <Link
+              href="/contact"
+              className="w-full sm:w-auto border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] bg-bg-primary"
+            >
+              CONNECT WITH CONCIERGE
+            </Link>
           </div>
         </div>
       </section>
