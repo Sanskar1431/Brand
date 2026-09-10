@@ -244,10 +244,20 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
           </div>
         ) : (
           /* Empty Search Result */
-          <div className="text-center py-32 border border-dashed border-border-subtle/50 rounded-2xl">
+          <div className="text-center py-32 border border-dashed border-border-subtle/50 rounded-2xl flex flex-col items-center justify-center space-y-6">
             <p className="text-chrome uppercase tracking-widest text-sm">
               NO MATCHING ITEMS IN ARCHIVES.
             </p>
+            <button
+              onClick={() => {
+                setCategory(undefined);
+                setColor(undefined);
+                setSize(undefined);
+              }}
+              className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+            >
+              RESET ALL FILTERS
+            </button>
           </div>
         )}
 
