@@ -173,18 +173,19 @@ export default function AboutPage() {
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: idx * 0.15 }}
-                className="relative pl-8 md:pl-12 text-left"
+                tabIndex={0}
+                className="relative pl-8 md:pl-12 text-left group outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded-lg p-3 -ml-3 transition-all duration-300 hover:bg-bg-surface/30 cursor-default"
               >
                 {/* Timeline Dot Indicator */}
-                <span className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-accent border-4 border-bg-primary" />
+                <span className="absolute -left-[9px] top-4 w-4 h-4 rounded-full bg-accent border-4 border-bg-primary group-hover:scale-125 group-focus:scale-125 transition-transform duration-300" />
                 
                 <span className="font-mono text-xs font-bold text-accent tracking-widest">
                   {milestone.year}
                 </span>
-                <h4 className="font-display text-lg tracking-wider font-semibold uppercase text-text-primary mt-1">
+                <h4 className="font-display text-lg tracking-wider font-semibold uppercase text-text-primary mt-1 group-hover:text-accent transition-colors">
                   {milestone.title}
                 </h4>
-                <p className="text-chrome/70 text-xs sm:text-sm font-sans mt-2 max-w-xl leading-relaxed uppercase">
+                <p className="text-chrome/70 text-xs sm:text-sm font-sans mt-2 max-w-xl leading-relaxed uppercase group-hover:text-chrome transition-colors">
                   {milestone.desc}
                 </p>
               </motion.div>
