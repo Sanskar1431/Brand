@@ -7,6 +7,7 @@ import { useUIStore } from "@/lib/store/uiStore";
 import { useToastStore } from "@/lib/store/toastStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCurrencyStore } from "@/lib/store/currencyStore";
+import Link from "next/link";
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -180,7 +181,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
             </div>
 
             {/* CTA action */}
-            <div className="pt-6 border-t border-border-subtle/30 mt-6">
+            <div className="pt-6 border-t border-border-subtle/30 mt-6 space-y-3">
               {isOutOfStock(activeColor.name, selectedSize) ? (
                 <div className="space-y-3">
                   <button
@@ -225,6 +226,13 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                   ADD TO ARCHIVES
                 </button>
               )}
+              <Link
+                href={`/product/${product.slug}`}
+                onClick={onClose}
+                className="w-full block text-center bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-text-primary py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-colors cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+              >
+                VIEW FULL SPECIFICATIONS →
+              </Link>
             </div>
           </motion.div>
         </>
