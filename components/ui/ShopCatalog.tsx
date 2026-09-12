@@ -24,11 +24,26 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
     setCategory,
     setSize,
     setColor,
+    setSearch,
+    setPriceRange,
+    setSortBy,
+    reset,
   } = useFilterStore();
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
   const [visibleCount, setVisibleCount] = useState(24); // pagination count (Section 7.1)
   const router = useRouter();
+
+  const activeCategory = categoryFilter || category;
+  const hasActiveFilters = Boolean(
+    activeCategory ||
+    color ||
+    size ||
+    search ||
+    priceRange[0] > 0 ||
+    priceRange[1] < 15000 ||
+    (sortBy && sortBy !== "newest")
+  );
 
   // Sync category filter from URL route if present
   useEffect(() => {
@@ -213,6 +228,110 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
             );
           })}
         </div>
+
+        {/* Active Filter Chips Bar */}
+        {hasActiveFilters && (
+          <div className="flex flex-wrap items-center gap-2 mb-8 select-none">
+            <span className="text-[10px] text-accent font-mono uppercase tracking-widest mr-1">
+              ACTIVE FILTERS:
+            </span>
+
+            {/* Category Chip */}
+            {activeCategory && (
+              <button
+                type="button"
+                onClick={() => {
+                  setCategory(undefined);
+                  if (categoryFilter) router.push("/shop");
+                }}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-surface border border-border-subtle hover:border-error text-text-primary hover:text-error text-[10px] font-mono tracking-wider uppercase transition-all rounded cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                title="Remove Category filter"
+              >
+                <span>CAT: {activeCategory === "tshirt" ? "TEES" : "JOGGERS"}</span>
+                <span className="text-chrome hover:text-error">✕</span>
+              </button>
+            )}
+
+            {/* Size Chip */}
+            {size && (
+              <button
+                type="button"
+                onClick={() => setSize(undefined)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-surface border border-border-subtle hover:border-error text-text-primary hover:text-error text-[10px] font-mono tracking-wider uppercase transition-all rounded cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                title="Remove Size filter"
+              >
+                <span>SIZE: {size}</span>
+                <span className="text-chrome hover:text-error">✕</span>
+              </button>
+            )}
+
+            {/* Color Chip */}
+            {color && (
+              <button
+                type="button"
+                onClick={() => setColor(undefined)}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-surface border border-border-subtle hover:border-error text-text-primary hover:text-error text-[10px] font-mono tracking-wider uppercase transition-all rounded cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                title="Remove Color filter"
+              >
+                <span>COLOR: {color}</span>
+                <span className="text-chrome hover:text-error">✕</span>
+              </button>
+            )}
+
+            {/* Search Query Chip */}
+            {search && (
+              <button
+                type="button"
+                onClick={() => setSearch("")}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-surface border border-border-subtle hover:border-error text-text-primary hover:text-error text-[10px] font-mono tracking-wider uppercase transition-all rounded cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                title="Clear search query"
+              >
+                <span>SEARCH: "{search}"</span>
+                <span className="text-chrome hover:text-error">✕</span>
+              </button>
+            )}
+
+            {/* Price Range Chip */}
+            {(priceRange[0] > 0 || priceRange[1] < 15000) && (
+              <button
+                type="button"
+                onClick={() => setPriceRange([0, 15000])}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-surface border border-border-subtle hover:border-error text-text-primary hover:text-error text-[10px] font-mono tracking-wider uppercase transition-all rounded cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                title="Reset price range"
+              >
+                <span>PRICE: ₹{priceRange[0]} - ₹{priceRange[1]}</span>
+                <span className="text-chrome hover:text-error">✕</span>
+              </button>
+            )}
+
+            {/* Sort Chip */}
+            {sortBy && sortBy !== "newest" && (
+              <button
+                type="button"
+                onClick={() => setSortBy("newest")}
+                className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-surface border border-border-subtle hover:border-error text-text-primary hover:text-error text-[10px] font-mono tracking-wider uppercase transition-all rounded cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                title="Reset sort order"
+              >
+                <span>
+                  SORT: {sortBy === "price-asc" ? "PRICE: LOW TO HIGH" : sortBy === "price-desc" ? "PRICE: HIGH TO LOW" : "NAME"}
+                </span>
+                <span className="text-chrome hover:text-error">✕</span>
+              </button>
+            )}
+
+            {/* Clear All Link Button */}
+            <button
+              type="button"
+              onClick={() => {
+                reset();
+                if (categoryFilter) router.push("/shop");
+              }}
+              className="text-[10px] text-accent hover:text-error font-mono font-bold uppercase tracking-widest underline underline-offset-4 ml-2 cursor-pointer transition-colors outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
+            >
+              CLEAR ALL
+            </button>
+          </div>
+        )}
 
         {/* Product Grid (Section 7.1.1 asymmetric crop, grid rhythm) */}
         {filteredProducts.length > 0 ? (
