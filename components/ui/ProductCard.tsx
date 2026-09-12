@@ -4,6 +4,8 @@ import Link from "next/link";
 import { motion } from "framer-motion";
 import { useState } from "react";
 import { useCurrencyStore } from "@/lib/store/currencyStore";
+import { useWishlistStore } from "@/lib/store/wishlistStore";
+import { useToastStore } from "@/lib/store/toastStore";
 import QuickViewModal from "./QuickViewModal";
 import { Product } from "@/lib/products/schema";
 import { cardLift } from "../motion/variants";
@@ -22,6 +24,21 @@ export default function ProductCard({
   const isFeature = variant === "feature";
   const [openQuickView, setOpenQuickView] = useState(false);
   const { formatPrice } = useCurrencyStore();
+  const { addToast } = useToastStore();
+  const isWishlisted = useWishlistStore((state) => state.items.some((item) => item.id === product.id));
+  const { addItem: addToWishlist, removeItem: removeFromWishlist } = useWishlistStore();
+
+  const toggleWishlist = (e: React.MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    if (isWishlisted) {
+      removeFromWishlist(product.id);
+      addToast(`${product.name} REMOVED FROM WISHLIST`, "info");
+    } else {
+      addToWishlist(product);
+      addToast(`${product.name} ADDED TO WISHLIST`, "success");
+    }
+  };
 
   const getBadgeText = () => {
     if (product.price > 700000) return "LIMITED RELEASE";
@@ -127,6 +144,34 @@ export default function ProductCard({
         className="absolute top-4 left-4 z-30 opacity-0 group-hover:opacity-100 focus:opacity-100 transition-all duration-300 bg-bg-surface/85 hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-[9px] font-bold uppercase tracking-[0.2em] px-3.5 py-2 cursor-pointer shadow-md outline-none focus:bg-accent focus:text-white focus:border-accent focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
       >
         QUICK VIEW
+      </button>
+
+      {/* Quick Wishlist absolute trigger */}
+      <button
+        type="button"
+        onClick={toggleWishlist}
+        aria-label={isWishlisted ? `Remove ${product.name} from wishlist` : `Add ${product.name} to wishlist`}
+        title={isWishlisted ? "Remove from wishlist" : "Add to wishlist"}
+        className={`absolute top-4 right-4 z-30 transition-all duration-300 p-2 cursor-pointer shadow-md outline-none border focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)] ${
+          isWishlisted
+            ? "opacity-100 bg-accent text-white border-accent"
+            : "opacity-0 group-hover:opacity-100 focus:opacity-100 bg-bg-surface/85 hover:bg-accent hover:text-white border-border-subtle hover:border-accent text-chrome hover:text-white"
+        }`}
+      >
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill={isWishlisted ? "currentColor" : "none"}
+          stroke="currentColor"
+          strokeWidth="1.5"
+          className="w-3.5 h-3.5"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12z"
+          />
+        </svg>
       </button>
     </motion.div>
 
