@@ -10,7 +10,7 @@ import ProductCard from "@/components/ui/ProductCard";
 import Link from "next/link";
 
 export default function WishlistPage() {
-  const { items, removeItem } = useWishlistStore();
+  const { items, removeItem, clearWishlist } = useWishlistStore();
   const { addItem } = useCartStore();
   const { setOpenCart } = useUIStore();
   const { addToast } = useToastStore();
@@ -28,16 +28,47 @@ export default function WishlistPage() {
   return (
     <div className="w-full min-h-screen bg-bg-primary pt-32 pb-24 px-6 md:px-12">
       <div className="max-w-[1600px] mx-auto">
-        <div className="text-left mb-12">
-          <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block mb-1">
-            MY ARCHIVE
-          </span>
-          <h1 className="font-display text-3xl sm:text-5xl tracking-widest text-text-primary uppercase font-semibold">
-            YOUR WISHLIST
-          </h1>
-          <p className="text-chrome/50 text-xs sm:text-sm tracking-wider uppercase mt-2">
-            {items.length} ITEMS SAVED
-          </p>
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+          <div className="text-left">
+            <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block mb-1">
+              MY ARCHIVE
+            </span>
+            <h1 className="font-display text-3xl sm:text-5xl tracking-widest text-text-primary uppercase font-semibold">
+              YOUR WISHLIST
+            </h1>
+            <p className="text-chrome/50 text-xs sm:text-sm tracking-wider uppercase mt-2">
+              {items.length} ITEMS SAVED
+            </p>
+          </div>
+
+          {items.length > 0 && (
+            <div className="flex flex-wrap items-center gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  items.forEach((it) => {
+                    const activeColor = selectedColors[it.id] || it.colors[0].name;
+                    addItem(it, activeColor, "M", 1);
+                  });
+                  addToast(`ALL ${items.length} ARCHIVES TRANSFERRED TO CART`, "success");
+                  setOpenCart(true);
+                }}
+                className="px-5 py-3 bg-bg-surface hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-text-primary text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:bg-accent focus:text-white focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+              >
+                ADD ALL TO CART
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  clearWishlist();
+                  addToast("WISHLIST ARCHIVES CLEARED", "info");
+                }}
+                className="px-5 py-3 bg-bg-surface hover:bg-error hover:text-white border border-border-subtle hover:border-error text-chrome hover:text-white text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:bg-error focus:text-white focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
+              >
+                CLEAR WISHLIST
+              </button>
+            </div>
+          )}
         </div>
 
         {items.length > 0 && (
@@ -197,8 +228,15 @@ export default function WishlistPage() {
           ) : (
             <div className="text-center py-20 border border-dashed border-border-subtle/50 w-full flex flex-col items-center justify-center space-y-4">
               <p className="text-chrome uppercase tracking-widest text-xs">
-                No matching archives found inside your wishlist.
+                NO MATCHING ARCHIVES FOUND FOR &quot;{searchQuery}&quot;.
               </p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="bg-accent text-white hover:bg-accent-hover px-6 py-3 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+              >
+                RESET SEARCH
+              </button>
             </div>
           )
         ) : (
