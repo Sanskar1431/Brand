@@ -25,6 +25,8 @@ function SearchResultsContent() {
     });
   }, [query]);
 
+  const popularSearches = ["TEE", "JOGGER", "HEAVYWEIGHT", "RAW", "FRENCH TERRY"];
+
   return (
     <div className="w-full min-h-screen bg-bg-primary pt-32 pb-24 px-6 md:px-12">
       <div className="max-w-[1600px] mx-auto">
@@ -41,7 +43,7 @@ function SearchResultsContent() {
         </div>
 
         {/* Inline Search Refinement */}
-        <div className="mb-10 max-w-md text-left relative">
+        <div className="mb-4 max-w-md text-left relative">
           <form
             onSubmit={(e) => {
               e.preventDefault();
@@ -69,6 +71,30 @@ function SearchResultsContent() {
               </button>
             )}
           </form>
+        </div>
+
+        {/* Popular Search Suggestion Tags */}
+        <div className="flex flex-wrap items-center gap-2 mb-10 select-none">
+          <span className="text-[10px] text-chrome/60 uppercase tracking-widest font-mono mr-1">
+            POPULAR:
+          </span>
+          {popularSearches.map((tag) => {
+            const isCurrent = query.toLowerCase() === tag.toLowerCase();
+            return (
+              <button
+                key={tag}
+                type="button"
+                onClick={() => router.push(`/search?q=${encodeURIComponent(tag)}`)}
+                className={`px-3 py-1 text-[10px] font-mono font-bold uppercase tracking-wider border transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                  isCurrent
+                    ? "bg-accent border-accent text-white shadow-md shadow-accent/20"
+                    : "bg-bg-surface/60 hover:bg-bg-surface border-border-subtle hover:border-accent text-chrome hover:text-text-primary"
+                }`}
+              >
+                {tag}
+              </button>
+            );
+          })}
         </div>
 
         {loading ? (
@@ -101,13 +127,28 @@ function SearchResultsContent() {
         ) : (
           <div className="text-center py-32 border border-dashed border-border-subtle/50 rounded-2xl flex flex-col items-center justify-center space-y-6">
             <p className="text-chrome uppercase tracking-widest text-sm">
-              NO MATCHING ITEMS IN THE ARCHIVES.
+              NO MATCHING ITEMS FOR &ldquo;{query}&rdquo; IN THE ARCHIVES.
             </p>
+            <div className="flex flex-wrap gap-2 justify-center max-w-md">
+              <span className="w-full text-[10px] text-chrome/60 uppercase tracking-widest font-mono mb-1">
+                POPULAR SEARCHES:
+              </span>
+              {popularSearches.map((tag) => (
+                <button
+                  key={tag}
+                  type="button"
+                  onClick={() => router.push(`/search?q=${encodeURIComponent(tag)}`)}
+                  className="px-3 py-1.5 bg-bg-surface hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-chrome hover:text-text-primary text-[10px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                >
+                  {tag}
+                </button>
+              ))}
+            </div>
             <Link
               href="/shop"
-              className="bg-bg-surface hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+              className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
             >
-              EXPLORE COLLECTION
+              EXPLORE FULL ARCHIVE
             </Link>
           </div>
         )}
