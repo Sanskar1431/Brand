@@ -224,6 +224,36 @@ export default function ProfilePage() {
                 <span className="text-[10px] text-chrome uppercase tracking-widest block">Shipping Region</span>
                 <p className="text-sm uppercase">IN / ASIA PACIFIC</p>
               </div>
+
+              {/* Quick Archives Shortcuts */}
+              <div className="pt-4 border-t border-border-subtle/30 space-y-2">
+                <span className="text-[9px] text-accent font-mono uppercase tracking-widest block font-bold">
+                  QUICK ARCHIVES
+                </span>
+                <div className="flex flex-col gap-2">
+                  <Link
+                    href="/wishlist"
+                    className="flex items-center justify-between px-3 py-2 bg-bg-primary/50 hover:bg-bg-primary border border-border-subtle/50 hover:border-accent text-chrome hover:text-text-primary text-[10px] font-mono tracking-wider uppercase transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                  >
+                    <span>SAVED WISHLIST</span>
+                    <span>→</span>
+                  </Link>
+                  <Link
+                    href="/support"
+                    className="flex items-center justify-between px-3 py-2 bg-bg-primary/50 hover:bg-bg-primary border border-border-subtle/50 hover:border-accent text-chrome hover:text-text-primary text-[10px] font-mono tracking-wider uppercase transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                  >
+                    <span>CLIENT SUPPORT & FAQ</span>
+                    <span>→</span>
+                  </Link>
+                  <Link
+                    href="/contact"
+                    className="flex items-center justify-between px-3 py-2 bg-bg-primary/50 hover:bg-bg-primary border border-border-subtle/50 hover:border-accent text-chrome hover:text-text-primary text-[10px] font-mono tracking-wider uppercase transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                  >
+                    <span>CONCIERGE INQUIRY</span>
+                    <span>→</span>
+                  </Link>
+                </div>
+              </div>
             </div>
           </motion.div>
 
@@ -508,10 +538,21 @@ export default function ProfilePage() {
                 </div>
               ))
               ) : (
-                <div className="text-center py-16 border border-dashed border-border-subtle/50 rounded-lg">
+                <div className="text-center py-16 border border-dashed border-border-subtle/50 rounded-lg flex flex-col items-center justify-center space-y-4">
                   <p className="text-chrome uppercase tracking-widest text-xs">
                     No matching archives found inside your orders.
                   </p>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setOrderSearchQuery("");
+                      setStatusFilter("ALL");
+                      addToast("ORDER FILTERS RESET", "info");
+                    }}
+                    className="bg-accent text-white hover:bg-accent-hover px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                  >
+                    RESET ORDER FILTERS
+                  </button>
                 </div>
               )}
             </div>
