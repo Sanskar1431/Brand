@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
+import Link from "next/link";
 
 interface AccordionItemProps {
   title: string;
@@ -155,10 +156,37 @@ export default function SupportPage() {
               />
             ))
           ) : (
-            <p className="text-xs text-chrome/50 font-mono tracking-widest uppercase py-8 text-center border border-dashed border-border-subtle/30">
-              NO MATCHING FAQ ARTICLES FOUND IN PROTOCOL QUEUES
-            </p>
+            <div className="py-12 text-center border border-dashed border-border-subtle/30 flex flex-col items-center justify-center space-y-4">
+              <p className="text-xs text-chrome/50 font-mono tracking-widest uppercase">
+                NO MATCHING FAQ ARTICLES FOUND IN PROTOCOL QUEUES
+              </p>
+              <button
+                type="button"
+                onClick={() => setSearchQuery("")}
+                className="bg-accent text-white hover:bg-accent-hover px-6 py-2.5 text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+              >
+                RESET FAQ SEARCH
+              </button>
+            </div>
           )}
+        </div>
+
+        {/* Direct Concierge Gateway Card */}
+        <div className="mt-12 p-6 bg-bg-surface border border-border-subtle flex flex-col sm:flex-row items-center justify-between gap-6">
+          <div className="text-left space-y-1">
+            <span className="text-[9px] text-accent tracking-[0.2em] font-mono font-bold block uppercase">
+              NEED BESPOKE ASSISTANCE?
+            </span>
+            <p className="text-xs text-chrome font-sans uppercase tracking-wider">
+              Our concierge team is available 24/7 for tailored inquiries, custom orders, and archive guidance.
+            </p>
+          </div>
+          <Link
+            href="/contact"
+            className="whitespace-nowrap bg-accent text-white hover:bg-accent-hover px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+          >
+            CONTACT CONCIERGE →
+          </Link>
         </div>
       </div>
     </div>
