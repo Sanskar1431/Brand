@@ -238,13 +238,20 @@ export default function CartDrawer() {
                 ))
               ) : (
                 /* Empty state recommendations (Section 7.1.3) */
-                <div className="flex flex-col items-center justify-center py-10 text-center">
-                  <p className="text-sm text-chrome uppercase tracking-widest mb-6">
+                <div className="flex flex-col items-center justify-center py-8 text-center space-y-4">
+                  <p className="text-sm text-chrome uppercase tracking-widest">
                     YOUR CART IS EMPTY.
                   </p>
+                  <Link
+                    href="/shop"
+                    onClick={() => setOpenCart(false)}
+                    className="bg-accent text-white hover:bg-accent-hover px-6 py-3 text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                  >
+                    EXPLORE COLLECTION
+                  </Link>
                   
                   {recommendations.length > 0 && (
-                    <div className="w-full mt-6 text-left border-t border-border-subtle pt-6">
+                    <div className="w-full mt-4 text-left border-t border-border-subtle pt-6">
                       <h4 className="text-xs uppercase tracking-[0.2em] font-bold text-accent mb-4">
                         SIGNATURE RECOMMENDATIONS
                       </h4>
@@ -262,12 +269,17 @@ export default function CartDrawer() {
                               <div className="aspect-[3/4] bg-bg-elevated mb-2 flex items-center justify-center">
                                 <span className="text-[10px] text-chrome font-bold uppercase">HERO</span>
                               </div>
-                              <h5 className="text-[11px] uppercase tracking-wider font-semibold truncate">
+                              <h5 className="text-[11px] uppercase tracking-wider font-semibold truncate group-hover:text-accent transition-colors">
                                 {prod.name}
                               </h5>
-                              <p className="text-[10px] text-chrome font-sans font-semibold mt-1">
-                               {formatPrice(prod.price)}
-                              </p>
+                              <div className="flex justify-between items-center mt-1">
+                                <p className="text-[10px] text-chrome font-sans font-semibold">
+                                  {formatPrice(prod.price)}
+                                </p>
+                                <span className="text-[8.5px] text-accent font-mono uppercase font-bold tracking-wider opacity-0 group-hover:opacity-100 transition-opacity">
+                                  VIEW →
+                                </span>
+                              </div>
                             </Link>
                           </div>
                         ))}
