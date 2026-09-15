@@ -49,6 +49,11 @@ export default function Footer() {
                 Premium Joggers
               </Link>
             </li>
+            <li>
+              <Link href="/wishlist" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
+                Saved Wishlist
+              </Link>
+            </li>
           </ul>
         </div>
 
@@ -66,6 +71,11 @@ export default function Footer() {
             <li>
               <Link href="/profile" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
                 My Profile / Orders
+              </Link>
+            </li>
+            <li>
+              <Link href="/contact" className="hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -ml-1">
+                Contact Concierge
               </Link>
             </li>
             <li>
