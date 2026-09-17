@@ -72,6 +72,15 @@ export default function AboutPage() {
           <p className="text-chrome/60 text-xs uppercase tracking-widest font-mono">
             Metric: 2x Twist Comb / Pre-shrunk weave integrity
           </p>
+          <div className="pt-2">
+            <Link
+              href="/shop/tshirt"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-accent hover:text-text-primary transition-colors outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
+            >
+              <span>VIEW SIGNATURE TEES</span>
+              <span>→</span>
+            </Link>
+          </div>
         </div>
         
         {/* Parallax Image Placeholder */}
@@ -134,6 +143,15 @@ export default function AboutPage() {
           <p className="text-chrome/60 text-xs uppercase tracking-widest font-mono">
             Metric: Dropped seam axis / 3D block sizing
           </p>
+          <div className="pt-2">
+            <Link
+              href="/shop/jogger"
+              className="inline-flex items-center gap-2 text-xs font-bold uppercase tracking-[0.2em] text-accent hover:text-text-primary transition-colors outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded"
+            >
+              <span>VIEW PREMIUM JOGGERS</span>
+              <span>→</span>
+            </Link>
+          </div>
         </div>
       </section>
 
@@ -218,6 +236,12 @@ export default function AboutPage() {
               className="w-full sm:w-auto border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] bg-bg-primary"
             >
               CONNECT WITH CONCIERGE
+            </Link>
+            <Link
+              href="/support"
+              className="w-full sm:w-auto border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] bg-bg-primary"
+            >
+              CLIENT FAQS & SUPPORT
             </Link>
           </div>
         </div>
