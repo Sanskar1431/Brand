@@ -130,7 +130,49 @@ export default function CheckoutPage() {
     <div className="min-h-screen w-full bg-bg-primary text-text-primary pt-32 pb-24 px-6 md:px-12 select-none relative">
       <div className="max-w-6xl mx-auto z-10 relative">
         <AnimatePresence mode="wait">
-          {!isSuccess ? (
+          {items.length === 0 && !isSuccess ? (
+            <motion.div
+              key="checkout-empty"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="text-center py-32 border border-dashed border-border-subtle/50 rounded-2xl flex flex-col items-center justify-center space-y-6 max-w-lg mx-auto"
+            >
+              <div className="w-16 h-16 bg-bg-surface border border-border-subtle rounded-full flex items-center justify-center text-chrome shadow-md">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  strokeWidth="1.5"
+                  stroke="currentColor"
+                  className="w-8 h-8"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M15.75 10.5V6a3.75 3.75 0 1 0-7.5 0v4.5m11.356-1.993 1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 0 1-1.12-1.243l1.264-12A1.125 1.125 0 0 1 5.513 7.5h12.974c.576 0 1.059.435 1.119 1.007ZM8.625 10.5a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Zm7.5 0a.375.375 0 1 1-.75 0 .375.375 0 0 1 .75 0Z"
+                  />
+                </svg>
+              </div>
+              <div className="space-y-2">
+                <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block">
+                  CHECKOUT PROTOCOL
+                </span>
+                <h2 className="font-display text-2xl sm:text-3xl tracking-widest uppercase font-semibold text-text-primary">
+                  YOUR CART IS EMPTY
+                </h2>
+                <p className="text-chrome text-xs uppercase tracking-wider max-w-xs mx-auto leading-relaxed">
+                  No active garments detected in your cart archive. Explore the collection to initialize transactions.
+                </p>
+              </div>
+              <Link
+                href="/shop"
+                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+              >
+                EXPLORE COLLECTION
+              </Link>
+            </motion.div>
+          ) : !isSuccess ? (
             <motion.div
               key="checkout-form"
               initial={{ opacity: 0, y: 15 }}
