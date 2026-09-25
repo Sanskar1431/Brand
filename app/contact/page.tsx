@@ -41,6 +41,7 @@ export default function ContactPage() {
     register,
     handleSubmit,
     reset,
+    setValue,
     watch,
     formState: { errors },
   } = useForm<ContactFormValues>({
@@ -85,16 +86,26 @@ export default function ContactPage() {
             <h4 className="text-[10px] text-accent tracking-[0.2em] font-bold uppercase">
               DIRECT LINES
             </h4>
-            <div className="flex gap-4">
-              {["INSTAGRAM", "X-TWITTER", "DISCORD"].map((s) => (
-                <motion.a
-                  key={s}
-                  href="#"
-                  whileHover={{ y: -3, scale: 1.05 }}
-                  className="text-xs font-bold tracking-widest text-chrome hover:text-accent border border-border-subtle hover:border-accent px-4 py-2.5 bg-bg-surface transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+            <div className="flex flex-wrap gap-3">
+              {[
+                { name: "INSTAGRAM", handle: "@prince.brand" },
+                { name: "X-TWITTER", handle: "@prince_garments" },
+                { name: "DISCORD", handle: "PRINCE VAULT" },
+              ].map((channel) => (
+                <motion.button
+                  key={channel.name}
+                  type="button"
+                  whileHover={{ y: -2, scale: 1.02 }}
+                  onClick={() => {
+                    addToast(`ROUTING TO ${channel.name} CONCIERGE LINE (${channel.handle})`, "info");
+                  }}
+                  className="text-xs font-bold tracking-widest text-chrome hover:text-accent border border-border-subtle hover:border-accent px-4 py-2.5 bg-bg-surface transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] flex items-center gap-2"
                 >
-                  {s}
-                </motion.a>
+                  <span>{channel.name}</span>
+                  <span className="text-[8px] text-chrome/50 font-mono font-normal">
+                    {channel.handle}
+                  </span>
+                </motion.button>
               ))}
             </div>
           </div>
@@ -139,13 +150,27 @@ export default function ContactPage() {
         <div className="lg:col-span-7">
           <div className="glass-panel p-8 md:p-12 rounded-3xl shadow-2xl space-y-8 relative overflow-hidden">
             
-            <div className="text-left border-b border-border-subtle/50 pb-4">
-              <h3 className="font-display text-lg tracking-[0.15em] font-semibold uppercase">
-                SECURE CONCIERGE QUEUE
-              </h3>
-              <p className="text-[10px] text-chrome/50 uppercase tracking-widest mt-1">
-                Submissions routed immediately to staff.
-              </p>
+            <div className="text-left border-b border-border-subtle/50 pb-4 flex items-center justify-between">
+              <div>
+                <h3 className="font-display text-lg tracking-[0.15em] font-semibold uppercase">
+                  SECURE CONCIERGE QUEUE
+                </h3>
+                <p className="text-[10px] text-chrome/50 uppercase tracking-widest mt-1">
+                  Submissions routed immediately to staff.
+                </p>
+              </div>
+              {(nameValue || emailValue || subjectValue || messageValue) && (
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    addToast("INQUIRY DRAFT CLEARED", "info");
+                  }}
+                  className="text-[9px] font-mono tracking-widest uppercase text-chrome/60 hover:text-accent border border-border-subtle hover:border-accent px-2.5 py-1 transition-colors outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                >
+                  RESET FORM
+                </button>
+              )}
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
@@ -203,7 +228,7 @@ export default function ContactPage() {
               </div>
 
               {/* Subject */}
-              <div className="space-y-1 text-left">
+              <div className="space-y-1.5 text-left">
                 <div className="flex justify-between items-center">
                   <label className="text-[9px] text-chrome tracking-wider uppercase block">
                     SUBJECT
@@ -213,6 +238,25 @@ export default function ContactPage() {
                   }`}>
                     {subjectValue.length} / 40 CHARS
                   </span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 pb-1">
+                  {["ORDER INQUIRY", "SIZE ADVISORY", "DISPATCH LOGISTICS", "SPECIAL REQUEST"].map((topic) => (
+                    <button
+                      key={topic}
+                      type="button"
+                      onClick={() => {
+                        setValue("subject", topic, { shouldValidate: true });
+                        addToast(`SUBJECT TOPIC APPLIED: ${topic}`, "info");
+                      }}
+                      className={`text-[9px] font-mono tracking-wider px-2.5 py-1 border transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                        subjectValue === topic
+                          ? "border-accent bg-accent/15 text-accent font-bold"
+                          : "border-border-subtle/50 text-chrome/60 hover:border-chrome hover:text-text-primary bg-bg-primary/50"
+                      }`}
+                    >
+                      {topic}
+                    </button>
+                  ))}
                 </div>
                 <input
                   type="text"
