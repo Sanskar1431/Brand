@@ -266,9 +266,9 @@ export default function Navbar() {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="fixed inset-0 bg-bg-surface z-30 pt-28 px-6 flex flex-col justify-start gap-8 md:hidden"
+            className="fixed inset-0 bg-bg-surface z-30 pt-24 px-6 pb-8 flex flex-col justify-between overflow-y-auto md:hidden"
           >
-            <div className="flex flex-col gap-6 text-left">
+            <div className="flex flex-col gap-5 text-left">
               <Link
                 href="/shop"
                 onClick={() => setOpenMenu(false)}
@@ -304,6 +304,66 @@ export default function Navbar() {
               >
                 Contact Concierge
               </Link>
+
+              {/* Direct Category Quick Filter Shortcuts */}
+              <div className="pt-4 border-t border-border-subtle/40 space-y-3">
+                <span className="text-[9px] text-accent tracking-[0.25em] font-bold uppercase block font-mono">
+                  QUICK ARCHIVE GATEWAYS
+                </span>
+                <div className="grid grid-cols-2 gap-2.5">
+                  <Link
+                    href="/shop/tshirt"
+                    onClick={() => setOpenMenu(false)}
+                    className="p-3 border border-border-subtle/50 bg-bg-primary/40 hover:border-accent group transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                  >
+                    <span className="text-[10px] text-chrome group-hover:text-accent font-bold tracking-wider uppercase block">
+                      T-SHIRTS
+                    </span>
+                    <span className="text-[8px] text-chrome/50 font-mono tracking-widest uppercase">
+                      240 GSM HEAVYWEIGHT
+                    </span>
+                  </Link>
+                  <Link
+                    href="/shop/jogger"
+                    onClick={() => setOpenMenu(false)}
+                    className="p-3 border border-border-subtle/50 bg-bg-primary/40 hover:border-accent group transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                  >
+                    <span className="text-[10px] text-chrome group-hover:text-accent font-bold tracking-wider uppercase block">
+                      JOGGERS
+                    </span>
+                    <span className="text-[8px] text-chrome/50 font-mono tracking-widest uppercase">
+                      400 GSM FRENCH TERRY
+                    </span>
+                  </Link>
+                </div>
+              </div>
+            </div>
+
+            {/* Mobile Footer Utility Bar */}
+            <div className="pt-6 border-t border-border-subtle/40 flex flex-col gap-4">
+              <div className="flex items-center justify-between text-xs">
+                <Link
+                  href="/wishlist"
+                  onClick={() => setOpenMenu(false)}
+                  className="text-chrome hover:text-accent uppercase tracking-wider font-mono text-[10px] flex items-center gap-1.5 outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -mx-1"
+                >
+                  <span>WISHLIST ({wishlistCount})</span>
+                </Link>
+                <Link
+                  href="/profile"
+                  onClick={() => setOpenMenu(false)}
+                  className="text-chrome hover:text-accent uppercase tracking-wider font-mono text-[10px] outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -mx-1"
+                >
+                  FIT PROFILE
+                </Link>
+                <Link
+                  href="/support"
+                  onClick={() => setOpenMenu(false)}
+                  className="text-chrome hover:text-accent uppercase tracking-wider font-mono text-[10px] outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1 -mx-1"
+                >
+                  SUPPORT
+                </Link>
+              </div>
             </div>
           </motion.div>
         )}
