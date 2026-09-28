@@ -472,21 +472,70 @@ export default function ProductDetailClient({
 
             {/* Delivery protocol checker */}
             <div className="pt-6 border-t border-border-subtle/30 space-y-3">
-              <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block">
-                DELIVERY PROTOCOL CHECKER
-              </span>
-              <div className="flex gap-2">
-                <input
-                  type="text"
-                  placeholder="ENTER ZIP/POSTAL CODE..."
-                  value={postalCode}
-                  onChange={(e) => {
-                    setPostalCode(e.target.value.toUpperCase());
-                    setDeliveryEstimate("");
-                  }}
-                  className="flex-1 bg-bg-surface border border-border-subtle p-2.5 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-                  maxLength={10}
-                />
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block">
+                  DELIVERY PROTOCOL CHECKER
+                </span>
+                <span className="text-[8.5px] text-chrome/60 font-mono uppercase tracking-wider">
+                  GLOBAL AIR EXPRESS
+                </span>
+              </div>
+
+              {/* Sample Region Presets */}
+              <div className="flex flex-wrap gap-1.5 pb-1">
+                {[
+                  { city: "NYC", code: "10001" },
+                  { city: "LDN", code: "SW1A" },
+                  { city: "DEL", code: "110001" },
+                  { city: "TOK", code: "100-0001" },
+                ].map((preset) => (
+                  <button
+                    key={preset.city}
+                    type="button"
+                    onClick={() => {
+                      setPostalCode(preset.code);
+                      const delayDays = (preset.code.length % 3) + 2;
+                      setDeliveryEstimate(`ESTIMATED ARRIVAL IN ${delayDays} BUSINESS DAYS PROTOCOL (${preset.city})`);
+                      addToast(`LOGISTICS CALCULATED FOR ${preset.city} (${preset.code})`, "success");
+                    }}
+                    className={`text-[9px] font-mono tracking-wider px-2 py-1 border transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                      postalCode === preset.code
+                        ? "border-accent bg-accent/15 text-accent font-bold"
+                        : "border-border-subtle/50 text-chrome/60 hover:border-chrome hover:text-text-primary bg-bg-surface/30"
+                    }`}
+                  >
+                    {preset.city} ({preset.code})
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex gap-2 relative">
+                <div className="relative flex-1">
+                  <input
+                    type="text"
+                    placeholder="ENTER ZIP/POSTAL CODE..."
+                    value={postalCode}
+                    onChange={(e) => {
+                      setPostalCode(e.target.value.toUpperCase());
+                      setDeliveryEstimate("");
+                    }}
+                    className="w-full bg-bg-surface border border-border-subtle p-2.5 pr-8 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                    maxLength={10}
+                  />
+                  {postalCode && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPostalCode("");
+                        setDeliveryEstimate("");
+                      }}
+                      className="absolute right-2.5 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] cursor-pointer outline-none focus:text-accent"
+                      title="Clear postal code"
+                    >
+                      ✕
+                    </button>
+                  )}
+                </div>
                 <button
                   type="button"
                   onClick={handleCheckDelivery}
@@ -495,10 +544,18 @@ export default function ProductDetailClient({
                   CHECK
                 </button>
               </div>
+
               {deliveryEstimate && (
-                <p className="text-[10px] text-accent font-mono font-bold uppercase tracking-wider">
-                  ✓ {deliveryEstimate}
-                </p>
+                <div className="p-3 bg-bg-surface/50 border border-accent/30 space-y-1 text-left">
+                  <p className="text-[10px] text-accent font-mono font-bold uppercase tracking-wider">
+                    ✓ {deliveryEstimate}
+                  </p>
+                  <div className="flex flex-wrap gap-3 pt-1 text-[8px] font-mono text-chrome/70 uppercase">
+                    <span>• INSURED TRANSIT</span>
+                    <span>• SIGNATURE REQUIRED</span>
+                    <span>• REAL-TIME DISPATCH</span>
+                  </div>
+                </div>
               )}
             </div>
 
