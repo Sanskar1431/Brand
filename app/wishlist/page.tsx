@@ -240,16 +240,103 @@ export default function WishlistPage() {
             </div>
           )
         ) : (
-          <div className="text-center py-32 border border-dashed border-border-subtle/50 rounded-2xl flex flex-col items-center justify-center space-y-6">
-            <p className="text-chrome uppercase tracking-widest text-sm">
-              YOUR WISHLIST IS CURRENTLY EMPTY.
-            </p>
-            <Link
-              href="/shop"
-              className="bg-bg-surface hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-            >
-              EXPLORE COLLECTION
-            </Link>
+          <div className="text-center py-24 px-6 border border-dashed border-border-subtle/60 rounded-3xl flex flex-col items-center justify-center space-y-10 bg-bg-surface/10">
+            <div className="w-16 h-16 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-8 h-8"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="M21 8.25c0-2.485-2.099-4.5-4.688-4.5-1.935 0-3.597 1.126-4.312 2.733-.715-1.607-2.377-2.733-4.313-2.733C5.1 3.75 3 5.765 3 8.25c0 7.22 9 12 9 12s9-4.78 9-12Z"
+                />
+              </svg>
+            </div>
+
+            <div className="space-y-2 max-w-md">
+              <span className="text-[10px] text-accent tracking-[0.25em] font-mono font-bold uppercase block">
+                CLIENT VAULT EMPTY
+              </span>
+              <h3 className="font-display text-2xl tracking-widest text-text-primary uppercase font-semibold">
+                NO SAVED ARCHIVES IN WISHLIST
+              </h3>
+              <p className="text-chrome/70 text-xs leading-relaxed uppercase font-sans">
+                Curate your personal collection of luxury streetwear. Save pieces during exploration to compare fits and configure quick checkouts.
+              </p>
+            </div>
+
+            {/* Curated Archive Exploration Gateways */}
+            <div className="w-full max-w-2xl grid grid-cols-1 sm:grid-cols-2 gap-4 text-left">
+              <Link
+                href="/shop/tshirt"
+                className="p-5 border border-border-subtle hover:border-accent bg-bg-surface/40 group transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[9px] text-accent font-mono font-bold uppercase tracking-widest">
+                      SECTOR 01
+                    </span>
+                    <span className="text-[8px] text-chrome/50 font-mono tracking-widest uppercase">
+                      240 GSM
+                    </span>
+                  </div>
+                  <h4 className="font-display text-lg text-text-primary group-hover:text-accent font-semibold uppercase tracking-wider transition-colors">
+                    SIGNATURE TEES
+                  </h4>
+                  <p className="text-[10px] text-chrome/70 uppercase leading-relaxed mt-1">
+                    Heavyweight oversized boxy drops with reinforced collar metrics.
+                  </p>
+                </div>
+                <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest mt-4 block">
+                  EXPLORE TEES →
+                </span>
+              </Link>
+
+              <Link
+                href="/shop/jogger"
+                className="p-5 border border-border-subtle hover:border-accent bg-bg-surface/40 group transition-all outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] flex flex-col justify-between"
+              >
+                <div>
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="text-[9px] text-accent font-mono font-bold uppercase tracking-widest">
+                      SECTOR 02
+                    </span>
+                    <span className="text-[8px] text-chrome/50 font-mono tracking-widest uppercase">
+                      400 GSM
+                    </span>
+                  </div>
+                  <h4 className="font-display text-lg text-text-primary group-hover:text-accent font-semibold uppercase tracking-wider transition-colors">
+                    PREMIUM JOGGERS
+                  </h4>
+                  <p className="text-[10px] text-chrome/70 uppercase leading-relaxed mt-1">
+                    Loopback French Terry with custom hardware and tailored cuffs.
+                  </p>
+                </div>
+                <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest mt-4 block">
+                  EXPLORE JOGGERS →
+                </span>
+              </Link>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-4">
+              <Link
+                href="/shop"
+                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+              >
+                EXPLORE ALL COLLECTIONS
+              </Link>
+              <Link
+                href="/search"
+                className="bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+              >
+                SEARCH ARCHIVES →
+              </Link>
+            </div>
           </div>
         )}
       </div>
