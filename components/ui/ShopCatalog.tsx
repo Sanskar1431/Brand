@@ -7,6 +7,7 @@ import ProductCard from "./ProductCard";
 import FilterPanel from "./FilterPanel";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 interface ShopCatalogProps {
   initialProducts: Product[];
@@ -363,20 +364,92 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
           </div>
         ) : (
           /* Empty Search Result */
-          <div className="text-center py-32 border border-dashed border-border-subtle/50 rounded-2xl flex flex-col items-center justify-center space-y-6">
-            <p className="text-chrome uppercase tracking-widest text-sm">
-              NO MATCHING ITEMS IN ARCHIVES.
-            </p>
-            <button
-              onClick={() => {
-                setCategory(undefined);
-                setColor(undefined);
-                setSize(undefined);
-              }}
-              className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
-            >
-              RESET ALL FILTERS
-            </button>
+          <div className="text-center py-24 px-6 border border-dashed border-border-subtle/60 rounded-3xl flex flex-col items-center justify-center space-y-8 bg-bg-surface/10">
+            <div className="w-16 h-16 rounded-full bg-accent/10 border border-accent/30 flex items-center justify-center text-accent">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                strokeWidth="1.5"
+                stroke="currentColor"
+                className="w-8 h-8"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  d="m21 21-5.197-5.197m0 0A7.5 7.5 0 1 0 5.196 5.196a7.5 7.5 0 0 0 10.637 10.637Z"
+                />
+              </svg>
+            </div>
+
+            <div className="space-y-2 max-w-md">
+              <span className="text-[10px] text-accent tracking-[0.25em] font-mono font-bold uppercase block">
+                CATALOG ARCHIVE FILTER NOTICE
+              </span>
+              <h3 className="font-display text-2xl tracking-widest text-text-primary uppercase font-semibold">
+                NO MATCHING ARCHIVES FOUND
+              </h3>
+              <p className="text-chrome/70 text-xs leading-relaxed uppercase font-sans">
+                The current filter parameters yielded no product matches. Reset criteria or explore signature collection sectors below.
+              </p>
+            </div>
+
+            {/* Quick Recovery Filter Action Chips */}
+            <div className="space-y-3">
+              <span className="text-[9px] text-chrome/50 font-mono tracking-widest uppercase block">
+                QUICK RECOVERY GATEWAYS:
+              </span>
+              <div className="flex flex-wrap justify-center gap-2 max-w-lg">
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    if (categoryFilter) router.push("/shop");
+                  }}
+                  className="px-4 py-2 border border-accent/40 bg-accent/10 hover:bg-accent hover:text-white text-accent text-[9px] font-mono font-bold tracking-wider uppercase transition-all cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                >
+                  RESET ALL CRITERIA
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    setCategory("tshirt");
+                  }}
+                  className="px-4 py-2 border border-border-subtle bg-bg-surface hover:border-accent text-chrome hover:text-text-primary text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                >
+                  SIGNATURE TEES ONLY
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    setCategory("jogger");
+                  }}
+                  className="px-4 py-2 border border-border-subtle bg-bg-surface hover:border-accent text-chrome hover:text-text-primary text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                >
+                  PREMIUM JOGGERS ONLY
+                </button>
+              </div>
+            </div>
+
+            <div className="pt-2 flex flex-col sm:flex-row items-center gap-4">
+              <button
+                onClick={() => {
+                  reset();
+                  if (categoryFilter) router.push("/shop");
+                }}
+                className="bg-accent text-white hover:bg-accent-hover px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+              >
+                VIEW FULL ARCHIVE
+              </button>
+              <Link
+                href="/contact"
+                className="bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+              >
+                CONTACT CONCIERGE →
+              </Link>
+            </div>
           </div>
         )}
 
