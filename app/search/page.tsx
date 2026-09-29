@@ -15,6 +15,8 @@ function SearchResultsContent() {
   const [inputVal, setInputVal] = useState(query);
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
+  const [selectedCategory, setSelectedCategory] = useState<"ALL" | "tshirt" | "jogger">("ALL");
+  const [sortBy, setSortBy] = useState<"relevance" | "price-asc" | "price-desc" | "name">("relevance");
 
   useEffect(() => {
     setInputVal(query);
@@ -27,6 +29,21 @@ function SearchResultsContent() {
 
   const popularSearches = ["TEE", "JOGGER", "HEAVYWEIGHT", "RAW", "FRENCH TERRY"];
 
+  const teeCount = products.filter((p) => p.category === "tshirt").length;
+  const joggerCount = products.filter((p) => p.category === "jogger").length;
+
+  const displayProducts = [...products]
+    .filter((p) => {
+      if (selectedCategory === "ALL") return true;
+      return p.category === selectedCategory;
+    })
+    .sort((a, b) => {
+      if (sortBy === "price-asc") return a.price - b.price;
+      if (sortBy === "price-desc") return b.price - a.price;
+      if (sortBy === "name") return a.name.localeCompare(b.name);
+      return 0;
+    });
+
   return (
     <div className="w-full min-h-screen bg-bg-primary pt-32 pb-24 px-6 md:px-12">
       <div className="max-w-[1600px] mx-auto">
@@ -38,7 +55,7 @@ function SearchResultsContent() {
             &ldquo;{query}&rdquo;
           </h1>
           <p className="text-chrome/50 text-xs sm:text-sm tracking-wider uppercase mt-2">
-            {loading ? "SEARCHING ARCHIVES..." : `FOUND ${products.length} PRODUCTS`}
+            {loading ? "SEARCHING ARCHIVES..." : `FOUND ${displayProducts.length} PRODUCTS (TOTAL: ${products.length})`}
           </p>
         </div>
 
@@ -74,7 +91,7 @@ function SearchResultsContent() {
         </div>
 
         {/* Popular Search Suggestion Tags */}
-        <div className="flex flex-wrap items-center gap-2 mb-10 select-none">
+        <div className="flex flex-wrap items-center gap-2 mb-8 select-none">
           <span className="text-[10px] text-chrome/60 uppercase tracking-widest font-mono mr-1">
             POPULAR:
           </span>
@@ -97,16 +114,69 @@ function SearchResultsContent() {
           })}
         </div>
 
+        {/* Category & Sorting Controls Bar */}
+        {!loading && products.length > 0 && (
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 pb-6 mb-8 border-b border-border-subtle/30 select-none">
+            {/* Category Tabs */}
+            <div className="flex flex-wrap items-center gap-2">
+              {[
+                { label: "ALL", value: "ALL" as const, count: products.length },
+                { label: "SIGNATURE TEES", value: "tshirt" as const, count: teeCount },
+                { label: "PREMIUM JOGGERS", value: "jogger" as const, count: joggerCount },
+              ].map((tab) => {
+                const isActive = selectedCategory === tab.value;
+                return (
+                  <button
+                    key={tab.value}
+                    type="button"
+                    onClick={() => setSelectedCategory(tab.value)}
+                    className={`px-3.5 py-1.5 text-[9px] font-mono font-bold tracking-wider uppercase border transition-all cursor-pointer flex items-center gap-1.5 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                      isActive
+                        ? "bg-accent border-accent text-white shadow-md shadow-accent/20"
+                        : "bg-bg-surface/50 border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
+                    }`}
+                  >
+                    <span>{tab.label}</span>
+                    <span className={`px-1.5 py-0.2 rounded-full text-[8px] font-mono ${
+                      isActive ? "bg-white text-accent font-bold" : "bg-bg-primary text-chrome/70"
+                    }`}>
+                      {tab.count}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+
+            {/* Sorting Select */}
+            <div className="flex items-center gap-2 text-left">
+              <span className="text-[9px] text-chrome/60 font-mono tracking-widest uppercase">
+                SORT:
+              </span>
+              <select
+                value={sortBy}
+                onChange={(e) => setSortBy(e.target.value as any)}
+                aria-label="Sort search results"
+                className="bg-bg-surface border border-border-subtle text-text-primary text-[9px] font-mono uppercase tracking-wider py-1.5 px-2.5 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] cursor-pointer"
+              >
+                <option value="relevance">RELEVANCE</option>
+                <option value="price-asc">PRICE: LOW TO HIGH</option>
+                <option value="price-desc">PRICE: HIGH TO LOW</option>
+                <option value="name">NAME (A-Z)</option>
+              </select>
+            </div>
+          </div>
+        )}
+
         {loading ? (
           <div className="flex flex-col items-center justify-center py-32 space-y-4">
             {/* Elegant minimalist loader */}
             <div className="w-8 h-8 border-2 border-accent border-t-transparent rounded-full animate-spin" />
             <p className="text-xs uppercase tracking-[0.25em] text-chrome">QUERING ARCHIVES...</p>
           </div>
-        ) : products.length > 0 ? (
+        ) : displayProducts.length > 0 ? (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             <AnimatePresence mode="popLayout">
-              {products.map((product, index) => (
+              {displayProducts.map((product, index) => (
                 <motion.div
                   key={product.id}
                   layout
