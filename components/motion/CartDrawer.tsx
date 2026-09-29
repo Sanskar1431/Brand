@@ -21,6 +21,37 @@ export default function CartDrawer() {
   const { formatPrice } = useCurrencyStore();
   const { addItem: addToWishlist } = useWishlistStore();
   const [recommendations, setRecommendations] = useState<Product[]>([]);
+  const [promoCodeInput, setPromoCodeInput] = useState("");
+  const [appliedPromo, setAppliedPromo] = useState<{ code: string; percent: number } | null>(null);
+  const [isPromoOpen, setIsPromoOpen] = useState(false);
+
+  const handleApplyPromo = () => {
+    const code = promoCodeInput.trim().toUpperCase();
+    if (!code) {
+      addToast("PLEASE ENTER A PROMO CODE", "error");
+      return;
+    }
+    if (code === "PRINCE10") {
+      setAppliedPromo({ code: "PRINCE10", percent: 10 });
+      addToast("PROMO CODE 'PRINCE10' APPLIED (10% OFF)", "success");
+      setPromoCodeInput("");
+    } else if (code === "VIPARCHIVE" || code === "KINGDOM15") {
+      setAppliedPromo({ code, percent: 15 });
+      addToast(`VIP PROMO CODE '${code}' APPLIED (15% OFF)`, "success");
+      setPromoCodeInput("");
+    } else if (code === "ROYALTY20") {
+      setAppliedPromo({ code: "ROYALTY20", percent: 20 });
+      addToast("EXCLUSIVE PROMO 'ROYALTY20' APPLIED (20% OFF)", "success");
+      setPromoCodeInput("");
+    } else {
+      addToast("INVALID OR EXPIRED CONCIERGE PROMO CODE", "error");
+    }
+  };
+
+  const handleRemovePromo = () => {
+    setAppliedPromo(null);
+    addToast("PROMO VOUCHER REMOVED", "info");
+  };
 
   const handleTransferToWishlist = (item: any) => {
     addToWishlist(item.product);
@@ -32,6 +63,7 @@ export default function CartDrawer() {
 
   const handleClearCart = () => {
     clearCart();
+    setAppliedPromo(null);
     addToast("ALL ITEMS WIPED FROM CART ARCHIVE", "info");
   };
 
@@ -291,51 +323,145 @@ export default function CartDrawer() {
             </div>
 
             {/* Footer Summary */}
-            {items.length > 0 && (
-              <div className="p-6 border-t border-border-subtle bg-bg-primary/50 space-y-4">
-                {/* Gift wrapping toggle */}
-                <div className="border border-border-subtle/40 p-3 bg-bg-surface/20 flex items-center justify-between">
-                  <div className="flex flex-col text-left">
-                    <span className="text-[10px] text-text-primary tracking-wider uppercase font-bold">
-                      SIGNATURE GIFT BOX PACKAGING
-                    </span>
-                    <span className="text-[9px] text-chrome uppercase font-mono">
-                      + {formatPrice(25000)} // PREMIUM BOX & EMBOSSED ARCHIVE TICKET
-                    </span>
-                  </div>
-                  <input
-                    type="checkbox"
-                    checked={giftWrap}
-                    onChange={(e) => {
-                      toggleGiftWrap();
-                      addToast(
-                        e.target.checked
-                          ? "GIFT PACKAGING ADDED TO DISPATCH PROTOCOL"
-                          : "GIFT PACKAGING REMOVED",
-                        "info"
-                      );
-                    }}
-                    className="accent-accent w-4 h-4 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-                  />
-                </div>
+            {items.length > 0 && (() => {
+              const subtotalBeforeDiscount = getTotalPrice() + (giftWrap ? 25000 : 0);
+              const discountAmount = appliedPromo
+                ? Math.round((getTotalPrice() * appliedPromo.percent) / 100)
+                : 0;
+              const finalSubtotal = Math.max(0, subtotalBeforeDiscount - discountAmount);
 
-                <div className="flex justify-between items-center text-sm uppercase tracking-wider font-semibold">
-                  <span>Subtotal</span>
-                  <span className="font-sans tabular-nums">
-                    {formatPrice(getTotalPrice() + (giftWrap ? 25000 : 0))}
-                  </span>
+              return (
+                <div className="p-6 border-t border-border-subtle bg-bg-primary/50 space-y-4">
+                  {/* Gift wrapping toggle */}
+                  <div className="border border-border-subtle/40 p-3 bg-bg-surface/20 flex items-center justify-between">
+                    <div className="flex flex-col text-left">
+                      <span className="text-[10px] text-text-primary tracking-wider uppercase font-bold">
+                        SIGNATURE GIFT BOX PACKAGING
+                      </span>
+                      <span className="text-[9px] text-chrome uppercase font-mono">
+                        + {formatPrice(25000)} // PREMIUM BOX & EMBOSSED ARCHIVE TICKET
+                      </span>
+                    </div>
+                    <input
+                      type="checkbox"
+                      checked={giftWrap}
+                      onChange={(e) => {
+                        toggleGiftWrap();
+                        addToast(
+                          e.target.checked
+                            ? "GIFT PACKAGING ADDED TO DISPATCH PROTOCOL"
+                            : "GIFT PACKAGING REMOVED",
+                          "info"
+                        );
+                      }}
+                      className="accent-accent w-4 h-4 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                    />
+                  </div>
+
+                  {/* Promo / Concierge Voucher Section */}
+                  <div className="border border-border-subtle/40 p-3 bg-bg-surface/20 space-y-2.5">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[10px] text-accent tracking-wider uppercase font-bold font-mono">
+                        CONCIERGE VOUCHER PROTOCOL
+                      </span>
+                      {appliedPromo && (
+                        <button
+                          type="button"
+                          onClick={handleRemovePromo}
+                          className="text-[9px] text-error hover:underline font-mono uppercase font-bold cursor-pointer"
+                        >
+                          REMOVE ({appliedPromo.code})
+                        </button>
+                      )}
+                    </div>
+
+                    {appliedPromo ? (
+                      <div className="flex items-center justify-between p-2 bg-accent/10 border border-accent/30 text-[9px] font-mono">
+                        <span className="text-accent font-bold">
+                          ✓ {appliedPromo.code} ({appliedPromo.percent}% SAVINGS APPLIED)
+                        </span>
+                        <span className="text-accent font-bold">
+                          -{formatPrice(discountAmount)}
+                        </span>
+                      </div>
+                    ) : (
+                      <div className="space-y-2">
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="ENTER PROMO CODE (e.g. PRINCE10)..."
+                            value={promoCodeInput}
+                            onChange={(e) => setPromoCodeInput(e.target.value.toUpperCase())}
+                            className="flex-1 bg-bg-surface border border-border-subtle p-2 text-xs outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                            maxLength={15}
+                          />
+                          <button
+                            type="button"
+                            onClick={handleApplyPromo}
+                            className="bg-bg-primary hover:bg-bg-surface border border-border-subtle hover:border-accent text-chrome hover:text-text-primary px-3.5 py-2 text-[10px] font-bold uppercase tracking-wider transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          >
+                            APPLY
+                          </button>
+                        </div>
+                        <div className="flex items-center gap-1.5 pt-0.5">
+                          <span className="text-[8px] text-chrome/50 font-mono uppercase tracking-widest">
+                            TRY:
+                          </span>
+                          {["PRINCE10", "VIPARCHIVE"].map((sample) => (
+                            <button
+                              key={sample}
+                              type="button"
+                              onClick={() => {
+                                setPromoCodeInput(sample);
+                              }}
+                              className="text-[8px] font-mono uppercase tracking-wider px-1.5 py-0.5 border border-border-subtle/50 text-chrome/70 hover:text-accent hover:border-accent cursor-pointer transition-colors"
+                            >
+                              {sample}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+
+                  {/* Subtotal breakdown */}
+                  <div className="space-y-1 pt-1">
+                    {appliedPromo && (
+                      <div className="flex justify-between items-center text-xs text-chrome uppercase tracking-wider">
+                        <span>Standard Archive Subtotal</span>
+                        <span className="font-sans tabular-nums line-through opacity-70">
+                          {formatPrice(subtotalBeforeDiscount)}
+                        </span>
+                      </div>
+                    )}
+                    {appliedPromo && (
+                      <div className="flex justify-between items-center text-xs text-accent uppercase tracking-wider font-semibold">
+                        <span>Concierge Discount ({appliedPromo.percent}%)</span>
+                        <span className="font-sans tabular-nums">
+                          -{formatPrice(discountAmount)}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex justify-between items-center text-sm uppercase tracking-wider font-semibold pt-1">
+                      <span>Final Total</span>
+                      <span className="font-sans tabular-nums font-bold text-text-primary">
+                        {formatPrice(finalSubtotal)}
+                      </span>
+                    </div>
+                  </div>
+
+                  <p className="text-[10px] text-chrome uppercase tracking-wider leading-relaxed">
+                    Shipping, taxes, and duties calculated at checkout.
+                  </p>
+                  <button
+                    onClick={handleCheckout}
+                    className="w-full bg-accent text-white py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                  >
+                    SECURE CHECKOUT
+                  </button>
                 </div>
-                <p className="text-[10px] text-chrome uppercase tracking-wider leading-relaxed">
-                  Shipping, taxes, and duties calculated at checkout.
-                </p>
-                <button
-                  onClick={handleCheckout}
-                  className="w-full bg-accent text-white py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
-                >
-                  SECURE CHECKOUT
-                </button>
-              </div>
-            )}
+              );
+            })()}
           </motion.div>
 
           {/* Full-bleed Checkout Transition Wipe */}
