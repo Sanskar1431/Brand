@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { useToastStore } from "@/lib/store/toastStore";
+import { useCartStore } from "@/lib/store/cartStore";
+import { useUIStore } from "@/lib/store/uiStore";
+import { Product } from "@/lib/products/schema";
 
 interface OrderCountdownProps {
   status: string;
@@ -52,8 +55,41 @@ export default function ProfilePage() {
   const [orderSearchQuery, setOrderSearchQuery] = useState("");
   const [statusFilter, setStatusFilter] = useState<"ALL" | "DELIVERED" | "IN TRANSIT">("ALL");
   const { addToast } = useToastStore();
+  const { addItem } = useCartStore();
+  const { setOpenCart } = useUIStore();
   const [refreshingOrderId, setRefreshingOrderId] = useState<string | null>(null);
   const [refreshLatency, setRefreshLatency] = useState(1.2);
+
+  const handleCopyTracking = (orderId: string) => {
+    if (typeof window !== "undefined" && navigator.clipboard) {
+      const trackingHash = `TRK-${orderId}-SECURE`;
+      navigator.clipboard.writeText(trackingHash);
+      addToast(`TRACKING PROTOCOL HASH COPIED: ${trackingHash}`, "success");
+    }
+  };
+
+  const handleReorder = (order: any) => {
+    const mockProduct: Product = {
+      id: order.id,
+      slug: order.item.toLowerCase().replace(/ /g, "-"),
+      name: order.item,
+      price: order.price,
+      currency: "INR",
+      category: order.item.toUpperCase().includes("TEE") ? "tshirt" : "jogger",
+      fabric: "PREMIUM HEAVYWEIGHT",
+      fit: "oversized",
+      colors: [{ name: order.color, hex: "#1a1a1a", swatchImage: "" }],
+      sizes: ["S", "M", "L", "XL"],
+      images: { hero: "/images/products/tee-black-hero.png", gallery: [] },
+      description: "Re-ordered garment from client transaction archives.",
+      craftsmanship: ["Luxury Reinforced Seams", "Pre-shrunk Heavyweight Terry"],
+      isSignature: true,
+      stock: { [`${order.color}-${order.size}`]: 10 },
+    };
+    addItem(mockProduct, order.color, order.size, 1);
+    addToast(`${order.item} (${order.color} / ${order.size}) ADDED TO CART`, "success");
+    setOpenCart(true);
+  };
 
   useEffect(() => {
     let interval: any;
@@ -459,12 +495,26 @@ export default function ProfilePage() {
                           </div>
                         </div>
 
-                        {/* Invoice download simulation */}
-                        <div className="border-t border-border-subtle/20 pt-4">
+                        {/* Order Actions: Reorder, Copy Tracking Hash, Download Invoice */}
+                        <div className="border-t border-border-subtle/20 pt-4 grid grid-cols-1 sm:grid-cols-3 gap-3">
+                          <button
+                            type="button"
+                            onClick={() => handleReorder(order)}
+                            className="bg-accent hover:bg-accent-hover text-white py-3 px-3 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                          >
+                            <span>⚡ RE-ORDER TO CART</span>
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => handleCopyTracking(order.id)}
+                            className="bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent py-3 px-3 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          >
+                            <span>COPY TRACKING HASH</span>
+                          </button>
                           <button
                             type="button"
                             onClick={() => handleDownloadInvoice(order.id)}
-                            className="w-full bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent py-3 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                            className="bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent py-3 px-3 text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer flex items-center justify-center gap-1.5 outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
@@ -472,7 +522,7 @@ export default function ProfilePage() {
                               viewBox="0 0 24 24"
                               strokeWidth="1.5"
                               stroke="currentColor"
-                              className="w-4 h-4"
+                              className="w-3.5 h-3.5"
                             >
                               <path
                                 strokeLinecap="round"
@@ -480,7 +530,7 @@ export default function ProfilePage() {
                                 d="M19.5 14.25v-2.625a3.375 3.375 0 0 0-3.375-3.375h-1.5A1.125 1.125 0 0 1 13.5 7.125v-1.5a3.375 3.375 0 0 0-3.375-3.375H8.25m.75 12 3 3m0 0 3-3m-3 3v-6m-1.5-9H5.625c-.621 0-1.125.504-1.125 1.125v17.25c0 .621.504 1.125 1.125 1.125h12.75c.621 0 1.125-.504 1.125-1.125V11.25a9 9 0 0 0-9-9Z"
                               />
                             </svg>
-                            DOWNLOAD INVOICE PROTOCOL
+                            <span>INVOICE PDF</span>
                           </button>
                         </div>
 
