@@ -182,13 +182,64 @@ export default function CheckoutPage() {
             >
               {/* Checkout Form (7 cols) */}
               <form onSubmit={handleSubmit} className="lg:col-span-7 space-y-8 text-left">
-                <div>
-                  <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block mb-1">
-                    SECURE TRANSACTIONS
-                  </span>
-                  <h1 className="font-display text-3xl sm:text-4xl tracking-widest uppercase font-semibold">
-                    CHECKOUT
-                  </h1>
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4">
+                  <div>
+                    <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block mb-1">
+                      SECURE TRANSACTIONS
+                    </span>
+                    <h1 className="font-display text-3xl sm:text-4xl tracking-widest uppercase font-semibold">
+                      CHECKOUT
+                    </h1>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setFormData({
+                          email: "sanskar1431@users.noreply.github.com",
+                          name: "Sanskar Verma",
+                          address: "42 Kingsway Boulevard, Luxury Quarter",
+                          city: "Mumbai",
+                          postalCode: "400001",
+                          cardNumber: "4242 •••• •••• 4242",
+                          cardExpiry: "12/28",
+                          cardCvc: "888",
+                        });
+                        setPanNumber("SANSR1431P");
+                        setPanVerified(true);
+                        setPanError("");
+                        addToast("TEST PROTOCOL CREDENTIALS & VERIFIED PAN APPLIED", "success");
+                      }}
+                      className="px-3 py-1.5 bg-accent/10 border border-accent/40 hover:bg-accent hover:text-white text-accent text-[9px] font-mono font-bold tracking-wider uppercase transition-all cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                    >
+                      ⚡ AUTO-FILL TEST DATA
+                    </button>
+                    {(formData.email || formData.name || formData.address) && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setFormData({
+                            email: "",
+                            name: "",
+                            address: "",
+                            city: "",
+                            postalCode: "",
+                            cardNumber: "",
+                            cardExpiry: "",
+                            cardCvc: "",
+                          });
+                          setPanNumber("");
+                          setPanVerified(false);
+                          setPanError("");
+                          setConciergeNotes("");
+                          addToast("CHECKOUT FORM DRAFT RESET", "info");
+                        }}
+                        className="px-3 py-1.5 border border-border-subtle bg-bg-surface hover:border-error text-chrome hover:text-error text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer outline-none focus:border-error focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
+                      >
+                        RESET
+                      </button>
+                    )}
+                  </div>
                 </div>
 
                 {/* Email Section */}
@@ -363,6 +414,36 @@ export default function CheckoutPage() {
                         ✓ PAN VERIFIED PROTOCOL ACTIVE
                       </p>
                     )}
+                    {/* Quick PAN Presets */}
+                    <div className="flex flex-wrap items-center gap-1.5 pt-1 select-none">
+                      <span className="text-[8.5px] text-chrome/60 font-mono uppercase tracking-widest mr-1">
+                        QUICK PAN PRESETS:
+                      </span>
+                      {[
+                        { label: "SANSR1431P (MEMBER)", pan: "SANSR1431P" },
+                        { label: "PRNCE1990A (VIP)", pan: "PRNCE1990A" },
+                        { label: "GUEST9999F (GUEST)", pan: "GUEST9999F" },
+                      ].map((preset) => (
+                        <button
+                          key={preset.pan}
+                          type="button"
+                          onClick={() => {
+                            setPanNumber(preset.pan);
+                            setPanVerified(true);
+                            setPanError("");
+                            addToast(`PAN PRESET APPLIED & VERIFIED: ${preset.pan}`, "success");
+                          }}
+                          className={`text-[8.5px] font-mono tracking-wider px-2 py-0.5 border transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                            panNumber === preset.pan && panVerified
+                              ? "border-success/50 bg-success/15 text-success font-bold"
+                              : "border-border-subtle/50 text-chrome/70 hover:border-chrome hover:text-text-primary bg-bg-surface/30"
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      ))}
+                    </div>
+
                     <p className="text-[9px] text-chrome/50 uppercase tracking-widest leading-relaxed">
                       * Tax Compliance simulated validation is required for high value archive transactions. Valid mock PAN examples: <span className="font-mono text-chrome font-bold select-all">SANSR1431P</span>, <span className="font-mono text-chrome font-bold select-all">PRNCE1990A</span>.
                     </p>
