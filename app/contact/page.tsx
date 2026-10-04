@@ -35,6 +35,9 @@ const faqs = [
 export default function ContactPage() {
   const [submitStatus, setSubmitStatus] = useState<"idle" | "loading" | "success">("idle");
   const [activeFaq, setActiveFaq] = useState<number | null>(null);
+  const [requestCallback, setRequestCallback] = useState(false);
+  const [selectedTimeSlot, setSelectedTimeSlot] = useState("MORNING (09:00 - 12:00)");
+  const [selectedDeskLocation, setSelectedDeskLocation] = useState("LONDON (GMT)");
   const { addToast } = useToastStore();
 
   const {
@@ -58,8 +61,16 @@ export default function ContactPage() {
     // Simulate network submission delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setSubmitStatus("success");
-    addToast("INQUIRY SUBMITTED TO CONCIERGE QUEUE", "success");
+    if (requestCallback) {
+      addToast(
+        `INQUIRY & VIP CALLBACK SCHEDULED (${selectedDeskLocation} / ${selectedTimeSlot})`,
+        "success"
+      );
+    } else {
+      addToast("INQUIRY SUBMITTED TO CONCIERGE QUEUE", "success");
+    }
     reset();
+    setRequestCallback(false);
     setTimeout(() => setSubmitStatus("idle"), 5000);
   };
 
@@ -108,6 +119,70 @@ export default function ContactPage() {
                 </motion.button>
               ))}
             </div>
+          </div>
+
+          {/* Global Atelier Concierge Operating Desks */}
+          <div className="space-y-3 pt-6 border-t border-border-subtle/30">
+            <div className="flex justify-between items-center">
+              <h4 className="text-[10px] text-accent tracking-[0.2em] font-bold uppercase">
+                GLOBAL ATELIER OPERATING DESKS
+              </h4>
+              <span className="text-[8px] font-mono text-chrome tracking-widest uppercase">
+                24/7 ROTATIONAL COVERAGE
+              </span>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+              {[
+                { city: "LONDON ATELIER", timezone: "GMT+0", hours: "09:00 - 18:00 GMT", status: "DESK ACTIVE" },
+                { city: "NEW YORK DESK", timezone: "EST", hours: "10:00 - 19:00 EST", status: "DESK ACTIVE" },
+                { city: "TOKYO VAULT", timezone: "JST", hours: "09:00 - 18:00 JST", status: "DESK ACTIVE" },
+                { city: "MUMBAI DISPATCH", timezone: "IST", hours: "10:00 - 20:00 IST", status: "DESK ACTIVE" },
+              ].map((desk, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 bg-bg-surface/50 border border-border-subtle/50 space-y-1 text-left"
+                >
+                  <div className="flex justify-between items-center">
+                    <span className="text-[10px] font-mono font-bold text-text-primary uppercase">
+                      {desk.city}
+                    </span>
+                    <span className="text-[8px] font-mono text-accent font-bold tracking-wider flex items-center gap-1">
+                      <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+                      {desk.status}
+                    </span>
+                  </div>
+                  <div className="flex justify-between text-[9px] font-mono text-chrome/70 uppercase">
+                    <span>TZ: {desk.timezone}</span>
+                    <span>{desk.hours}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+
+          {/* Priority Hotline & Encrypted Chat Trigger Trays */}
+          <div className="space-y-2 pt-2">
+            <button
+              type="button"
+              onClick={() => {
+                if (typeof window !== "undefined" && navigator.clipboard) {
+                  navigator.clipboard.writeText("+1-800-840-7762");
+                  addToast("PRIORITY CONCIERGE HOTLINE COPIED: +1 (800) 840-PRNC", "success");
+                }
+              }}
+              className="w-full p-3 bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-left transition-all cursor-pointer flex items-center justify-between outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] group"
+            >
+              <div>
+                <span className="text-[8px] font-mono text-chrome block uppercase">VIP INSTANT CALL LINE</span>
+                <span className="text-[10px] font-mono font-bold text-text-primary group-hover:text-accent transition-colors">
+                  +1 (800) 840-PRNC (TOLL-FREE)
+                </span>
+              </div>
+              <span className="text-[9px] font-mono text-accent uppercase font-bold opacity-80 group-hover:opacity-100">
+                COPY ⎘
+              </span>
+            </button>
           </div>
 
           {/* FAQs Accordion Pattern (Section 7.3.2) */}
@@ -295,6 +370,86 @@ export default function ContactPage() {
                   <p className="text-[10px] text-error uppercase font-semibold tracking-wider mt-1">
                     {errors.message.message}
                   </p>
+                )}
+              </div>
+
+              {/* VIP Callback Protocol Selector (Optional) */}
+              <div className="border border-border-subtle/50 p-4 bg-bg-primary/40 space-y-3">
+                <div className="flex items-center justify-between">
+                  <label className="flex items-center gap-2 cursor-pointer select-none">
+                    <input
+                      type="checkbox"
+                      checked={requestCallback}
+                      onChange={(e) => {
+                        setRequestCallback(e.target.checked);
+                        if (e.target.checked) {
+                          addToast("VIP CALL BACK PROTOCOL ATTACHED", "info");
+                        }
+                      }}
+                      className="accent-accent w-4 h-4 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                    />
+                    <span className="text-[10px] font-mono font-bold text-text-primary uppercase tracking-wider">
+                      REQUEST SCHEDULED VIP CALL BACK
+                    </span>
+                  </label>
+                  <span className="text-[8px] font-mono text-accent uppercase font-bold tracking-widest">
+                    OPTIONAL
+                  </span>
+                </div>
+
+                {requestCallback && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    exit={{ opacity: 0, height: 0 }}
+                    className="space-y-3 pt-2 border-t border-border-subtle/30"
+                  >
+                    <div>
+                      <span className="text-[8px] font-mono text-chrome block uppercase mb-1.5">
+                        PREFERRED TIME WINDOW
+                      </span>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5">
+                        {["MORNING (09:00 - 12:00)", "AFTERNOON (13:00 - 17:00)", "EVENING (18:00 - 21:00)"].map(
+                          (slot) => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => setSelectedTimeSlot(slot)}
+                              className={`p-2 text-[8px] font-mono font-bold uppercase tracking-wider border transition-all cursor-pointer text-center outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                                selectedTimeSlot === slot
+                                  ? "bg-accent text-white border-accent"
+                                  : "bg-bg-surface text-chrome border-border-subtle hover:border-accent hover:text-accent"
+                              }`}
+                            >
+                              {slot}
+                            </button>
+                          )
+                        )}
+                      </div>
+                    </div>
+
+                    <div>
+                      <span className="text-[8px] font-mono text-chrome block uppercase mb-1.5">
+                        DESK TIMEZONE
+                      </span>
+                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-1.5">
+                        {["LONDON (GMT)", "NEW YORK (EST)", "MUMBAI (IST)", "TOKYO (JST)"].map((tz) => (
+                          <button
+                            key={tz}
+                            type="button"
+                            onClick={() => setSelectedDeskLocation(tz)}
+                            className={`p-2 text-[8px] font-mono font-bold uppercase tracking-wider border transition-all cursor-pointer text-center outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                              selectedDeskLocation === tz
+                                ? "bg-accent text-white border-accent"
+                                : "bg-bg-surface text-chrome border-border-subtle hover:border-accent hover:text-accent"
+                            }`}
+                          >
+                            {tz}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  </motion.div>
                 )}
               </div>
 
