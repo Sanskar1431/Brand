@@ -251,8 +251,69 @@ export default function ProfilePage() {
 
               <div>
                 <span className="text-[10px] text-chrome uppercase tracking-widest block">Client Tier</span>
-                <p className="text-xs font-mono uppercase text-accent font-bold tracking-wider">
-                  PRINCE ARCHIVE MEMBER // TIER 01
+                <div className="flex items-center justify-between mt-0.5">
+                  <p className="text-xs font-mono uppercase text-accent font-bold tracking-wider">
+                    TIER 01: ARCHIVIST
+                  </p>
+                  <span className="text-[8px] font-mono px-2 py-0.5 bg-accent/15 border border-accent/30 text-accent font-bold">
+                    ACTIVE VIP
+                  </span>
+                </div>
+              </div>
+
+              {/* Tier 02 Sovereign Spend Progression */}
+              <div className="space-y-1.5 bg-bg-primary/50 p-3 border border-border-subtle/50">
+                <div className="flex justify-between text-[8px] font-mono uppercase tracking-wider">
+                  <span className="text-chrome">PATHWAY TO TIER 02 (SOVEREIGN)</span>
+                  <span className="text-accent font-bold">65%</span>
+                </div>
+                <div className="w-full h-1.5 bg-border-subtle/30 overflow-hidden">
+                  <div className="h-full bg-accent w-[65%]" />
+                </div>
+                <span className="text-[8px] font-mono text-chrome/60 block uppercase">
+                  ₹26,000 SPENT // ₹14,000 TO UNLOCK NEXT LEVEL
+                </span>
+              </div>
+
+              {/* VIP Unlocked Privileges */}
+              <div className="space-y-2 pt-2 border-t border-border-subtle/30">
+                <span className="text-[9px] text-accent font-mono uppercase tracking-widest block font-bold">
+                  UNLOCKED VIP PRIVILEGES
+                </span>
+                <ul className="space-y-1.5 text-[9px] font-mono text-chrome/90 uppercase tracking-wider">
+                  <li className="flex items-center gap-1.5 text-text-primary">
+                    <span className="text-accent font-bold">✓</span> 24-HR EARLY VAULT DROP ACCESS
+                  </li>
+                  <li className="flex items-center gap-1.5 text-text-primary">
+                    <span className="text-accent font-bold">✓</span> COMPLIMENTARY INSURED AIR DISPATCH
+                  </li>
+                  <li className="flex items-center gap-1.5 text-text-primary">
+                    <span className="text-accent font-bold">✓</span> DEDICATED ATELIER CONCIERGE LINE
+                  </li>
+                </ul>
+              </div>
+
+              {/* VIP Client Archive Pass Key */}
+              <div className="p-3 bg-bg-primary/70 border border-accent/40 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-[8px] font-mono text-accent uppercase font-bold tracking-widest">
+                    CLIENT ARCHIVE PASS HASH
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined" && navigator.clipboard) {
+                        navigator.clipboard.writeText("VIP-SANSKAR-8839-AUTH");
+                        addToast("VIP CLIENT ARCHIVE PASS KEY COPIED: VIP-SANSKAR-8839-AUTH", "success");
+                      }
+                    }}
+                    className="text-[8px] font-mono font-bold text-accent hover:underline uppercase cursor-pointer"
+                  >
+                    COPY KEY ⎘
+                  </button>
+                </div>
+                <p className="text-[10px] font-mono text-text-primary font-bold uppercase tracking-wider select-all">
+                  VIP-SANSKAR-8839-AUTH
                 </p>
               </div>
 
