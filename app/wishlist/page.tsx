@@ -17,18 +17,40 @@ export default function WishlistPage() {
   const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingPill, setLoadingPill] = useState<string | null>(null);
+  const [activeCategory, setActiveCategory] = useState<"ALL" | "tshirt" | "jogger">("ALL");
+  const [batchDefaultSize, setBatchDefaultSize] = useState<"S" | "M" | "L" | "XL">("M");
 
-  const filteredItems = items.filter((product) =>
-    product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    product.category.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredItems = items.filter((product) => {
+    const matchesCategory = activeCategory === "ALL" || product.category === activeCategory;
+    const matchesSearch =
+      product.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      product.category.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCategory && matchesSearch;
+  });
 
+  const handleShareWishlist = () => {
+    if (typeof window !== "undefined" && navigator.clipboard) {
+      const shareUrl = `${window.location.origin}/wishlist?vault=WL-${Math.random().toString(36).substring(2, 9).toUpperCase()}`;
+      navigator.clipboard.writeText(shareUrl);
+      addToast("WISHLIST SHARE LINK COPIED TO CLIPBOARD", "success");
+    }
+  };
 
+  const handleExportWishlist = () => {
+    const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(items, null, 2));
+    const downloadAnchor = document.createElement("a");
+    downloadAnchor.setAttribute("href", dataStr);
+    downloadAnchor.setAttribute("download", `prince-wishlist-archive-${Date.now()}.json`);
+    document.body.appendChild(downloadAnchor);
+    downloadAnchor.click();
+    downloadAnchor.remove();
+    addToast("WISHLIST ARCHIVE PROTOCOL EXPORTED", "success");
+  };
 
   return (
     <div className="w-full min-h-screen bg-bg-primary pt-32 pb-24 px-6 md:px-12">
       <div className="max-w-[1600px] mx-auto">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-12">
+        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-6 mb-10">
           <div className="text-left">
             <span className="text-xs text-accent tracking-[0.2em] font-bold uppercase block mb-1">
               MY ARCHIVE
@@ -37,25 +59,39 @@ export default function WishlistPage() {
               YOUR WISHLIST
             </h1>
             <p className="text-chrome/50 text-xs sm:text-sm tracking-wider uppercase mt-2">
-              {items.length} ITEMS SAVED
+              {items.length} {items.length === 1 ? "ITEM" : "ITEMS"} SAVED IN CLIENT VAULT
             </p>
           </div>
 
           {items.length > 0 && (
-            <div className="flex flex-wrap items-center gap-3">
+            <div className="flex flex-wrap items-center gap-2.5">
+              <button
+                type="button"
+                onClick={handleShareWishlist}
+                className="px-4 py-3 bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] flex items-center gap-1.5"
+              >
+                <span>SHARE ARCHIVE ⎘</span>
+              </button>
+              <button
+                type="button"
+                onClick={handleExportWishlist}
+                className="px-4 py-3 bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] flex items-center gap-1.5"
+              >
+                <span>EXPORT JSON ↓</span>
+              </button>
               <button
                 type="button"
                 onClick={() => {
                   items.forEach((it) => {
                     const activeColor = selectedColors[it.id] || it.colors[0].name;
-                    addItem(it, activeColor, "M", 1);
+                    addItem(it, activeColor, batchDefaultSize, 1);
                   });
-                  addToast(`ALL ${items.length} ARCHIVES TRANSFERRED TO CART`, "success");
+                  addToast(`ALL ${items.length} ARCHIVES (SIZE ${batchDefaultSize}) TRANSFERRED TO CART`, "success");
                   setOpenCart(true);
                 }}
-                className="px-5 py-3 bg-bg-surface hover:bg-accent hover:text-white border border-border-subtle hover:border-accent text-text-primary text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:bg-accent focus:text-white focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                className="px-5 py-3 bg-accent text-white hover:bg-accent-hover text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
               >
-                ADD ALL TO CART
+                ADD ALL TO CART ({batchDefaultSize})
               </button>
               <button
                 type="button"
@@ -63,32 +99,82 @@ export default function WishlistPage() {
                   clearWishlist();
                   addToast("WISHLIST ARCHIVES CLEARED", "info");
                 }}
-                className="px-5 py-3 bg-bg-surface hover:bg-error hover:text-white border border-border-subtle hover:border-error text-chrome hover:text-white text-[10px] font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md outline-none focus:bg-error focus:text-white focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
+                className="px-4 py-3 bg-bg-surface hover:bg-error hover:text-white border border-border-subtle hover:border-error text-chrome hover:text-white text-[10px] font-bold uppercase tracking-wider transition-all cursor-pointer shadow-md outline-none focus:bg-error focus:text-white focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
               >
-                CLEAR WISHLIST
+                CLEAR
               </button>
             </div>
           )}
         </div>
 
         {items.length > 0 && (
-          <div className="mb-8 max-w-md text-left relative">
-            <input
-              type="text"
-              placeholder="SEARCH WISHLIST ARCHIVES..."
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-bg-surface border border-border-subtle p-3 pr-10 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-            />
-            {searchQuery && (
-              <button
-                onClick={() => setSearchQuery("")}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] font-bold uppercase transition-colors cursor-pointer p-1 outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded-full"
-                title="CLEAR SEARCH"
-              >
-                ✕
-              </button>
-            )}
+          <div className="mb-8 space-y-4 text-left">
+            {/* Category Filter Tabs & Batch Size Selector */}
+            <div className="flex flex-wrap items-center justify-between gap-4 border-y border-border-subtle/30 py-3">
+              <div className="flex items-center gap-2">
+                {[
+                  { id: "ALL", label: "ALL ARCHIVES", count: items.length },
+                  { id: "tshirt", label: "SIGNATURE TEES", count: items.filter((i) => i.category === "tshirt").length },
+                  { id: "jogger", label: "PREMIUM JOGGERS", count: items.filter((i) => i.category === "jogger").length },
+                ].map((tab) => (
+                  <button
+                    key={tab.id}
+                    type="button"
+                    onClick={() => setActiveCategory(tab.id as any)}
+                    className={`px-3 py-1.5 text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer border ${
+                      activeCategory === tab.id
+                        ? "bg-accent text-white border-accent shadow-sm"
+                        : "bg-bg-surface hover:bg-bg-primary text-chrome hover:text-accent border-border-subtle hover:border-accent outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                    }`}
+                  >
+                    {tab.label} ({tab.count})
+                  </button>
+                ))}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <span className="text-[8px] font-mono text-chrome uppercase tracking-widest font-bold">
+                  DEFAULT BATCH SIZE:
+                </span>
+                <div className="flex gap-1">
+                  {(["S", "M", "L", "XL"] as const).map((sz) => (
+                    <button
+                      key={sz}
+                      type="button"
+                      onClick={() => setBatchDefaultSize(sz)}
+                      className={`w-6 h-6 text-[8px] font-mono font-bold uppercase border transition-all cursor-pointer flex items-center justify-center ${
+                        batchDefaultSize === sz
+                          ? "bg-accent text-white border-accent"
+                          : "bg-bg-surface text-chrome border-border-subtle hover:border-accent hover:text-accent"
+                      }`}
+                    >
+                      {sz}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Search Filter Bar */}
+            <div className="max-w-md relative">
+              <input
+                type="text"
+                placeholder="SEARCH WISHLIST ARCHIVES..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-bg-surface border border-border-subtle p-3 pr-10 text-xs tracking-wider outline-none focus:border-accent text-text-primary uppercase font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+              />
+              {searchQuery && (
+                <button
+                  type="button"
+                  onClick={() => setSearchQuery("")}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-text-primary text-[10px] font-bold uppercase transition-colors cursor-pointer p-1 outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded-full"
+                  title="CLEAR SEARCH"
+                >
+                  ✕
+                </button>
+              )}
+            </div>
           </div>
         )}
 
