@@ -71,6 +71,51 @@ export default function CheckoutPage() {
     cardCvc: "",
   });
 
+  const [selectedAddressPreset, setSelectedAddressPreset] = useState<string | null>(null);
+
+  const addressPresets = [
+    {
+      id: "vault",
+      label: "HOME VAULT",
+      name: "PRINCE PATRON",
+      address: "PRINCE MANOR, 42 LUXURY BLVD, BANDRA WEST",
+      city: "MUMBAI",
+      postalCode: "400050",
+      email: "client.vip@prince.luxury",
+    },
+    {
+      id: "atelier",
+      label: "ATELIER STUDIO",
+      name: "ATELIER ARCHIVIST",
+      address: "STUDIO 7, FASHION QUARTER, 100 FT RD, INDIRANAGAR",
+      city: "BENGALURU",
+      postalCode: "560038",
+      email: "atelier.studio@prince.luxury",
+    },
+    {
+      id: "office",
+      label: "OFFICE SUITE",
+      name: "EXECUTIVE SUITE",
+      address: "PENTHOUSE SUITE 19, CYBER TOWERS, HITEC CITY",
+      city: "HYDERABAD",
+      postalCode: "500081",
+      email: "corporate.concierge@prince.luxury",
+    },
+  ];
+
+  const handleSelectPreset = (preset: typeof addressPresets[0]) => {
+    setSelectedAddressPreset(preset.id);
+    setFormData((prev) => ({
+      ...prev,
+      name: preset.name,
+      address: preset.address,
+      city: preset.city,
+      postalCode: preset.postalCode,
+      email: prev.email || preset.email,
+    }));
+    addToast(`PRESET '${preset.label}' LOADED TO DISPATCH FORM`, "success");
+  };
+
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -264,9 +309,68 @@ export default function CheckoutPage() {
 
                 {/* Shipping Section */}
                 <div className="space-y-4">
-                  <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
-                    02. SHIPPING ADDRESS
-                  </h3>
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle/30 pb-2 gap-2">
+                    <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome">
+                      02. SHIPPING ADDRESS
+                    </h3>
+                    <span className="text-[9px] font-mono text-accent uppercase tracking-widest">
+                      EXPRESS ARCHIVE DISPATCH
+                    </span>
+                  </div>
+
+                  {/* Saved Client Address Presets */}
+                  <div className="space-y-2 p-3 bg-bg-surface/20 border border-border-subtle/40">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-mono text-chrome/60 uppercase tracking-widest font-bold">
+                        SAVED CLIENT ADDRESS PRESETS
+                      </span>
+                      {selectedAddressPreset && (
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setSelectedAddressPreset(null);
+                            setFormData((prev) => ({ ...prev, name: "", address: "", city: "", postalCode: "" }));
+                            addToast("ADDRESS FIELDS RESET FOR CUSTOM ENTRY", "info");
+                          }}
+                          className="text-[8px] font-mono text-chrome/50 hover:text-error transition-colors uppercase tracking-wider cursor-pointer"
+                        >
+                          CLEAR (CUSTOM ENTRY)
+                        </button>
+                      )}
+                    </div>
+                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                      {addressPresets.map((preset) => {
+                        const isSelected = selectedAddressPreset === preset.id;
+                        return (
+                          <button
+                            key={preset.id}
+                            type="button"
+                            onClick={() => handleSelectPreset(preset)}
+                            className={`p-2.5 text-left border transition-all cursor-pointer outline-none flex flex-col justify-between ${
+                              isSelected
+                                ? "border-accent bg-accent/10 shadow-[0_0_12px_rgba(212,163,89,0.15)] ring-1 ring-accent/30"
+                                : "border-border-subtle/50 bg-bg-surface/40 hover:border-accent/60"
+                            } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                          >
+                            <div className="flex items-center justify-between w-full mb-1">
+                              <span className={`text-[10px] font-mono font-bold tracking-wider uppercase ${
+                                isSelected ? "text-accent" : "text-text-primary"
+                              }`}>
+                                {preset.label}
+                              </span>
+                              {isSelected && (
+                                <span className="text-accent text-[9px] font-mono font-bold">✓</span>
+                              )}
+                            </div>
+                            <span className="text-[8px] font-mono text-chrome/60 uppercase line-clamp-1">
+                              {preset.city} // {preset.postalCode}
+                            </span>
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+
                   <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div className="sm:col-span-2">
                       <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
