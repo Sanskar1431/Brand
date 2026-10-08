@@ -30,10 +30,45 @@ export default function Navbar() {
   const [hasBg, setHasBg] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
+  const [recentSearches, setRecentSearches] = useState<string[]>([]);
+
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem("prince_recent_searches");
+      if (saved) {
+        setRecentSearches(JSON.parse(saved));
+      }
+    } catch {
+      // Fallback if local storage is restricted
+    }
+  }, []);
+
+  const saveRecentSearch = (term: string) => {
+    const trimmed = term.trim();
+    if (!trimmed) return;
+    try {
+      const filtered = recentSearches.filter((item) => item.toLowerCase() !== trimmed.toLowerCase());
+      const updated = [trimmed, ...filtered].slice(0, 5);
+      setRecentSearches(updated);
+      localStorage.setItem("prince_recent_searches", JSON.stringify(updated));
+    } catch {
+      // Ignore write errors
+    }
+  };
+
+  const clearRecentSearches = () => {
+    setRecentSearches([]);
+    try {
+      localStorage.removeItem("prince_recent_searches");
+    } catch {
+      // Ignore write errors
+    }
+  };
 
   const popularSearches = ["TEE", "JOGGER", "HEAVYWEIGHT", "RAW", "FRENCH TERRY"];
 
   const handlePopularSearchClick = (term: string) => {
+    saveRecentSearch(term);
     setIsSearchOpen(false);
     router.push(`/search?q=${encodeURIComponent(term)}`);
     setSearchQuery("");
@@ -77,23 +112,26 @@ export default function Navbar() {
           <nav className="hidden md:flex items-center gap-8">
             <Link
               href="/shop"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2 flex items-center gap-1.5"
             >
-              Shop
+              <span>Shop</span>
+              <span className="text-[9px] font-mono text-chrome/40 group-hover:text-accent/80 transition-colors">11</span>
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
             </Link>
             <Link
               href="/shop/tshirt"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2 flex items-center gap-1.5"
             >
-              T-Shirts
+              <span>T-Shirts</span>
+              <span className="text-[9px] font-mono text-chrome/40 group-hover:text-accent/80 transition-colors">6</span>
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
             </Link>
             <Link
               href="/shop/jogger"
-              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2"
+              className="relative text-sm uppercase tracking-wider text-chrome hover:text-text-primary transition-colors py-2 group outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -mx-2 flex items-center gap-1.5"
             >
-              Joggers
+              <span>Joggers</span>
+              <span className="text-[9px] font-mono text-chrome/40 group-hover:text-accent/80 transition-colors">5</span>
               <span className="absolute bottom-0 left-0 w-full h-[1px] bg-accent scale-x-0 group-hover:scale-x-100 origin-left transition-transform duration-300"></span>
             </Link>
             <Link
@@ -272,23 +310,26 @@ export default function Navbar() {
               <Link
                 href="/shop"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2 flex items-center justify-between"
               >
-                Shop All
+                <span>Shop All</span>
+                <span className="text-xs font-mono text-chrome/50 font-normal">11</span>
               </Link>
               <Link
                 href="/shop/tshirt"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2 flex items-center justify-between"
               >
-                Signature Tees
+                <span>Signature Tees</span>
+                <span className="text-xs font-mono text-chrome/50 font-normal">6</span>
               </Link>
               <Link
                 href="/shop/jogger"
                 onClick={() => setOpenMenu(false)}
-                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2"
+                className="font-display text-2xl tracking-[0.15em] uppercase text-text-primary hover:text-accent transition-colors outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-2 -ml-2 flex items-center justify-between"
               >
-                Premium Joggers
+                <span>Premium Joggers</span>
+                <span className="text-xs font-mono text-chrome/50 font-normal">5</span>
               </Link>
               <Link
                 href="/about"
@@ -412,6 +453,7 @@ export default function Navbar() {
                 onSubmit={(e) => {
                   e.preventDefault();
                   if (searchQuery.trim()) {
+                    saveRecentSearch(searchQuery.trim());
                     setIsSearchOpen(false);
                     router.push(`/search?q=${encodeURIComponent(searchQuery.trim())}`);
                     setSearchQuery("");
@@ -454,7 +496,40 @@ export default function Navbar() {
                   Press Enter to search the collection
                 </span>
               </div>
-              <div className="mt-8 text-left space-y-3">
+
+              {/* Recent Searches */}
+              {recentSearches.length > 0 && (
+                <div className="mt-6 text-left space-y-2.5 pb-4 border-b border-border-subtle/30">
+                  <div className="flex items-center justify-between">
+                    <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold uppercase block">
+                      RECENT SEARCHES ({recentSearches.length})
+                    </span>
+                    <button
+                      onClick={clearRecentSearches}
+                      className="text-[9px] text-chrome/50 hover:text-error transition-colors font-mono tracking-wider uppercase cursor-pointer outline-none focus:text-error"
+                    >
+                      CLEAR HISTORY
+                    </button>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {recentSearches.map((term) => (
+                      <button
+                        key={term}
+                        onClick={() => handlePopularSearchClick(term)}
+                        className="text-[10px] tracking-wider uppercase font-mono border border-accent/40 bg-accent/5 text-accent px-3 py-1.5 hover:bg-accent hover:text-bg-primary transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] flex items-center gap-1.5"
+                      >
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-3 h-3">
+                          <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z" />
+                        </svg>
+                        <span>{term}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Popular Searches */}
+              <div className="mt-6 text-left space-y-3">
                 <span className="text-[10px] text-chrome/55 tracking-[0.2em] font-bold uppercase block">
                   Popular Searches:
                 </span>
