@@ -24,6 +24,17 @@ export default function CartDrawer() {
   const [promoCodeInput, setPromoCodeInput] = useState("");
   const [appliedPromo, setAppliedPromo] = useState<{ code: string; percent: number } | null>(null);
   const [isPromoOpen, setIsPromoOpen] = useState(false);
+  const [isGiftNoteOpen, setIsGiftNoteOpen] = useState(false);
+  const [giftRecipient, setGiftRecipient] = useState("");
+  const [giftNote, setGiftNote] = useState("");
+  const [monogramInitials, setMonogramInitials] = useState("");
+
+  const getEstimatedDeliveryDate = () => {
+    const today = new Date();
+    const est = new Date(today);
+    est.setDate(today.getDate() + 3);
+    return est.toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" });
+  };
 
   const handleApplyPromo = () => {
     const code = promoCodeInput.trim().toUpperCase();
@@ -332,30 +343,119 @@ export default function CartDrawer() {
 
               return (
                 <div className="p-6 border-t border-border-subtle bg-bg-primary/50 space-y-4">
-                  {/* Gift wrapping toggle */}
-                  <div className="border border-border-subtle/40 p-3 bg-bg-surface/20 flex items-center justify-between">
-                    <div className="flex flex-col text-left">
-                      <span className="text-[10px] text-text-primary tracking-wider uppercase font-bold">
-                        SIGNATURE GIFT BOX PACKAGING
-                      </span>
-                      <span className="text-[9px] text-chrome uppercase font-mono">
-                        + {formatPrice(25000)} // PREMIUM BOX & EMBOSSED ARCHIVE TICKET
-                      </span>
+                  {/* Gift wrapping toggle & Concierge Monogramming */}
+                  <div className="border border-border-subtle/40 p-3.5 bg-bg-surface/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col text-left">
+                        <span className="text-[10px] text-text-primary tracking-wider uppercase font-bold">
+                          SIGNATURE GIFT BOX PACKAGING
+                        </span>
+                        <span className="text-[9px] text-chrome uppercase font-mono">
+                          + {formatPrice(25000)} // PREMIUM BOX & EMBOSSED ARCHIVE TICKET
+                        </span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={giftWrap}
+                        onChange={(e) => {
+                          toggleGiftWrap();
+                          addToast(
+                            e.target.checked
+                              ? "GIFT PACKAGING ADDED TO DISPATCH PROTOCOL"
+                              : "GIFT PACKAGING REMOVED",
+                            "info"
+                          );
+                        }}
+                        className="accent-accent w-4 h-4 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                      />
                     </div>
-                    <input
-                      type="checkbox"
-                      checked={giftWrap}
-                      onChange={(e) => {
-                        toggleGiftWrap();
-                        addToast(
-                          e.target.checked
-                            ? "GIFT PACKAGING ADDED TO DISPATCH PROTOCOL"
-                            : "GIFT PACKAGING REMOVED",
-                          "info"
-                        );
-                      }}
-                      className="accent-accent w-4 h-4 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-                    />
+
+                    {/* Expandable Monogram & Concierge Note Protocol */}
+                    <div className="border-t border-border-subtle/30 pt-2.5">
+                      <button
+                        type="button"
+                        onClick={() => setIsGiftNoteOpen(!isGiftNoteOpen)}
+                        className="w-full flex items-center justify-between text-[9px] font-mono tracking-widest text-accent uppercase font-bold hover:text-accent/80 transition-colors outline-none focus:text-accent"
+                      >
+                        <span className="flex items-center gap-1.5">
+                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-3.5 h-3.5">
+                            <path strokeLinecap="round" strokeLinejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
+                          </svg>
+                          CONCIERGE MONOGRAM & EMBOSSED NOTE
+                        </span>
+                        <span className="text-xs">{isGiftNoteOpen ? "−" : "+"}</span>
+                      </button>
+
+                      <AnimatePresence>
+                        {isGiftNoteOpen && (
+                          <motion.div
+                            initial={{ opacity: 0, height: 0 }}
+                            animate={{ opacity: 1, height: "auto" }}
+                            exit={{ opacity: 0, height: 0 }}
+                            transition={{ duration: 0.25 }}
+                            className="space-y-2.5 pt-3 overflow-hidden text-left"
+                          >
+                            <div className="grid grid-cols-2 gap-2">
+                              <div>
+                                <label className="text-[8px] font-mono text-chrome/60 uppercase tracking-widest block mb-1">
+                                  RECIPIENT NAME
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="e.g. ALEXANDER"
+                                  value={giftRecipient}
+                                  onChange={(e) => setGiftRecipient(e.target.value.toUpperCase())}
+                                  maxLength={30}
+                                  className="w-full bg-bg-surface border border-border-subtle p-1.5 text-[10px] uppercase font-mono outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] text-text-primary"
+                                />
+                              </div>
+                              <div>
+                                <label className="text-[8px] font-mono text-chrome/60 uppercase tracking-widest block mb-1">
+                                  MONOGRAM (MAX 3)
+                                </label>
+                                <input
+                                  type="text"
+                                  placeholder="PRN"
+                                  value={monogramInitials}
+                                  onChange={(e) => setMonogramInitials(e.target.value.toUpperCase().slice(0, 3))}
+                                  maxLength={3}
+                                  className="w-full bg-bg-surface border border-border-subtle p-1.5 text-[10px] uppercase font-mono tracking-widest outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] text-accent font-bold"
+                                />
+                              </div>
+                            </div>
+
+                            {monogramInitials && (
+                              <div className="flex items-center gap-2 p-1.5 bg-accent/10 border border-accent/30">
+                                <span className="text-[8px] font-mono uppercase text-accent tracking-widest">
+                                  EMBOSSED CREST:
+                                </span>
+                                <span className="text-[10px] font-mono font-bold tracking-[0.25em] text-accent">
+                                  [ {monogramInitials.split("").join(" · ")} ]
+                                </span>
+                              </div>
+                            )}
+
+                            <div>
+                              <div className="flex justify-between items-center mb-1">
+                                <label className="text-[8px] font-mono text-chrome/60 uppercase tracking-widest block">
+                                  PERSONALIZED CONCIERGE MESSAGE
+                                </label>
+                                <span className="text-[8px] font-mono text-chrome/40">
+                                  {giftNote.length}/140
+                                </span>
+                              </div>
+                              <textarea
+                                placeholder="Complimentary gold-foiled note included in dispatch parcel..."
+                                value={giftNote}
+                                onChange={(e) => setGiftNote(e.target.value.slice(0, 140))}
+                                rows={2}
+                                className="w-full bg-bg-surface border border-border-subtle p-2 text-[10px] outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] text-text-primary resize-none"
+                              />
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </div>
                   </div>
 
                   {/* Promo / Concierge Voucher Section */}
@@ -446,6 +546,21 @@ export default function CartDrawer() {
                       <span>Final Total</span>
                       <span className="font-sans tabular-nums font-bold text-text-primary">
                         {formatPrice(finalSubtotal)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Estimated Delivery Dispatch Badge */}
+                  <div className="flex items-center gap-2 p-2.5 bg-bg-surface/40 border border-border-subtle/50 text-[9px] font-mono text-chrome">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth="1.5" stroke="currentColor" className="w-4 h-4 text-accent flex-shrink-0">
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M8.25 18.75a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h6m-9 0H3.375a1.125 1.125 0 01-1.125-1.125V14.25m17.25 4.5a1.5 1.5 0 01-3 0m3 0a1.5 1.5 0 00-3 0m3 0h1.125c.621 0 1.129-.504 1.09-1.124a17.902 17.902 0 00-3.213-9.193 2.056 2.056 0 00-1.58-.86H14.25M16.5 18.75h-2.25m0-11.177v-.958c0-.568-.422-1.048-.987-1.106a48.554 48.554 0 00-10.026 0 1.106 1.106 0 00-.987 1.106v7.635m12-6.677v6.677m0 4.5v-4.5m0 0h-12" />
+                    </svg>
+                    <div className="flex flex-col text-left">
+                      <span className="text-text-primary font-bold uppercase tracking-wider">
+                        ESTIMATED ARRIVAL: <span className="text-accent">{getEstimatedDeliveryDate()}</span>
+                      </span>
+                      <span className="text-[8px] text-chrome/60 uppercase">
+                        WHITE-GLOVE AIR COURIER // 24H DISPATCH PROTOCOL
                       </span>
                     </div>
                   </div>
