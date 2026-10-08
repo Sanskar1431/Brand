@@ -33,6 +33,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
 
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
   const [visibleCount, setVisibleCount] = useState(24); // pagination count (Section 7.1)
+  const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
   const router = useRouter();
 
   const activeCategory = categoryFilter || category;
@@ -198,7 +199,7 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
         </div>
 
         {/* Quick Color Swatch Filters */}
-        <div className="w-full overflow-x-auto pb-4 mb-10 scrollbar-hide flex gap-2 items-center select-none text-[10px] uppercase tracking-wider font-bold border-b border-border-subtle/20">
+        <div className="w-full overflow-x-auto pb-4 mb-4 scrollbar-hide flex gap-2 items-center select-none text-[10px] uppercase tracking-wider font-bold border-b border-border-subtle/20">
           <span className="text-chrome mr-2">Quick Color:</span>
           {[
             { label: "ALL", value: "", hex: "" },
@@ -228,6 +229,60 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
               </button>
             );
           })}
+        </div>
+
+        {/* Quick Price Bracket Presets & Grid Density Switcher */}
+        <div className="w-full pb-4 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-subtle/20 select-none">
+          {/* Price Brackets */}
+          <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
+            <span className="text-chrome text-[10px] uppercase tracking-wider font-bold mr-1">
+              Price Range:
+            </span>
+            {[
+              { label: "ALL PRICES", range: [0, 15000] },
+              { label: "UNDER ₹5,000", range: [0, 5000] },
+              { label: "₹5,000 - ₹8,000", range: [5000, 8000] },
+              { label: "ABOVE ₹8,000", range: [8000, 15000] },
+            ].map((bracket) => {
+              const isSelected =
+                priceRange[0] === bracket.range[0] && priceRange[1] === bracket.range[1];
+              return (
+                <button
+                  key={bracket.label}
+                  type="button"
+                  onClick={() => setPriceRange(bracket.range as [number, number])}
+                  className={`px-3 py-1.5 border text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
+                    isSelected
+                      ? "bg-accent text-white border-accent shadow-sm"
+                      : "border-border-subtle text-chrome hover:text-text-primary hover:border-accent bg-bg-surface/10"
+                  }`}
+                >
+                  {bracket.label}
+                </button>
+              );
+            })}
+          </div>
+
+          {/* Grid Layout Density Switcher */}
+          <div className="flex items-center gap-1.5 self-end sm:self-auto">
+            <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest mr-1">
+              GRID:
+            </span>
+            {([2, 3, 4] as const).map((cols) => (
+              <button
+                key={cols}
+                type="button"
+                onClick={() => setGridColumns(cols)}
+                className={`px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-wider border transition-all cursor-pointer ${
+                  gridColumns === cols
+                    ? "bg-text-primary text-bg-primary border-text-primary"
+                    : "border-border-subtle text-chrome hover:text-text-primary hover:border-border-subtle/80 bg-bg-surface/20"
+                }`}
+              >
+                {cols} COL
+              </button>
+            ))}
+          </div>
         </div>
 
         {/* Active Filter Chips Bar */}
@@ -336,7 +391,15 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
 
         {/* Product Grid (Section 7.1.1 asymmetric crop, grid rhythm) */}
         {filteredProducts.length > 0 ? (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
+          <div
+            className={`grid gap-8 transition-all duration-300 ${
+              gridColumns === 2
+                ? "grid-cols-1 md:grid-cols-2"
+                : gridColumns === 3
+                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            }`}
+          >
             <AnimatePresence mode="popLayout">
               {paginatedProducts.map((product, index) => {
                 // Occasional 'feature' cells span 2 columns (every 8th item starting from index 6)
