@@ -119,6 +119,41 @@ export default function ProductDetailClient({
 
   const [isPlayingLoop, setIsPlayingLoop] = useState(false);
   const [timecode, setTimecode] = useState(0);
+  const [isReserved, setIsReserved] = useState(false);
+  const [reserveTimeLeft, setReserveTimeLeft] = useState(900);
+  const [isModelSpecsOpen, setIsModelSpecsOpen] = useState(false);
+
+  // Vault Reservation timer loop
+  useEffect(() => {
+    let interval: any;
+    if (isReserved && reserveTimeLeft > 0) {
+      interval = setInterval(() => {
+        setReserveTimeLeft((prev) => prev - 1);
+      }, 1000);
+    } else if (reserveTimeLeft === 0 && isReserved) {
+      setIsReserved(false);
+      addToast(`ATELIER VAULT HOLD EXPIRED FOR ${product.name}`, "info");
+    }
+    return () => clearInterval(interval);
+  }, [isReserved, reserveTimeLeft, product.name]);
+
+  const handleToggleReserve = () => {
+    if (isReserved) {
+      setIsReserved(false);
+      setReserveTimeLeft(900);
+      addToast(`VAULT HOLD RELEASED FOR ${product.name}`, "info");
+    } else {
+      setIsReserved(true);
+      setReserveTimeLeft(900);
+      addToast(`ATELIER VAULT HOLD SECURED (SIZE ${selectedSize} LOCKED FOR 15 MIN)`, "success");
+    }
+  };
+
+  const formatReserveTime = (secs: number) => {
+    const mins = Math.floor(secs / 60);
+    const s = secs % 60;
+    return `${mins}:${s.toString().padStart(2, "0")}`;
+  };
 
   // Reset angle when color changes
   useEffect(() => {
@@ -437,6 +472,40 @@ export default function ProductDetailClient({
               </div>
             </div>
 
+            {/* Atelier Vault Scarcity Reserve Protocol */}
+            <div className="pt-2">
+              {isReserved ? (
+                <div className="p-3 bg-bg-surface/80 border border-accent flex items-center justify-between shadow-[0_0_15px_rgba(212,163,89,0.2)]">
+                  <div className="flex items-center gap-2">
+                    <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+                    <div>
+                      <span className="text-[9px] font-mono font-bold text-accent uppercase block">
+                        ✓ ATELIER VAULT HOLD ACTIVE
+                      </span>
+                      <span className="text-[10px] font-mono text-text-primary font-bold">
+                        {formatReserveTime(reserveTimeLeft)} REMAINING (SIZE {selectedSize})
+                      </span>
+                    </div>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={handleToggleReserve}
+                    className="text-[9px] font-mono text-error hover:underline uppercase font-bold cursor-pointer"
+                  >
+                    RELEASE HOLD
+                  </button>
+                </div>
+              ) : (
+                <button
+                  type="button"
+                  onClick={handleToggleReserve}
+                  className="w-full bg-bg-surface hover:bg-bg-primary border border-border-subtle hover:border-accent text-chrome hover:text-accent py-3 text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer flex items-center justify-center gap-2 outline-none focus:text-accent focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                >
+                  <span>🔒 RESERVE SIZE IN VAULT (15 MIN HOLD)</span>
+                </button>
+              )}
+            </div>
+
             {/* Out of stock notifications */}
             {isOutOfStock(selectedColor.name, selectedSize) && (
               <div className="border border-border-subtle/40 p-4 bg-bg-surface/20 space-y-3 mt-4 text-left select-none">
@@ -557,6 +626,52 @@ export default function ProductDetailClient({
                   </div>
                 </div>
               )}
+            </div>
+
+            {/* Model Specs & Sizing Architecture Accordion */}
+            <div className="border-t border-border-subtle/40 pt-4">
+              <button
+                type="button"
+                onClick={() => setIsModelSpecsOpen(!isModelSpecsOpen)}
+                className="w-full flex justify-between items-center text-xs uppercase tracking-[0.2em] text-text-primary font-bold py-2 cursor-pointer outline-none focus:text-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] rounded px-1"
+              >
+                <span>MODEL SPECS &amp; FIT METRICS</span>
+                <span>{isModelSpecsOpen ? "−" : "+"}</span>
+              </button>
+
+              <AnimatePresence>
+                {isModelSpecsOpen && (
+                  <motion.div
+                    initial={{ height: 0, opacity: 0 }}
+                    animate={{ height: "auto", opacity: 1 }}
+                    exit={{ height: 0, opacity: 0 }}
+                    className="overflow-hidden"
+                  >
+                    <div className="py-4 space-y-3 font-mono text-xs uppercase text-chrome/90 leading-relaxed border-b border-border-subtle/20 mb-2">
+                      <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 bg-bg-surface/40 p-3 border border-border-subtle/40 text-[9px]">
+                        <div>
+                          <span className="text-chrome/50 block">MODEL HEIGHT:</span>
+                          <span className="text-text-primary font-bold">6'2" / 188 CM</span>
+                        </div>
+                        <div>
+                          <span className="text-chrome/50 block">MODEL CHEST:</span>
+                          <span className="text-text-primary font-bold">40 IN / 101 CM</span>
+                        </div>
+                        <div>
+                          <span className="text-chrome/50 block">SIZE WORN:</span>
+                          <span className="text-accent font-bold">SIZE L (LARGE)</span>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-chrome leading-relaxed font-sans">
+                        • SILHOUETTE: ARCHITECTURAL DROP-SHOULDER BOXY DRAPE.
+                      </p>
+                      <p className="text-[10px] text-chrome leading-relaxed font-sans">
+                        • FIT RECOMMENDATION: TRUE TO SIZE FOR THE INTENDED EDITORIAL OVERSIZED FIT. SIZE DOWN FOR STANDARD FIT.
+                      </p>
+                    </div>
+                  </motion.div>
+                )}
+              </AnimatePresence>
             </div>
 
             {/* Care accordion */}
