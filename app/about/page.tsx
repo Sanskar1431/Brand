@@ -8,6 +8,47 @@ export default function AboutPage() {
   const [selectedFabricIndex, setSelectedFabricIndex] = useState(0);
   const [customGsm, setCustomGsm] = useState(380);
 
+  // Archive Longevity & Micro-Weave Inspector State
+  const [activeWeaveIndex, setActiveWeaveIndex] = useState(0);
+  const [washTemp, setWashTemp] = useState<"COLD" | "WARM" | "HOT">("COLD");
+  const [dryingMethod, setDryingMethod] = useState<"LINE" | "TUMBLE">("LINE");
+
+  const weaveSpecs = [
+    {
+      name: "240 GSM SINGLE JERSEY",
+      yarnCount: "32/1 Combed Ring-Spun",
+      threadDensity: "128 x 84 picks/in",
+      tensileStrength: "460 Newtons",
+      shrinkageRate: "< 0.6% after 40 cycles",
+      gaugeType: "28 Gauge Single Knit Circular",
+    },
+    {
+      name: "400 GSM FRENCH TERRY",
+      yarnCount: "20/1 + 10/1 Loopback",
+      threadDensity: "142 x 98 picks/in",
+      tensileStrength: "580 Newtons",
+      shrinkageRate: "< 0.4% after 40 cycles",
+      gaugeType: "20 Gauge Double Loopback",
+    },
+    {
+      name: "500 GSM LOOPBACK FLEECE",
+      yarnCount: "16/1 Heavy Twist Ring-Spun",
+      threadDensity: "165 x 110 picks/in",
+      tensileStrength: "720 Newtons",
+      shrinkageRate: "< 0.2% after 40 cycles",
+      gaugeType: "18 Gauge Heavy Armor Knit",
+    },
+  ];
+
+  const getLifespanMetrics = () => {
+    let wears = 360;
+    let score = 99;
+    if (washTemp === "WARM") { wears -= 80; score -= 18; }
+    if (washTemp === "HOT") { wears -= 190; score -= 45; }
+    if (dryingMethod === "TUMBLE") { wears -= 70; score -= 16; }
+    return { wears, score };
+  };
+
   const fabrics = [
     {
       id: "tee-cotton",
@@ -309,6 +350,174 @@ export default function AboutPage() {
               <span>280 GSM (PRINCE TEE SPEC)</span>
               <span>450 GSM (PRINCE TERRY SPEC)</span>
               <span>550 GSM (VAULT SPEC)</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* Section 2.6: Micro-Weave Inspector & Longevity Simulator */}
+      <section className="relative w-full py-20 bg-bg-primary border-t border-border-subtle/20 px-6 md:px-12 text-left">
+        <div className="max-w-5xl mx-auto space-y-10">
+          <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border-subtle/30 pb-4 gap-3">
+            <div>
+              <span className="text-[10px] text-accent tracking-[0.25em] font-mono font-bold uppercase block">
+                ATELIER SCIENCE
+              </span>
+              <h3 className="font-display text-2xl sm:text-3xl tracking-widest uppercase font-semibold text-text-primary mt-1">
+                MICRO-WEAVE SPECS &amp; LONGEVITY PROTOCOL
+              </h3>
+            </div>
+            <span className="text-[8px] font-mono text-chrome/60 uppercase tracking-widest border border-border-subtle/40 px-3 py-1.5 self-start md:self-auto bg-bg-surface">
+              MOLECULAR TWIST INTEGRITY
+            </span>
+          </div>
+
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Left: Micro-weave specs */}
+            <div className="lg:col-span-7 space-y-4">
+              <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest font-bold block">
+                SELECT TEXTILE STRUCTURE FOR WEAVE ANALYSIS
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                {weaveSpecs.map((spec, idx) => {
+                  const isSelected = activeWeaveIndex === idx;
+                  return (
+                    <button
+                      key={spec.name}
+                      type="button"
+                      onClick={() => setActiveWeaveIndex(idx)}
+                      className={`p-3 text-left border transition-all cursor-pointer outline-none ${
+                        isSelected
+                          ? "border-accent bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          : "border-border-subtle/50 bg-bg-surface/50 text-chrome hover:border-accent/60 hover:text-text-primary"
+                      } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      <span className={`text-[9px] font-mono font-bold uppercase block ${isSelected ? "text-accent" : "text-text-primary"}`}>
+                        {spec.name}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* Active Weave Breakdown Table */}
+              <div className="p-5 bg-bg-surface/60 border border-border-subtle/50 space-y-3">
+                <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest block">
+                  TECHNICAL WEAVE PARAMETERS // {weaveSpecs[activeWeaveIndex].name}
+                </span>
+                <div className="grid grid-cols-2 gap-y-2 text-[10px] font-mono uppercase tracking-wider text-chrome border-t border-border-subtle/30 pt-3">
+                  <span>Yarn Count Specification:</span>
+                  <span className="text-right text-text-primary font-bold">{weaveSpecs[activeWeaveIndex].yarnCount}</span>
+
+                  <span>Thread Warp/Weft Density:</span>
+                  <span className="text-right text-text-primary font-bold">{weaveSpecs[activeWeaveIndex].threadDensity}</span>
+
+                  <span>Tensile Fracture Resistance:</span>
+                  <span className="text-right text-accent font-bold">{weaveSpecs[activeWeaveIndex].tensileStrength}</span>
+
+                  <span>Post-Wash Shrinkage Rate:</span>
+                  <span className="text-right text-text-primary font-bold">{weaveSpecs[activeWeaveIndex].shrinkageRate}</span>
+
+                  <span>Gauge Machine Architecture:</span>
+                  <span className="text-right text-text-primary font-bold">{weaveSpecs[activeWeaveIndex].gaugeType}</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Right: Care Longevity Simulator */}
+            <div className="lg:col-span-5 p-6 bg-bg-surface border border-border-subtle space-y-5">
+              <div>
+                <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest block">
+                  LIFESPAN SIMULATOR
+                </span>
+                <h4 className="font-display text-base font-bold uppercase tracking-wider text-text-primary mt-0.5">
+                  GARMENT ROTATION PRESERVATION
+                </h4>
+              </div>
+
+              {/* Wash Temp */}
+              <div className="space-y-1.5">
+                <span className="text-[8px] font-mono text-chrome block uppercase">
+                  WASH TEMPERATURE SETTING
+                </span>
+                <div className="grid grid-cols-3 gap-1.5">
+                  {[
+                    { id: "COLD" as const, label: "20°C COLD" },
+                    { id: "WARM" as const, label: "30°C WARM" },
+                    { id: "HOT" as const, label: "40°C HOT" },
+                  ].map((temp) => (
+                    <button
+                      key={temp.id}
+                      type="button"
+                      onClick={() => setWashTemp(temp.id)}
+                      className={`p-1.5 text-[8px] font-mono font-bold uppercase border transition-all cursor-pointer text-center outline-none ${
+                        washTemp === temp.id
+                          ? "bg-accent text-bg-primary border-accent"
+                          : "bg-bg-primary text-chrome border-border-subtle hover:border-accent hover:text-accent"
+                      } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      {temp.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Drying Protocol */}
+              <div className="space-y-1.5">
+                <span className="text-[8px] font-mono text-chrome block uppercase">
+                  DRYING METHOD
+                </span>
+                <div className="grid grid-cols-2 gap-1.5">
+                  {[
+                    { id: "LINE" as const, label: "SHADE LINE DRY" },
+                    { id: "TUMBLE" as const, label: "TUMBLE DRY LOW" },
+                  ].map((dry) => (
+                    <button
+                      key={dry.id}
+                      type="button"
+                      onClick={() => setDryingMethod(dry.id)}
+                      className={`p-1.5 text-[8px] font-mono font-bold uppercase border transition-all cursor-pointer text-center outline-none ${
+                        dryingMethod === dry.id
+                          ? "bg-accent text-bg-primary border-accent"
+                          : "bg-bg-primary text-chrome border-border-subtle hover:border-accent hover:text-accent"
+                      } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      {dry.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              {/* Longevity Score Readout */}
+              {(() => {
+                const metrics = getLifespanMetrics();
+                return (
+                  <div className="p-4 bg-bg-primary/70 border border-border-subtle space-y-2">
+                    <div className="flex justify-between items-center">
+                      <span className="text-[8px] font-mono text-chrome uppercase tracking-widest">
+                        ESTIMATED ROTATION RETENTION:
+                      </span>
+                      <span className="text-xs font-mono font-bold text-accent">
+                        {metrics.score}% INDEX
+                      </span>
+                    </div>
+                    <div className="w-full h-1.5 bg-border-subtle/30 overflow-hidden">
+                      <div
+                        className="h-full bg-accent transition-all duration-500 ease-out"
+                        style={{ width: `${metrics.score}%` }}
+                      />
+                    </div>
+                    <span className="text-sm font-mono font-bold text-text-primary block mt-1">
+                      {metrics.wears}+ ACTIVE WEARS
+                    </span>
+                    <p className="text-[8px] font-mono text-chrome/60 uppercase">
+                      {metrics.score > 85
+                        ? "Retains complete boxy shoulder stiffness and carbon saturation indefinitely."
+                        : "Slight fiber softening expected over extensive rotations."}
+                    </p>
+                  </div>
+                );
+              })()}
             </div>
           </div>
         </div>
