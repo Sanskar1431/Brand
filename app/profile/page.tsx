@@ -60,6 +60,42 @@ export default function ProfilePage() {
   const [refreshingOrderId, setRefreshingOrderId] = useState<string | null>(null);
   const [refreshLatency, setRefreshLatency] = useState(1.2);
 
+  // Regional Dispatch Hub & VIP Notification Protocols
+  const [preferredHub, setPreferredHub] = useState("APAC / MUMBAI CENTRAL");
+  const [notifications, setNotifications] = useState({
+    dropAlerts: true,
+    archiveReleases: true,
+    salonInvites: false,
+  });
+
+  useEffect(() => {
+    try {
+      const savedHub = localStorage.getItem("prince_client_hub");
+      if (savedHub) setPreferredHub(savedHub);
+      const savedNotifs = localStorage.getItem("prince_vip_notifications");
+      if (savedNotifs) setNotifications(JSON.parse(savedNotifs));
+    } catch {
+      // Fallback
+    }
+  }, []);
+
+  const handleHubChange = (hub: string) => {
+    setPreferredHub(hub);
+    try {
+      localStorage.setItem("prince_client_hub", hub);
+    } catch {}
+    addToast(`REGIONAL DISPATCH HUB SET TO ${hub}`, "success");
+  };
+
+  const handleToggleNotif = (key: keyof typeof notifications, label: string) => {
+    const updated = { ...notifications, [key]: !notifications[key] };
+    setNotifications(updated);
+    try {
+      localStorage.setItem("prince_vip_notifications", JSON.stringify(updated));
+    } catch {}
+    addToast(`${label}: ${updated[key] ? "ACTIVATED" : "MUTED"}`, "info");
+  };
+
   const handleCopyTracking = (orderId: string) => {
     if (typeof window !== "undefined" && navigator.clipboard) {
       const trackingHash = `TRK-${orderId}-SECURE`;
@@ -317,9 +353,81 @@ export default function ProfilePage() {
                 </p>
               </div>
 
-              <div>
-                <span className="text-[10px] text-chrome uppercase tracking-widest block">Shipping Region</span>
-                <p className="text-sm uppercase">IN / ASIA PACIFIC</p>
+              {/* Regional Dispatch Hub Selector */}
+              <div className="space-y-2 pt-2 border-t border-border-subtle/30 text-left">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-accent font-mono uppercase tracking-widest block font-bold">
+                    PREFERRED REGIONAL HUB
+                  </span>
+                  <span className="text-[8px] font-mono text-chrome/50 uppercase">
+                    AIR TRANSIT
+                  </span>
+                </div>
+                <div className="grid grid-cols-1 gap-1.5">
+                  {[
+                    { id: "APAC / MUMBAI CENTRAL", desc: "ASIA-PACIFIC PRIORITY DISPATCH" },
+                    { id: "EMEA / LONDON HEATHROW", desc: "UK & EUROPEAN VAULT TRANSIT" },
+                    { id: "AMER / NEW YORK JFK", desc: "AMERICAS CONTINENTAL AIR" },
+                  ].map((hub) => {
+                    const isSelected = preferredHub === hub.id;
+                    return (
+                      <button
+                        key={hub.id}
+                        type="button"
+                        onClick={() => handleHubChange(hub.id)}
+                        className={`p-2 text-left border transition-all cursor-pointer outline-none flex items-center justify-between ${
+                          isSelected
+                            ? "border-accent bg-accent/15 text-accent shadow-[0_0_12px_rgba(212,163,89,0.15)] ring-1 ring-accent/30"
+                            : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent/60 hover:text-text-primary"
+                        } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                      >
+                        <div>
+                          <span className={`text-[9px] font-mono font-bold uppercase tracking-wider block ${isSelected ? "text-accent" : "text-text-primary"}`}>
+                            {hub.id}
+                          </span>
+                          <span className="text-[7.5px] font-mono text-chrome/60 uppercase">
+                            {hub.desc}
+                          </span>
+                        </div>
+                        {isSelected && <span className="text-accent text-xs font-mono font-bold">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* VIP Vault Notification Channels */}
+              <div className="space-y-2 pt-2 border-t border-border-subtle/30 text-left">
+                <span className="text-[9px] text-accent font-mono uppercase tracking-widest block font-bold">
+                  VIP NOTIFICATION PROTOCOLS
+                </span>
+                <div className="space-y-2">
+                  {[
+                    { key: "dropAlerts" as const, label: "VAULT DROP ALERTS", desc: "SMS & Mobile push 15m prior" },
+                    { key: "archiveReleases" as const, label: "EXCLUSIVE ARCHIVE SEEDING", desc: "Invitations for unreleased samples" },
+                    { key: "salonInvites" as const, label: "PRIVATE SALON INVITATIONS", desc: "Atelier showroom fitting invites" },
+                  ].map((item) => (
+                    <label
+                      key={item.key}
+                      className="flex items-start justify-between p-2 bg-bg-primary/40 border border-border-subtle/40 hover:border-border-subtle cursor-pointer select-none"
+                    >
+                      <div>
+                        <span className="text-[9px] font-mono font-bold text-text-primary uppercase block">
+                          {item.label}
+                        </span>
+                        <span className="text-[7.5px] font-mono text-chrome/50 uppercase">
+                          {item.desc}
+                        </span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={notifications[item.key]}
+                        onChange={() => handleToggleNotif(item.key, item.label)}
+                        className="accent-accent w-3.5 h-3.5 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] mt-0.5"
+                      />
+                    </label>
+                  ))}
+                </div>
               </div>
 
               {/* Quick Archives Shortcuts */}
