@@ -62,6 +62,26 @@ export default function SupportPage() {
   const [activeCategory, setActiveCategory] = useState<string>("ALL");
   const { addToast } = useToastStore();
 
+  // Urgent Ticket Protocol State
+  const [ticketPriority, setTicketPriority] = useState<"STANDARD" | "URGENT" | "VIP SOVEREIGN">("URGENT");
+  const [ticketTopic, setTicketTopic] = useState("ORDER DISPATCH TRACKING");
+  const [ticketClientRef, setTicketClientRef] = useState("");
+  const [generatedTicket, setGeneratedTicket] = useState<{ code: string; estTime: string } | null>(null);
+  const [isGeneratingTicket, setIsGeneratingTicket] = useState(false);
+
+  const handleGenerateTicket = (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsGeneratingTicket(true);
+    setTimeout(() => {
+      setIsGeneratingTicket(false);
+      const pfx = ticketPriority === "VIP SOVEREIGN" ? "SOV" : ticketPriority.slice(0, 3);
+      const randomCode = `TCK-${pfx}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const estTime = ticketPriority === "VIP SOVEREIGN" ? "8 MINS" : ticketPriority === "URGENT" ? "24 MINS" : "90 MINS";
+      setGeneratedTicket({ code: randomCode, estTime });
+      addToast(`PRIORITY TICKET DISPATCHED: ${randomCode}`, "success");
+    }, 1200);
+  };
+
   const faqs = [
     {
       id: "sizing",
@@ -273,8 +293,175 @@ export default function SupportPage() {
           )}
         </div>
 
+        {/* Priority Concierge Urgent Ticket Protocol */}
+        <div className="mt-8 p-6 bg-bg-surface/40 border border-border-subtle/50 space-y-6 text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle/30 pb-4 gap-2">
+            <div>
+              <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block uppercase">
+                RAPID PROTOCOL QUEUE
+              </span>
+              <h3 className="font-display text-lg tracking-[0.15em] font-semibold uppercase text-text-primary mt-0.5">
+                EXPRESS CONCIERGE TICKET DISPATCH
+              </h3>
+            </div>
+            <span className="text-[8px] font-mono text-chrome/60 uppercase tracking-widest border border-border-subtle/40 px-2.5 py-1 self-start sm:self-auto bg-bg-primary/40">
+              AVERAGE TRIAGE: &lt; 15 MINS
+            </span>
+          </div>
+
+          {generatedTicket ? (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-5 bg-accent/10 border border-accent/40 space-y-4"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-accent/30 pb-3">
+                <div>
+                  <span className="text-[8px] font-mono text-accent uppercase tracking-widest block font-bold">
+                    ACTIVE TICKET IDENTIFIER
+                  </span>
+                  <span className="text-lg font-mono font-bold text-accent tracking-[0.2em] mt-0.5 block">
+                    {generatedTicket.code}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined" && navigator.clipboard) {
+                        navigator.clipboard.writeText(generatedTicket.code);
+                        addToast(`TICKET HASH COPIED: ${generatedTicket.code}`, "success");
+                      }
+                    }}
+                    className="px-3.5 py-1.5 bg-accent text-bg-primary hover:bg-accent-hover text-[9px] font-mono font-bold uppercase tracking-widest transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                  >
+                    COPY TICKET HASH ⎘
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setGeneratedTicket(null)}
+                    className="px-3 py-1.5 border border-accent/40 text-accent hover:border-accent text-[9px] font-mono font-bold uppercase tracking-widest transition-colors cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                  >
+                    NEW TICKET
+                  </button>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 text-left">
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">PRIORITY LEVEL</span>
+                  <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">{ticketPriority}</span>
+                </div>
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">TOPIC CATEGORY</span>
+                  <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">{ticketTopic}</span>
+                </div>
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">EST. FIRST RESPONSE</span>
+                  <span className="text-[10px] font-mono font-bold text-accent uppercase mt-0.5 block">&lt; {generatedTicket.estTime}</span>
+                </div>
+              </div>
+            </motion.div>
+          ) : (
+            <form onSubmit={handleGenerateTicket} className="space-y-4">
+              {/* Priority Chips */}
+              <div className="space-y-1.5">
+                <span className="text-[8px] font-mono text-chrome/70 uppercase tracking-widest font-bold block">
+                  01. SELECT TRIAGE PRIORITY
+                </span>
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "STANDARD" as const, est: "< 90 MINS" },
+                    { id: "URGENT" as const, est: "< 24 MINS" },
+                    { id: "VIP SOVEREIGN" as const, est: "< 8 MINS" },
+                  ].map((lvl) => {
+                    const isSelected = ticketPriority === lvl.id;
+                    return (
+                      <button
+                        key={lvl.id}
+                        type="button"
+                        onClick={() => setTicketPriority(lvl.id)}
+                        className={`p-2 text-left border transition-all cursor-pointer outline-none flex flex-col justify-between ${
+                          isSelected
+                            ? "border-accent bg-accent/15 text-accent shadow-[0_0_12px_rgba(212,163,89,0.15)] ring-1 ring-accent/30"
+                            : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent/60 hover:text-text-primary"
+                        } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                      >
+                        <span className={`text-[9px] font-mono font-bold uppercase tracking-wider ${isSelected ? "text-accent" : "text-text-primary"}`}>
+                          {lvl.id}
+                        </span>
+                        <span className="text-[7.5px] font-mono text-chrome/50 uppercase mt-0.5">
+                          {lvl.est}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Inquiry Topic Chips */}
+              <div className="space-y-1.5">
+                <span className="text-[8px] font-mono text-chrome/70 uppercase tracking-widest font-bold block">
+                  02. INQUIRY TOPIC
+                </span>
+                <div className="grid grid-cols-2 gap-2">
+                  {[
+                    "ORDER DISPATCH TRACKING",
+                    "GARMENT SPECIFICATIONS",
+                    "BESPOKE SIZING ADVISORY",
+                    "CUSTOM MONOGRAM INQUIRY",
+                  ].map((topic) => {
+                    const isSelected = ticketTopic === topic;
+                    return (
+                      <button
+                        key={topic}
+                        type="button"
+                        onClick={() => setTicketTopic(topic)}
+                        className={`p-2 text-left border text-[9px] font-mono tracking-wider uppercase transition-all cursor-pointer outline-none ${
+                          isSelected
+                            ? "border-accent bg-accent/15 text-accent ring-1 ring-accent/30"
+                            : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent/60 hover:text-text-primary"
+                        } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                      >
+                        {topic}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Client Ref & Submit Trigger */}
+              <div className="grid grid-cols-1 sm:grid-cols-12 gap-2 pt-1">
+                <div className="sm:col-span-8">
+                  <input
+                    type="text"
+                    required
+                    placeholder="ENTER ORDER ID (E.G. PRNC-940182) OR VIP EMAIL..."
+                    value={ticketClientRef}
+                    onChange={(e) => setTicketClientRef(e.target.value.toUpperCase())}
+                    className="w-full bg-bg-primary border border-border-subtle p-2.5 text-[10px] font-mono uppercase outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] text-text-primary"
+                  />
+                </div>
+                <div className="sm:col-span-4">
+                  <button
+                    type="submit"
+                    disabled={isGeneratingTicket}
+                    className="w-full h-full min-h-[38px] bg-accent hover:bg-accent-hover text-bg-primary text-[10px] font-bold uppercase tracking-widest transition-all cursor-pointer shadow-md outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)] flex items-center justify-center"
+                  >
+                    {isGeneratingTicket ? (
+                      <span className="animate-pulse">DISPATCHING...</span>
+                    ) : (
+                      <span>DISPATCH TICKET →</span>
+                    )}
+                  </button>
+                </div>
+              </div>
+            </form>
+          )}
+        </div>
+
         {/* Direct Concierge Gateway Card & Instant Action Trays */}
-        <div className="mt-12 p-6 bg-bg-surface border border-border-subtle space-y-6">
+        <div className="mt-8 p-6 bg-bg-surface border border-border-subtle space-y-6">
           <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div className="text-left space-y-1">
               <span className="text-[9px] text-accent tracking-[0.2em] font-mono font-bold block uppercase">
