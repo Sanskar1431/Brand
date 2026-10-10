@@ -38,6 +38,16 @@ export default function ContactPage() {
   const [requestCallback, setRequestCallback] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("MORNING (09:00 - 12:00)");
   const [selectedDeskLocation, setSelectedDeskLocation] = useState("LONDON (GMT)");
+  
+  // Private Atelier Showroom Session State
+  const [showroomLocation, setShowroomLocation] = useState("LONDON MAYFAIR");
+  const [sessionType, setSessionType] = useState("PRIVATE ARCHIVE FITTING");
+  const [sessionDate, setSessionDate] = useState("THU, OCT 15");
+  const [sessionTime, setSessionTime] = useState("11:00 AM");
+  const [clientGuestCount, setClientGuestCount] = useState("SOLO VIP (1)");
+  const [bookingPassCode, setBookingPassCode] = useState<string | null>(null);
+  const [isBookingSession, setIsBookingSession] = useState(false);
+  
   const { addToast } = useToastStore();
 
   const {
@@ -74,9 +84,23 @@ export default function ContactPage() {
     setTimeout(() => setSubmitStatus("idle"), 5000);
   };
 
+  const handleBookSession = () => {
+    setIsBookingSession(true);
+    setTimeout(() => {
+      setIsBookingSession(false);
+      const locCode = showroomLocation.split(" ")[0].slice(0, 3).toUpperCase();
+      const generatedCode = `ATELIER-${locCode}-${Math.floor(1000 + Math.random() * 9000)}`;
+      setBookingPassCode(generatedCode);
+      addToast(`PRIVATE SHOWROOM RESERVED: ${generatedCode} (${showroomLocation})`, "success");
+    }, 1200);
+  };
+
   return (
     <div className="w-full min-h-screen bg-bg-primary pt-32 pb-24 px-6 md:px-12 text-left flex flex-col justify-center">
-      <div className="max-w-[1600px] mx-auto w-full grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
+      <div className="max-w-[1600px] mx-auto w-full space-y-16">
+        
+        {/* Main Grid: Info and Form */}
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-16 items-start">
         
         {/* Left Column: Information and FAQs */}
         <div className="lg:col-span-5 space-y-12">
@@ -522,6 +546,243 @@ export default function ContactPage() {
         </div>
 
       </div>
+
+      {/* Private Atelier Showroom VIP Reservation Protocol */}
+      <div className="border border-border-subtle/50 bg-bg-surface/30 p-8 md:p-12 space-y-8 text-left">
+        <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-border-subtle/40 pb-5 gap-3">
+          <div>
+            <span className="text-[10px] text-accent font-mono font-bold tracking-[0.25em] uppercase block">
+              PRIVATE SALON ACCESS
+            </span>
+            <h2 className="font-display text-2xl md:text-3xl font-semibold tracking-wider text-text-primary uppercase mt-1">
+              ATELIER SHOWROOM VIP RESERVATION
+            </h2>
+          </div>
+          <span className="text-[9px] font-mono text-chrome/60 uppercase tracking-widest border border-border-subtle/40 px-3 py-1.5 self-start md:self-auto bg-bg-primary/40">
+            BY INVITATION & APPOINTMENT ONLY
+          </span>
+        </div>
+
+        {bookingPassCode ? (
+          <motion.div
+            initial={{ opacity: 0, scale: 0.98 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="p-6 md:p-8 bg-accent/10 border border-accent/40 space-y-6"
+          >
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-accent/30 pb-4">
+              <div>
+                <span className="text-[9px] font-mono text-accent uppercase font-bold tracking-widest block">
+                  CONFIRMED VIP SALON PASS
+                </span>
+                <span className="text-xl md:text-2xl font-mono font-bold text-accent tracking-[0.2em] mt-1 block">
+                  {bookingPassCode}
+                </span>
+              </div>
+              <div className="flex items-center gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== "undefined" && navigator.clipboard) {
+                      navigator.clipboard.writeText(bookingPassCode);
+                      addToast(`PASS KEY COPIED: ${bookingPassCode}`, "success");
+                    }
+                  }}
+                  className="px-4 py-2 bg-accent text-bg-primary hover:bg-accent-hover text-[10px] font-mono font-bold uppercase tracking-widest transition-colors cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                >
+                  COPY PASS KEY ⎘
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setBookingPassCode(null);
+                    addToast("MODIFIED SALON APPOINTMENT PROTOCOL", "info");
+                  }}
+                  className="px-4 py-2 border border-accent/40 text-accent hover:border-accent text-[10px] font-mono font-bold uppercase tracking-widest transition-colors cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                >
+                  RE-SCHEDULE
+                </button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-left">
+              <div>
+                <span className="text-[8px] font-mono text-chrome block uppercase">ATELIER LOCATION</span>
+                <span className="text-xs font-mono font-bold text-text-primary uppercase mt-0.5 block">{showroomLocation}</span>
+              </div>
+              <div>
+                <span className="text-[8px] font-mono text-chrome block uppercase">PROTOCOL TYPE</span>
+                <span className="text-xs font-mono font-bold text-text-primary uppercase mt-0.5 block">{sessionType}</span>
+              </div>
+              <div>
+                <span className="text-[8px] font-mono text-chrome block uppercase">DATE & SLOT</span>
+                <span className="text-xs font-mono font-bold text-accent uppercase mt-0.5 block">{sessionDate} @ {sessionTime}</span>
+              </div>
+              <div>
+                <span className="text-[8px] font-mono text-chrome block uppercase">GUEST PASS</span>
+                <span className="text-xs font-mono font-bold text-text-primary uppercase mt-0.5 block">{clientGuestCount}</span>
+              </div>
+            </div>
+          </motion.div>
+        ) : (
+          <div className="space-y-6">
+            {/* Showroom Location */}
+            <div className="space-y-2">
+              <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest font-bold block">
+                01. SELECT ATELIER SHOWROOM LOCATION
+              </span>
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5">
+                {[
+                  { name: "LONDON MAYFAIR", address: "44 BOND STREET, W1S" },
+                  { name: "NEW YORK SOHO", address: "102 MERCER STREET, NY" },
+                  { name: "TOKYO GINZA", address: "6-10-1 GINZA, CHUO" },
+                  { name: "MUMBAI BANDRA", address: "PRINCE ATELIER, WEST" },
+                ].map((loc) => {
+                  const isSelected = showroomLocation === loc.name;
+                  return (
+                    <button
+                      key={loc.name}
+                      type="button"
+                      onClick={() => setShowroomLocation(loc.name)}
+                      className={`p-3 text-left border transition-all cursor-pointer outline-none flex flex-col justify-between ${
+                        isSelected
+                          ? "border-accent bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent/60 hover:text-text-primary"
+                      } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      <span className={`text-[10px] font-mono font-bold uppercase tracking-wider ${isSelected ? "text-accent" : "text-text-primary"}`}>
+                        {loc.name}
+                      </span>
+                      <span className="text-[8px] font-mono text-chrome/50 uppercase mt-1">
+                        {loc.address}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Session Type */}
+            <div className="space-y-2">
+              <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest font-bold block">
+                02. SELECT SESSION PROTOCOL
+              </span>
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+                {[
+                  { type: "PRIVATE ARCHIVE FITTING", desc: "1-on-1 private styling & drape analysis" },
+                  { type: "BESPOKE MONOGRAM SALON", desc: "Live laser monogramming workshop" },
+                  { type: "COLLECTION PRE-RELEASE", desc: "VIP preview of upcoming vault drop" },
+                ].map((item) => {
+                  const isSelected = sessionType === item.type;
+                  return (
+                    <button
+                      key={item.type}
+                      type="button"
+                      onClick={() => setSessionType(item.type)}
+                      className={`p-3 text-left border transition-all cursor-pointer outline-none ${
+                        isSelected
+                          ? "border-accent bg-accent/15 text-accent ring-1 ring-accent/30 shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent/60 hover:text-text-primary"
+                      } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      <span className={`text-[10px] font-mono font-bold uppercase tracking-wider block ${isSelected ? "text-accent" : "text-text-primary"}`}>
+                        {item.type}
+                      </span>
+                      <span className="text-[8px] font-mono text-chrome/50 uppercase mt-0.5 block">
+                        {item.desc}
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </div>
+
+            {/* Date & Time Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest font-bold block">
+                  03. PREFERRED DATE
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {["THU, OCT 15", "FRI, OCT 16", "SAT, OCT 17", "SUN, OCT 18"].map((date) => (
+                    <button
+                      key={date}
+                      type="button"
+                      onClick={() => setSessionDate(date)}
+                      className={`py-2 px-1 text-center border text-[9px] font-mono font-bold uppercase transition-all cursor-pointer outline-none ${
+                        sessionDate === date
+                          ? "bg-accent text-bg-primary border-accent"
+                          : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent hover:text-accent"
+                      } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      {date}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest font-bold block">
+                  04. PREFERRED TIME SLOT
+                </span>
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
+                  {["11:00 AM", "02:30 PM", "05:00 PM", "07:30 PM"].map((time) => (
+                    <button
+                      key={time}
+                      type="button"
+                      onClick={() => setSessionTime(time)}
+                      className={`py-2 px-1 text-center border text-[9px] font-mono font-bold uppercase transition-all cursor-pointer outline-none ${
+                        sessionTime === time
+                          ? "bg-accent text-bg-primary border-accent"
+                          : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent hover:text-accent"
+                      } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      {time}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* Guest Capacity and Booking Trigger */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pt-4 border-t border-border-subtle/30">
+              <div className="flex items-center gap-2">
+                <span className="text-[8px] font-mono text-chrome uppercase tracking-widest">
+                  CLIENT CAPACITY:
+                </span>
+                {["SOLO VIP (1)", "VIP + 1 GUEST (2)"].map((cap) => (
+                  <button
+                    key={cap}
+                    type="button"
+                    onClick={() => setClientGuestCount(cap)}
+                    className={`px-3 py-1 text-[8px] font-mono font-bold uppercase tracking-wider border transition-all cursor-pointer outline-none ${
+                      clientGuestCount === cap
+                        ? "border-accent text-accent bg-accent/10"
+                        : "border-border-subtle/40 text-chrome/60 hover:text-text-primary"
+                    } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                  >
+                    {cap}
+                  </button>
+                ))}
+              </div>
+
+              <button
+                type="button"
+                onClick={handleBookSession}
+                disabled={isBookingSession}
+                className="px-8 py-3.5 bg-accent hover:bg-accent-hover text-bg-primary text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg shadow-accent/20 outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)] flex items-center justify-center gap-2"
+              >
+                {isBookingSession ? (
+                  <span className="animate-pulse">CONFIRMING ATELIER PASS...</span>
+                ) : (
+                  <span>CONFIRM PRIVATE APPOINTMENT</span>
+                )}
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+
     </div>
+  </div>
   );
 }
