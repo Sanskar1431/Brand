@@ -20,6 +20,34 @@ export default function CheckoutPage() {
   const [showCouponsDropdown, setShowCouponsDropdown] = useState(false);
   const [conciergeNotes, setConciergeNotes] = useState("");
 
+  // Payment Settlement Protocol State
+  type PaymentMethod = "CARD" | "UPI" | "CONCIERGE";
+  const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("CARD");
+  const [upiId, setUpiId] = useState("");
+  const [upiVerified, setUpiVerified] = useState(false);
+  const [isVerifyingUpi, setIsVerifyingUpi] = useState(false);
+  const [conciergeInspectionAgreed, setConciergeInspectionAgreed] = useState(true);
+
+  const handleAutofillCard = () => {
+    setFormData((prev) => ({
+      ...prev,
+      cardNumber: "4242 8819 0421 9901",
+      cardExpiry: "09/29",
+      cardCvc: "777",
+    }));
+    addToast("VIP BLACK CARD TEST HASH AUTO-FILLED", "info");
+  };
+
+  const handleSelectUpi = (vpa: string) => {
+    setUpiId(vpa);
+    setIsVerifyingUpi(true);
+    setTimeout(() => {
+      setIsVerifyingUpi(false);
+      setUpiVerified(true);
+      addToast(`UPI PROTOCOL VERIFIED: ${vpa}`, "success");
+    }, 600);
+  };
+
   const [panNumber, setPanNumber] = useState("");
   const [panVerified, setPanVerified] = useState(false);
   const [panError, setPanError] = useState("");
@@ -125,12 +153,29 @@ export default function CheckoutPage() {
       setPanError("Error : PAN does not exist, Please register this PAN or try with some other PAN.");
       return;
     }
+    if (paymentMethod === "CARD") {
+      if (!formData.cardNumber.trim() || !formData.cardExpiry.trim() || !formData.cardCvc.trim()) {
+        addToast("PLEASE COMPLETE ALL CARD VAULT FIELDS", "error");
+        return;
+      }
+    } else if (paymentMethod === "UPI") {
+      if (!upiId.trim()) {
+        addToast("PLEASE ENTER OR SELECT A VALID UPI VPA", "error");
+        return;
+      }
+    } else if (paymentMethod === "CONCIERGE") {
+      if (!conciergeInspectionAgreed) {
+        addToast("PLEASE CONFIRM CONCIERGE PROTOCOL TERMS", "error");
+        return;
+      }
+    }
+
     setLoading(true);
     setTimeout(() => {
       setLoading(false);
       const randomOrderId = "PRNC-" + Math.floor(100000 + Math.random() * 900000);
       clearCart();
-      router.push(`/checkout/success?orderId=${randomOrderId}&notes=${encodeURIComponent(conciergeNotes.trim())}`);
+      router.push(`/checkout/success?orderId=${randomOrderId}&notes=${encodeURIComponent(conciergeNotes.trim())}&method=${paymentMethod}`);
     }, 1800);
   };
 
@@ -556,54 +601,240 @@ export default function CheckoutPage() {
 
                 {/* Payment Section */}
                 <div className="space-y-4">
-                  <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome border-b border-border-subtle/30 pb-2">
-                    05. PAYMENT DETAIL
-                  </h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                    <div className="sm:col-span-3">
-                      <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
-                        Card Number
-                      </label>
-                      <input
-                        type="text"
-                        name="cardNumber"
-                        required
-                        placeholder="•••• •••• •••• ••••"
-                        value={formData.cardNumber}
-                        onChange={handleInputChange}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-                      />
-                    </div>
-                    <div className="sm:col-span-2">
-                       <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
-                        Expiry Date
-                      </label>
-                      <input
-                        type="text"
-                        name="cardExpiry"
-                        required
-                        placeholder="MM/YY"
-                        value={formData.cardExpiry}
-                        onChange={handleInputChange}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
-                        CVC
-                      </label>
-                      <input
-                        type="password"
-                        name="cardCvc"
-                        required
-                        placeholder="•••"
-                        maxLength={4}
-                        value={formData.cardCvc}
-                        onChange={handleInputChange}
-                        className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
-                      />
-                    </div>
+                  <div className="flex items-center justify-between border-b border-border-subtle/30 pb-2">
+                    <h3 className="text-xs tracking-[0.15em] font-bold uppercase text-chrome">
+                      05. PAYMENT SETTLEMENT PROTOCOL
+                    </h3>
+                    <span className="text-[9px] font-mono text-accent uppercase font-bold">
+                      256-BIT ENCRYPTED
+                    </span>
                   </div>
+
+                  {/* Payment Method Selector Tabs */}
+                  <div className="grid grid-cols-3 gap-2">
+                    {[
+                      { id: "CARD" as const, label: "CARD VAULT", sub: "VISA / MC / AMEX", icon: "💳" },
+                      { id: "UPI" as const, label: "UPI / QR", sub: "GPAY / PHONEPE", icon: "⚡" },
+                      { id: "CONCIERGE" as const, label: "CONCIERGE COD", sub: "PAY ON INSPECTION", icon: "✦" },
+                    ].map((tab) => {
+                      const isSelected = paymentMethod === tab.id;
+                      return (
+                        <button
+                          key={tab.id}
+                          type="button"
+                          onClick={() => setPaymentMethod(tab.id)}
+                          className={`p-3 text-left border transition-all cursor-pointer outline-none flex flex-col justify-between ${
+                            isSelected
+                              ? "bg-accent/10 border-accent text-accent shadow-[0_0_12px_rgba(212,163,89,0.15)] ring-1 ring-accent/30"
+                              : "bg-bg-surface border-border-subtle hover:border-accent/50 text-chrome hover:text-text-primary"
+                          } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                        >
+                          <div className="flex items-center justify-between w-full">
+                            <span className="text-sm">{tab.icon}</span>
+                            {isSelected && <span className="text-[10px] text-accent font-bold">●</span>}
+                          </div>
+                          <div className="mt-2">
+                            <span className={`text-[10px] font-mono font-bold uppercase block tracking-wider ${isSelected ? "text-accent" : "text-text-primary"}`}>
+                              {tab.label}
+                            </span>
+                            <span className="text-[8px] font-mono text-chrome/60 uppercase block">
+                              {tab.sub}
+                            </span>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+
+                  {/* Card Section */}
+                  {paymentMethod === "CARD" && (
+                    <div className="space-y-4 pt-2">
+                      <div className="flex items-center justify-between">
+                        <span className="text-[9px] font-mono text-chrome uppercase tracking-widest">
+                          AUTHENTICATED CARD DETAILS
+                        </span>
+                        <button
+                          type="button"
+                          onClick={handleAutofillCard}
+                          className="text-[8px] font-mono text-accent hover:underline uppercase font-bold tracking-wider cursor-pointer outline-none"
+                        >
+                          ⚡ AUTOFILL TEST CARD
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="sm:col-span-3">
+                          <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
+                            Card Number
+                          </label>
+                          <input
+                            type="text"
+                            name="cardNumber"
+                            placeholder="•••• •••• •••• ••••"
+                            value={formData.cardNumber}
+                            onChange={handleInputChange}
+                            className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          />
+                        </div>
+                        <div className="sm:col-span-2">
+                          <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
+                            Expiry Date
+                          </label>
+                          <input
+                            type="text"
+                            name="cardExpiry"
+                            placeholder="MM/YY"
+                            value={formData.cardExpiry}
+                            onChange={handleInputChange}
+                            className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          />
+                        </div>
+                        <div>
+                          <label className="text-[10px] text-chrome uppercase tracking-widest block mb-1">
+                            CVC
+                          </label>
+                          <input
+                            type="password"
+                            name="cardCvc"
+                            placeholder="•••"
+                            maxLength={4}
+                            value={formData.cardCvc}
+                            onChange={handleInputChange}
+                            className="w-full bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* UPI Section */}
+                  {paymentMethod === "UPI" && (
+                    <div className="space-y-4 pt-2">
+                      <div className="p-4 bg-bg-surface/50 border border-border-subtle/80 flex flex-col sm:flex-row items-center gap-4">
+                        {/* Simulated QR Code Canvas */}
+                        <div className="w-24 h-24 bg-bg-primary border border-accent/40 p-2 relative flex flex-col items-center justify-center shrink-0 shadow-md">
+                          <div className="absolute inset-1 border border-dashed border-accent/30" />
+                          <span className="text-xl">⚡</span>
+                          <span className="text-[7px] font-mono text-accent uppercase font-bold tracking-widest mt-1">
+                            SCAN &amp; PAY
+                          </span>
+                          <span className="text-[6px] font-mono text-chrome/50 uppercase mt-0.5">
+                            PRINCE VIP
+                          </span>
+                        </div>
+                        <div className="flex-1 text-left space-y-1.5">
+                          <span className="text-[9px] font-mono text-accent font-bold uppercase tracking-widest block">
+                            DYNAMIC SETTLEMENT QR CODE
+                          </span>
+                          <p className="text-[10px] font-mono text-chrome uppercase leading-relaxed">
+                            Scan with Google Pay, PhonePe, Paytm, or BHIM to authorize instant reserve lock.
+                          </p>
+                          <span className="text-[8px] font-mono text-chrome/50 uppercase block">
+                            AMOUNT: {formatPrice(total)} • ZERO PLATFORM SURCHARGE
+                          </span>
+                        </div>
+                      </div>
+
+                      {/* UPI ID Input */}
+                      <div className="space-y-2">
+                        <label className="text-[10px] text-chrome uppercase tracking-widest block">
+                          Or Enter UPI VPA Identifier
+                        </label>
+                        <div className="flex gap-2">
+                          <input
+                            type="text"
+                            placeholder="client@okhdfcbank"
+                            value={upiId}
+                            onChange={(e) => {
+                              setUpiId(e.target.value);
+                              setUpiVerified(false);
+                            }}
+                            className="flex-1 bg-bg-surface border border-border-subtle focus:border-accent p-3 outline-none text-sm text-text-primary transition-colors font-mono focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          />
+                          <button
+                            type="button"
+                            onClick={() => {
+                              if (!upiId.trim()) {
+                                addToast("PLEASE ENTER A VALID UPI VPA", "error");
+                                return;
+                              }
+                              setIsVerifyingUpi(true);
+                              setTimeout(() => {
+                                setIsVerifyingUpi(false);
+                                setUpiVerified(true);
+                                addToast("UPI VPA VALIDATED ON NPCI GATEWAY", "success");
+                              }, 600);
+                            }}
+                            className={`px-4 py-3 text-[10px] font-mono font-bold uppercase tracking-wider border cursor-pointer outline-none transition-all ${
+                              upiVerified
+                                ? "bg-success/15 border-success text-success"
+                                : "bg-bg-surface border-border-subtle hover:border-accent text-chrome hover:text-accent"
+                            }`}
+                          >
+                            {isVerifyingUpi ? "VERIFYING..." : upiVerified ? "VALIDATED ✓" : "VERIFY VPA"}
+                          </button>
+                        </div>
+
+                        {/* UPI Presets */}
+                        <div className="flex flex-wrap items-center gap-1.5 pt-1">
+                          <span className="text-[8px] font-mono text-chrome/60 uppercase tracking-widest">
+                            QUICK VPA PRESETS:
+                          </span>
+                          {[
+                            "sanskar@okhdfcbank",
+                            "prince.patron@icici",
+                            "atelier.vip@axisbank",
+                          ].map((preset) => (
+                            <button
+                              key={preset}
+                              type="button"
+                              onClick={() => handleSelectUpi(preset)}
+                              className={`text-[8.5px] font-mono px-2 py-0.5 border cursor-pointer transition-all ${
+                                upiId === preset && upiVerified
+                                  ? "border-success bg-success/10 text-success font-bold"
+                                  : "border-border-subtle/50 text-chrome hover:border-accent hover:text-accent bg-bg-surface/30"
+                              }`}
+                            >
+                              {preset}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Concierge COD Section */}
+                  {paymentMethod === "CONCIERGE" && (
+                    <div className="space-y-3 pt-2 text-left">
+                      <div className="p-4 bg-bg-surface/60 border border-accent/30 space-y-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-accent text-sm">✦</span>
+                          <span className="text-[10px] font-mono font-bold uppercase tracking-widest text-accent">
+                            WHITE-GLOVE ATELIER CONCIERGE PROTOCOL
+                          </span>
+                        </div>
+                        <p className="text-[10px] font-mono text-chrome uppercase leading-relaxed">
+                          Your archive pieces are hand-delivered in sealed bespoke vaults. You may inspect the craftsmanship, weave density, and fit prior to transaction settlement via card or UPI with the courier.
+                        </p>
+                        <ul className="text-[8.5px] font-mono text-chrome/80 uppercase space-y-1 pt-1">
+                          <li>• ZERO ADVANCE PAYMENT REQUIRED</li>
+                          <li>• IMMEDIATE SIZE EXCHANGE ON SITE IF REQUIRED</li>
+                          <li>• INSURED TRANSIT UNDER CLIENT PROTOCOL</li>
+                        </ul>
+                      </div>
+
+                      <label className="flex items-start gap-2.5 p-2.5 bg-bg-surface/30 border border-border-subtle/40 cursor-pointer select-none">
+                        <input
+                          type="checkbox"
+                          checked={conciergeInspectionAgreed}
+                          onChange={(e) => setConciergeInspectionAgreed(e.target.checked)}
+                          className="accent-accent w-4 h-4 cursor-pointer mt-0.5"
+                        />
+                        <span className="text-[9px] font-mono text-chrome uppercase tracking-wider leading-tight">
+                          I agree to White-Glove Concierge terms and will be present at the delivery location for inspection and settlement.
+                        </span>
+                      </label>
+                    </div>
+                  )}
                 </div>
 
                 {/* Submit button */}
@@ -614,8 +845,12 @@ export default function CheckoutPage() {
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+                  ) : paymentMethod === "CARD" ? (
+                    `AUTHORIZE CARD TRANSACTION — ${formatPrice(total)}`
+                  ) : paymentMethod === "UPI" ? (
+                    `INITIALIZE UPI TRANSACTION — ${formatPrice(total)}`
                   ) : (
-                    `AUTHORIZE PAYMENT — ₹${(total / 100).toLocaleString("en-IN")}`
+                    `BOOK CONCIERGE DISPATCH — ${formatPrice(total)}`
                   )}
                 </button>
               </form>

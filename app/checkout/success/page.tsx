@@ -10,6 +10,7 @@ function SuccessContent() {
   const searchParams = useSearchParams();
   const [orderId, setOrderId] = useState("PRNC-940182");
   const [conciergeNotes, setConciergeNotes] = useState("");
+  const [paymentMethod, setPaymentMethod] = useState<string>("CARD");
   const [isDispatchingReceipt, setIsDispatchingReceipt] = useState(false);
   const [receiptSent, setReceiptSent] = useState(false);
   const { addToast } = useToastStore();
@@ -25,6 +26,10 @@ function SuccessContent() {
     const nt = searchParams.get("notes");
     if (nt) {
       setConciergeNotes(decodeURIComponent(nt));
+    }
+    const m = searchParams.get("method");
+    if (m) {
+      setPaymentMethod(m);
     }
   }, [searchParams]);
 
@@ -46,7 +51,11 @@ function SuccessContent() {
   };
 
   const fulfillmentSteps = [
-    { step: "01", label: "PAYMENT AUTHORIZED", status: "completed" },
+    {
+      step: "01",
+      label: paymentMethod === "CONCIERGE" ? "CONCIERGE BOOKED" : "PAYMENT AUTHORIZED",
+      status: "completed",
+    },
     { step: "02", label: "VAULT PACKAGING", status: "current" },
     { step: "03", label: "AIR EXPRESS TRANSIT", status: "upcoming" },
     { step: "04", label: "SIGNATURE DELIVERY", status: "upcoming" },
@@ -86,6 +95,15 @@ function SuccessContent() {
             Your high-fashion acquisition has been finalized. Reference:{" "}
             <span className="font-mono font-bold text-accent select-all">{orderId}</span>
           </p>
+          <div className="flex items-center justify-center gap-2 pt-1">
+            <span className="text-[9px] font-mono tracking-[0.2em] px-2.5 py-1 bg-accent/10 border border-accent/40 text-accent font-bold uppercase shadow-sm">
+              {paymentMethod === "CARD"
+                ? "✦ SETTLED VIA ENCRYPTED CARD VAULT"
+                : paymentMethod === "UPI"
+                ? "✦ SETTLED VIA INSTANT NPCI UPI GATEWAY"
+                : "✦ WHITE-GLOVE CONCIERGE COD DISPATCH"}
+            </span>
+          </div>
           {conciergeNotes && (
             <p className="text-[9px] text-accent tracking-[0.2em] font-mono font-bold uppercase flex items-center justify-center gap-1.5 mt-2 animate-pulse">
               <svg
