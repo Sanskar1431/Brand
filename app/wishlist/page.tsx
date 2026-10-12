@@ -1,10 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { useCartStore } from "@/lib/store/cartStore";
 import { useUIStore } from "@/lib/store/uiStore";
 import { useToastStore } from "@/lib/store/toastStore";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
 import { motion, AnimatePresence } from "framer-motion";
 import ProductCard from "@/components/ui/ProductCard";
 import Link from "next/link";
@@ -14,11 +15,39 @@ export default function WishlistPage() {
   const { addItem } = useCartStore();
   const { setOpenCart } = useUIStore();
   const { addToast } = useToastStore();
+  const { formatPrice } = useCurrencyStore();
   const [selectedColors, setSelectedColors] = useState<Record<string, string>>({});
   const [searchQuery, setSearchQuery] = useState("");
   const [loadingPill, setLoadingPill] = useState<string | null>(null);
   const [activeCategory, setActiveCategory] = useState<"ALL" | "tshirt" | "jogger">("ALL");
   const [batchDefaultSize, setBatchDefaultSize] = useState<"S" | "M" | "L" | "XL">("M");
+
+  // Client Styling Memo State
+  const [clientNotes, setClientNotes] = useState<Record<string, string>>({});
+  const [editingNoteId, setEditingNoteId] = useState<string | null>(null);
+  const [activeNoteText, setActiveNoteText] = useState("");
+
+  useEffect(() => {
+    try {
+      const savedNotes = localStorage.getItem("prince_wishlist_notes");
+      if (savedNotes) setClientNotes(JSON.parse(savedNotes));
+    } catch {}
+  }, []);
+
+  const handleSaveNote = (productId: string) => {
+    const updated = { ...clientNotes, [productId]: activeNoteText.trim() };
+    setClientNotes(updated);
+    try {
+      localStorage.setItem("prince_wishlist_notes", JSON.stringify(updated));
+    } catch {}
+    setEditingNoteId(null);
+    setActiveNoteText("");
+    addToast("STYLING MEMO SAVED TO CLIENT ARCHIVE", "success");
+  };
+
+  const totalValuation = items.reduce((sum, item) => sum + item.price, 0);
+  const freeShippingThreshold = 1500000;
+  const isFreeShippingUnlocked = totalValuation >= freeShippingThreshold;
 
   const filteredItems = items.filter((product) => {
     const matchesCategory = activeCategory === "ALL" || product.category === activeCategory;
@@ -178,6 +207,58 @@ export default function WishlistPage() {
           </div>
         )}
 
+        {items.length > 0 && (
+          <div className="mb-8 p-5 sm:p-6 bg-bg-surface/60 border border-border-subtle/80 relative overflow-hidden backdrop-blur-sm">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-12 h-12 rounded-full border border-accent/40 bg-accent/10 flex items-center justify-center shrink-0">
+                  <span className="text-accent text-lg">✦</span>
+                </div>
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-[10px] font-mono text-accent uppercase tracking-[0.2em] font-bold">
+                      PORTFOLIO APPRAISAL
+                    </span>
+                    <span className="text-[9px] font-mono px-2 py-0.5 border border-border-subtle bg-bg-primary text-chrome uppercase">
+                      {items.length} {items.length === 1 ? "PIECE" : "PIECES"}
+                    </span>
+                  </div>
+                  <div className="flex items-baseline gap-3 mt-1">
+                    <span className="text-2xl sm:text-3xl font-display font-semibold text-text-primary tracking-wider">
+                      {formatPrice(totalValuation)}
+                    </span>
+                    <span className="text-[10px] font-mono text-chrome tracking-widest uppercase">
+                      ESTIMATED CURATION VALUE
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Complimentary Dispatch Status */}
+              <div className="flex flex-col lg:items-end justify-center min-w-[280px]">
+                <div className="flex items-center gap-2">
+                  <span className={`w-2 h-2 rounded-full ${isFreeShippingUnlocked ? "bg-accent shadow-[0_0_8px_rgba(212,163,89,0.8)]" : "bg-chrome/40"}`} />
+                  <span className="text-[10px] font-mono uppercase tracking-widest font-bold text-text-primary">
+                    {isFreeShippingUnlocked ? "COMPLIMENTARY AIR DISPATCH UNLOCKED" : "TIER PRIVILEGE: EXPRESS DISPATCH"}
+                  </span>
+                </div>
+                <p className="text-[9px] font-mono text-chrome tracking-wider mt-1 uppercase text-left lg:text-right">
+                  {isFreeShippingUnlocked
+                    ? "YOUR SELECTION QUALIFIES FOR INSURED WHITE-GLOVE AIR COURIER"
+                    : `ADD ${formatPrice(freeShippingThreshold - totalValuation)} MORE TO UNLOCK COMPLIMENTARY WHITE-GLOVE FREIGHT`}
+                </p>
+                {/* Progress bar */}
+                <div className="w-full lg:w-72 h-1.5 bg-bg-primary border border-border-subtle/50 mt-2 overflow-hidden">
+                  <div
+                    className="h-full bg-accent transition-all duration-500 ease-out"
+                    style={{ width: `${Math.min(100, Math.round((totalValuation / freeShippingThreshold) * 100))}%` }}
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {items.length > 0 ? (
           filteredItems.length > 0 ? (
             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
@@ -190,7 +271,7 @@ export default function WishlistPage() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.4 }}
-                  className="relative group"
+                  className="relative group flex flex-col justify-between"
                 >
                   <ProductCard
                     product={product}
@@ -202,6 +283,98 @@ export default function WishlistPage() {
                     <span className="text-[7.5px] font-mono font-bold tracking-widest text-accent uppercase">
                       {product.category}
                     </span>
+                  </div>
+
+                  {/* Client Styling Note Indicator / Editor */}
+                  <div className="mt-2.5 p-2 bg-bg-surface/50 border border-border-subtle/40 text-left">
+                    {editingNoteId === product.id ? (
+                      <div className="flex flex-col gap-2">
+                        <div className="flex items-center justify-between">
+                          <span className="text-[8px] font-mono text-accent uppercase tracking-widest font-bold">
+                            CLIENT STYLING MEMO
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingNoteId(null);
+                              setActiveNoteText("");
+                            }}
+                            className="text-chrome hover:text-text-primary text-[9px] p-0.5"
+                          >
+                            ✕
+                          </button>
+                        </div>
+                        <input
+                          type="text"
+                          value={activeNoteText}
+                          onChange={(e) => setActiveNoteText(e.target.value)}
+                          placeholder="e.g. Size up for oversize drape, reserve for Gala..."
+                          className="w-full bg-bg-primary border border-border-subtle px-2 py-1 text-[10px] font-mono text-text-primary outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          maxLength={100}
+                          autoFocus
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") handleSaveNote(product.id);
+                            if (e.key === "Escape") {
+                              setEditingNoteId(null);
+                              setActiveNoteText("");
+                            }
+                          }}
+                        />
+                        <div className="flex items-center justify-between">
+                          <span className="text-[8px] font-mono text-chrome/50">
+                            {activeNoteText.length}/100
+                          </span>
+                          <button
+                            type="button"
+                            onClick={() => handleSaveNote(product.id)}
+                            className="px-2.5 py-1 bg-accent text-white hover:bg-accent-hover text-[8px] font-mono font-bold uppercase tracking-wider transition-colors outline-none focus:ring-1 focus:ring-accent"
+                          >
+                            SAVE MEMO
+                          </button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between gap-2">
+                        {clientNotes[product.id] ? (
+                          <div
+                            onClick={() => {
+                              setEditingNoteId(product.id);
+                              setActiveNoteText(clientNotes[product.id]);
+                            }}
+                            className="group/note flex items-center gap-1.5 cursor-pointer max-w-[80%] text-left"
+                            title="Click to edit styling memo"
+                          >
+                            <span className="text-[9px] text-accent">✎</span>
+                            <span className="text-[9px] font-mono text-text-secondary truncate group-hover/note:text-accent transition-colors italic">
+                              &ldquo;{clientNotes[product.id]}&rdquo;
+                            </span>
+                          </div>
+                        ) : (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingNoteId(product.id);
+                              setActiveNoteText("");
+                            }}
+                            className="text-[8px] font-mono text-chrome/70 hover:text-accent transition-colors uppercase tracking-widest flex items-center gap-1 outline-none focus:text-accent"
+                          >
+                            <span>+ ADD STYLING MEMO</span>
+                          </button>
+                        )}
+                        {clientNotes[product.id] && (
+                          <button
+                            type="button"
+                            onClick={() => {
+                              setEditingNoteId(product.id);
+                              setActiveNoteText(clientNotes[product.id]);
+                            }}
+                            className="text-[8px] font-mono text-chrome hover:text-accent uppercase tracking-wider outline-none"
+                          >
+                            EDIT
+                          </button>
+                        )}
+                      </div>
+                    )}
                   </div>
 
                   {/* Quick Configuration Panel on hover */}
