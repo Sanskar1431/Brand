@@ -38,6 +38,7 @@ export default function ContactPage() {
   const [requestCallback, setRequestCallback] = useState(false);
   const [selectedTimeSlot, setSelectedTimeSlot] = useState("MORNING (09:00 - 12:00)");
   const [selectedDeskLocation, setSelectedDeskLocation] = useState("LONDON (GMT)");
+  const [inquiryPriority, setInquiryPriority] = useState<"STANDARD" | "URGENT" | "VIP OVERRIDE">("STANDARD");
   
   // Private Atelier Showroom Session State
   const [showroomLocation, setShowroomLocation] = useState("LONDON MAYFAIR");
@@ -71,13 +72,20 @@ export default function ContactPage() {
     // Simulate network submission delay
     await new Promise((resolve) => setTimeout(resolve, 2000));
     setSubmitStatus("success");
-    if (requestCallback) {
+    if (inquiryPriority === "VIP OVERRIDE") {
+      addToast(
+        `[VIP OVERRIDE] DIRECT ROUTED TO SENIOR ATELIER STYLIST (EST SLA: < 15 MINS)`,
+        "success"
+      );
+    } else if (inquiryPriority === "URGENT") {
+      addToast("URGENT CONCIERGE QUEUE HOLD ATTACHED (EST SLA: < 45 MINS)", "success");
+    } else if (requestCallback) {
       addToast(
         `INQUIRY & VIP CALLBACK SCHEDULED (${selectedDeskLocation} / ${selectedTimeSlot})`,
         "success"
       );
     } else {
-      addToast("INQUIRY SUBMITTED TO CONCIERGE QUEUE", "success");
+      addToast("INQUIRY SUBMITTED TO CONCIERGE QUEUE (EST SLA: < 2 HRS)", "success");
     }
     reset();
     setRequestCallback(false);
@@ -273,6 +281,54 @@ export default function ContactPage() {
             </div>
 
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+
+              {/* Concierge Response SLA Matrix */}
+              <div className="space-y-2 text-left bg-bg-primary/50 border border-border-subtle/60 p-3 select-none">
+                <div className="flex items-center justify-between">
+                  <span className="text-[8.5px] font-mono text-accent uppercase font-bold tracking-widest flex items-center gap-1.5">
+                    <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+                    CONCIERGE RESPONSE SLA MATRIX
+                  </span>
+                  <span className="text-[7.5px] font-mono text-chrome/60 uppercase">
+                    ENCRYPTED TLS 1.3
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-1.5 pt-1">
+                  {[
+                    { id: "STANDARD" as const, label: "STANDARD", sla: "< 2 HRS", desc: "GENERAL QUERIES" },
+                    { id: "URGENT" as const, label: "URGENT", sla: "< 45 MINS", desc: "DISPATCH QUEUE HOLD" },
+                    { id: "VIP OVERRIDE" as const, label: "VIP OVERRIDE", sla: "< 15 MINS", desc: "SENIOR ATELIER DESK" },
+                  ].map((p) => {
+                    const isCur = inquiryPriority === p.id;
+                    return (
+                      <button
+                        key={p.id}
+                        type="button"
+                        onClick={() => {
+                          setInquiryPriority(p.id);
+                          addToast(`INQUIRY PRIORITY ROUTING: ${p.id} (${p.sla})`, "info");
+                        }}
+                        className={`p-2 border text-left transition-all cursor-pointer outline-none flex flex-col justify-between ${
+                          isCur
+                            ? "border-accent bg-accent/15 text-accent shadow-[0_0_10px_rgba(212,163,89,0.15)] ring-1 ring-accent/30"
+                            : "border-border-subtle/50 bg-bg-surface/40 text-chrome hover:border-chrome"
+                        } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                      >
+                        <span className={`text-[8.5px] font-mono font-bold uppercase block ${isCur ? "text-accent" : "text-text-primary"}`}>
+                          {p.label}
+                        </span>
+                        <span className="text-[10px] font-mono font-bold text-accent block mt-0.5">
+                          {p.sla}
+                        </span>
+                        <span className="text-[7px] font-mono text-chrome/60 uppercase block mt-0.5 leading-tight">
+                          {p.desc}
+                        </span>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
               
               {/* Name */}
               <div className="space-y-1 text-left">
