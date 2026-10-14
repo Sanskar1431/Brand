@@ -68,16 +68,65 @@ export default function ProfilePage() {
     salonInvites: false,
   });
 
+  // Bespoke Monogram & Silhouette Drapery Profile
+  const [monogramInitials, setMonogramInitials] = useState("SV");
+  const [isEditingMonogram, setIsEditingMonogram] = useState(false);
+  const [tempMonogram, setTempMonogram] = useState("SV");
+  const [silhouetteDrape, setSilhouetteDrape] = useState("OVERSIZED ARCHITECTURAL");
+  const [isGeneratingPassport, setIsGeneratingPassport] = useState(false);
+  const [passportCode, setPassportCode] = useState<string | null>(null);
+
   useEffect(() => {
     try {
       const savedHub = localStorage.getItem("prince_client_hub");
       if (savedHub) setPreferredHub(savedHub);
       const savedNotifs = localStorage.getItem("prince_vip_notifications");
       if (savedNotifs) setNotifications(JSON.parse(savedNotifs));
+      const savedMonogram = localStorage.getItem("prince_client_monogram");
+      if (savedMonogram) {
+        setMonogramInitials(savedMonogram);
+        setTempMonogram(savedMonogram);
+      }
+      const savedDrape = localStorage.getItem("prince_client_silhouette");
+      if (savedDrape) setSilhouetteDrape(savedDrape);
     } catch {
       // Fallback
     }
   }, []);
+
+  const handleSaveMonogram = () => {
+    const clean = tempMonogram.trim().toUpperCase().replace(/[^A-Z]/g, "").slice(0, 3);
+    const finalVal = clean || "SV";
+    setMonogramInitials(finalVal);
+    setTempMonogram(finalVal);
+    try {
+      localStorage.setItem("prince_client_monogram", finalVal);
+    } catch {}
+    setIsEditingMonogram(false);
+    addToast(`BESPOKE ATELIER MONOGRAM SET: [ ${finalVal.split("").join(" · ")} ]`, "success");
+  };
+
+  const handleSilhouetteChange = (drape: string) => {
+    setSilhouetteDrape(drape);
+    try {
+      localStorage.setItem("prince_client_silhouette", drape);
+    } catch {}
+    addToast(`SILHOUETTE PROFILE UPDATED: ${drape}`, "info");
+  };
+
+  const handleGeneratePassport = () => {
+    setIsGeneratingPassport(true);
+    addToast("ENCRYPTING CLIENT DIGITAL WARDROBE PASSPORT...", "info");
+    setTimeout(() => {
+      setIsGeneratingPassport(false);
+      const pass = `PASSPORT-${monogramInitials}-VIP-${Math.floor(1000 + Math.random() * 9000)}`;
+      setPassportCode(pass);
+      if (typeof window !== "undefined" && navigator.clipboard) {
+        navigator.clipboard.writeText(pass);
+      }
+      addToast(`WARDROBE PASSPORT COMPILED & COPIED: ${pass}`, "success");
+    }, 1200);
+  };
 
   const handleHubChange = (hub: string) => {
     setPreferredHub(hub);
@@ -428,6 +477,138 @@ export default function ProfilePage() {
                     </label>
                   ))}
                 </div>
+              </div>
+
+              {/* Bespoke Atelier Monogramming Vault */}
+              <div className="space-y-3 pt-2 border-t border-border-subtle/30 text-left">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-accent font-mono uppercase tracking-widest block font-bold">
+                    BESPOKE MONOGRAMMING VAULT
+                  </span>
+                  <span className="text-[8px] font-mono text-chrome/50 uppercase">
+                    GOLD EMBOSS
+                  </span>
+                </div>
+
+                <div className="p-3 bg-bg-primary/60 border border-border-subtle/60 flex items-center justify-between gap-3">
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 border border-accent/40 bg-accent/10 flex items-center justify-center font-display text-accent font-bold tracking-widest text-xs shadow-inner">
+                      {monogramInitials.split("").join("·")}
+                    </div>
+                    <div>
+                      <span className="text-[9px] font-mono font-bold text-text-primary uppercase block">
+                        ARCHIVE STAMP: [ {monogramInitials.split("").join(" · ")} ]
+                      </span>
+                      <span className="text-[7.5px] font-mono text-chrome/60 uppercase block">
+                        APPLIED TO BESPOKE GARMENT LABELS &amp; VAULT BOXES
+                      </span>
+                    </div>
+                  </div>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsEditingMonogram(!isEditingMonogram);
+                      setTempMonogram(monogramInitials);
+                    }}
+                    className="text-[8px] font-mono text-accent hover:underline uppercase font-bold cursor-pointer outline-none"
+                  >
+                    {isEditingMonogram ? "CANCEL" : "EDIT ✎"}
+                  </button>
+                </div>
+
+                {isEditingMonogram && (
+                  <div className="p-2.5 bg-bg-primary border border-accent/40 space-y-2">
+                    <span className="text-[8px] font-mono text-chrome uppercase tracking-widest block">
+                      ENTER INITIALS (MAX 3 LETTERS)
+                    </span>
+                    <div className="flex gap-2">
+                      <input
+                        type="text"
+                        value={tempMonogram}
+                        onChange={(e) => setTempMonogram(e.target.value.toUpperCase().slice(0, 3))}
+                        placeholder="SV"
+                        maxLength={3}
+                        className="flex-1 bg-bg-surface border border-border-subtle px-2 py-1 text-xs font-mono font-bold uppercase text-accent outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                        autoFocus
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSaveMonogram}
+                        className="px-3 py-1 bg-accent text-white hover:bg-accent-hover text-[8px] font-mono font-bold uppercase tracking-wider transition-colors outline-none focus:ring-1 focus:ring-accent"
+                      >
+                        SAVE STAMP
+                      </button>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Fit Silhouette Drapery Profile */}
+              <div className="space-y-2 pt-2 border-t border-border-subtle/30 text-left">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] text-accent font-mono uppercase tracking-widest block font-bold">
+                    SILHOUETTE DRAPERY PROFILE
+                  </span>
+                  <span className="text-[8px] font-mono text-chrome/50 uppercase">
+                    TAILORING FIT
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-1 gap-1.5">
+                  {[
+                    { id: "OVERSIZED ARCHITECTURAL", desc: "SIGNATURE DROP-SHOULDER & RELAXED BODY DRAPE" },
+                    { id: "CLASSIC RELAXED", desc: "BALANCED PROPORTION WITH SUBTLE TAPER" },
+                    { id: "STRUCTURED CONTEMPORARY", desc: "CLOSER BODY PROFILE FOR CLEAN TAILORED LOOK" },
+                  ].map((s) => {
+                    const isSelected = silhouetteDrape === s.id;
+                    return (
+                      <button
+                        key={s.id}
+                        type="button"
+                        onClick={() => handleSilhouetteChange(s.id)}
+                        className={`p-2 text-left border transition-all cursor-pointer outline-none flex items-center justify-between ${
+                          isSelected
+                            ? "border-accent bg-accent/15 text-accent shadow-[0_0_12px_rgba(212,163,89,0.15)] ring-1 ring-accent/30"
+                            : "border-border-subtle/50 bg-bg-primary/40 text-chrome hover:border-accent/60 hover:text-text-primary"
+                        } focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                      >
+                        <div>
+                          <span className={`text-[8.5px] font-mono font-bold uppercase tracking-wider block ${isSelected ? "text-accent" : "text-text-primary"}`}>
+                            {s.id}
+                          </span>
+                          <span className="text-[7.5px] font-mono text-chrome/60 uppercase">
+                            {s.desc}
+                          </span>
+                        </div>
+                        {isSelected && <span className="text-accent text-xs font-mono font-bold">✓</span>}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              {/* Client Digital Wardrobe Passport */}
+              <div className="p-3 bg-bg-primary/70 border border-border-subtle/80 space-y-2 text-left">
+                <div className="flex justify-between items-center">
+                  <span className="text-[8px] font-mono text-accent uppercase font-bold tracking-widest">
+                    DIGITAL WARDROBE PASSPORT
+                  </span>
+                  <button
+                    type="button"
+                    onClick={handleGeneratePassport}
+                    disabled={isGeneratingPassport}
+                    className="text-[8px] font-mono font-bold text-accent hover:underline uppercase cursor-pointer outline-none"
+                  >
+                    {isGeneratingPassport ? "ENCRYPTING..." : passportCode ? "RE-GENERATE" : "GENERATE CARD ⎘"}
+                  </button>
+                </div>
+                <p className="text-[10px] font-mono text-text-primary font-bold uppercase tracking-wider select-all">
+                  {passportCode || `PASSPORT-${monogramInitials}-VIP-8839`}
+                </p>
+                <span className="text-[7.5px] font-mono text-chrome/60 uppercase block">
+                  CRYPTOGRAPHIC VIP PROFILE LINKED TO ALL ATELIER INQUIRIES
+                </span>
               </div>
 
               {/* Quick Archives Shortcuts */}
