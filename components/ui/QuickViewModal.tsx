@@ -29,6 +29,8 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
   const [selectedColor, setSelectedColor] = useState<ProductColor | null>(null);
   const [selectedSize, setSelectedSize] = useState<"S" | "M" | "L" | "XL">("M");
   const [recommendedSize, setRecommendedSize] = useState<string | null>(null);
+  const [showMeasurements, setShowMeasurements] = useState(false);
+  const [measurementUnit, setMeasurementUnit] = useState<"in" | "cm">("in");
 
   useEffect(() => {
     if (isOpen && typeof window !== "undefined") {
@@ -202,6 +204,27 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                 {product.description}
               </p>
 
+              {/* Atelier Fabric & Craftsmanship Specs */}
+              <div className="space-y-2 bg-bg-primary/40 border border-border-subtle/40 p-3 select-none">
+                <div className="flex items-center justify-between text-[8px] font-mono uppercase tracking-widest text-accent font-bold">
+                  <span>ATELIER SPECIFICATION</span>
+                  <span>{product.fit.toUpperCase()} SILHOUETTE</span>
+                </div>
+                <div className="flex flex-wrap gap-1.5 pt-1">
+                  <span className="text-[8px] font-mono px-2 py-0.5 border border-accent/40 bg-accent/10 text-accent font-bold">
+                    {product.fabric}
+                  </span>
+                  {product.craftsmanship?.slice(0, 2).map((craft, idx) => (
+                    <span
+                      key={idx}
+                      className="text-[8px] font-mono px-2 py-0.5 border border-border-subtle bg-bg-surface text-chrome"
+                    >
+                      {craft}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
               {/* Colorways */}
               <div className="space-y-2">
                 <label className="text-[9px] text-chrome tracking-[0.15em] font-bold uppercase block">
@@ -228,11 +251,20 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                 </div>
               </div>
 
-              {/* Sizes */}
+              {/* Sizes & Measurement Matrix */}
               <div className="space-y-2">
-                <label className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block">
-                  Select Size {recommendedSize && `(Fit profile: ${recommendedSize})`}
-                </label>
+                <div className="flex justify-between items-center">
+                  <label className="text-[9px] text-accent tracking-[0.15em] font-bold uppercase block">
+                    Select Size {recommendedSize && `(Fit profile: ${recommendedSize})`}
+                  </label>
+                  <button
+                    type="button"
+                    onClick={() => setShowMeasurements(!showMeasurements)}
+                    className="text-[8px] font-mono text-chrome hover:text-accent uppercase tracking-wider font-bold transition-colors cursor-pointer outline-none"
+                  >
+                    {showMeasurements ? "✕ HIDE DIMENSIONS" : "📐 MEASUREMENTS MATRIX"}
+                  </button>
+                </div>
                 <div className="flex gap-2.5">
                   {product.sizes.map((s) => {
                     const oos = isOutOfStock(activeColor.name, s);
@@ -253,6 +285,108 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                       </button>
                     );
                   })}
+                </div>
+
+                {/* Measurement Matrix Drawer */}
+                <AnimatePresence>
+                  {showMeasurements && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      className="overflow-hidden bg-bg-primary/70 border border-border-subtle/50 p-2.5 space-y-2 mt-2 select-none"
+                    >
+                      <div className="flex justify-between items-center">
+                        <span className="text-[8px] font-mono text-accent uppercase font-bold tracking-widest">
+                          {product.category === "tshirt" ? "TOP ARCHITECTURE" : "TROUSER INSEAM"}
+                        </span>
+                        <div className="flex gap-1 border border-border-subtle/50 bg-bg-surface p-0.5">
+                          <button
+                            type="button"
+                            onClick={() => setMeasurementUnit("in")}
+                            className={`px-1.5 py-0.5 text-[7.5px] font-mono font-bold uppercase transition-colors ${
+                              measurementUnit === "in" ? "bg-accent text-white" : "text-chrome hover:text-text-primary"
+                            }`}
+                          >
+                            IN
+                          </button>
+                          <button
+                            type="button"
+                            onClick={() => setMeasurementUnit("cm")}
+                            className={`px-1.5 py-0.5 text-[7.5px] font-mono font-bold uppercase transition-colors ${
+                              measurementUnit === "cm" ? "bg-accent text-white" : "text-chrome hover:text-text-primary"
+                            }`}
+                          >
+                            CM
+                          </button>
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-4 gap-1 text-center font-mono">
+                        {(["S", "M", "L", "XL"] as const).map((sz) => {
+                          const isCur = selectedSize === sz;
+                          const tShirtDims = {
+                            S: { chest: measurementUnit === "in" ? "42\"" : "107 cm", len: measurementUnit === "in" ? "29\"" : "74 cm" },
+                            M: { chest: measurementUnit === "in" ? "44\"" : "112 cm", len: measurementUnit === "in" ? "30\"" : "76 cm" },
+                            L: { chest: measurementUnit === "in" ? "46\"" : "117 cm", len: measurementUnit === "in" ? "31\"" : "79 cm" },
+                            XL: { chest: measurementUnit === "in" ? "48\"" : "122 cm", len: measurementUnit === "in" ? "32\"" : "81 cm" },
+                          };
+                          const joggerDims = {
+                            S: { chest: measurementUnit === "in" ? "30\"" : "76 cm", len: measurementUnit === "in" ? "29\"" : "74 cm" },
+                            M: { chest: measurementUnit === "in" ? "32\"" : "81 cm", len: measurementUnit === "in" ? "30\"" : "76 cm" },
+                            L: { chest: measurementUnit === "in" ? "34\"" : "86 cm", len: measurementUnit === "in" ? "31\"" : "79 cm" },
+                            XL: { chest: measurementUnit === "in" ? "36\"" : "91 cm", len: measurementUnit === "in" ? "32\"" : "81 cm" },
+                          };
+                          const dims = product.category === "tshirt" ? tShirtDims[sz] : joggerDims[sz];
+                          return (
+                            <div
+                              key={sz}
+                              className={`p-1 border transition-all ${
+                                isCur
+                                  ? "border-accent bg-accent/15 text-accent shadow-sm"
+                                  : "border-border-subtle/40 bg-bg-surface/50 text-chrome"
+                              }`}
+                            >
+                              <span className="text-[8px] font-bold block">{sz}</span>
+                              <span className="text-[7px] block opacity-80">{product.category === "tshirt" ? "CH" : "W"}: {dims.chest}</span>
+                              <span className="text-[7px] block opacity-80">{product.category === "tshirt" ? "L" : "INS"}: {dims.len}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
+                {/* Vault Scarcity Indicator */}
+                <div className="pt-2">
+                  {isOutOfStock(activeColor.name, selectedSize) ? (
+                    <div className="flex items-center gap-2 p-2 bg-error/10 border border-error/30 text-error text-[8.5px] font-mono uppercase tracking-widest font-bold">
+                      <span className="w-1.5 h-1.5 rounded-full bg-error" />
+                      <span>VAULT ALLOCATION EXHAUSTED FOR {selectedSize}</span>
+                    </div>
+                  ) : (
+                    <div className="p-2 bg-bg-surface/60 border border-border-subtle/50 space-y-1.5 text-left">
+                      <div className="flex justify-between items-center text-[8px] font-mono uppercase tracking-wider">
+                        <span className="text-chrome flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+                          VAULT LEVEL: {selectedSize} ({activeColor.name})
+                        </span>
+                        <span className="text-accent font-bold">LIMITED ARCHIVE</span>
+                      </div>
+                      <div className="w-full h-1 bg-border-subtle/40 overflow-hidden">
+                        <div
+                          className="h-full bg-accent transition-all duration-300"
+                          style={{
+                            width: selectedSize === "M" ? "25%" : selectedSize === "L" ? "40%" : "60%",
+                          }}
+                        />
+                      </div>
+                      <span className="text-[7.5px] font-mono text-chrome/60 uppercase block">
+                        FAST DISPATCH GUARANTEED FROM APAC LOGISTICS HUB
+                      </span>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>
