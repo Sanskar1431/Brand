@@ -69,6 +69,93 @@ export default function SupportPage() {
   const [generatedTicket, setGeneratedTicket] = useState<{ code: string; estTime: string } | null>(null);
   const [isGeneratingTicket, setIsGeneratingTicket] = useState(false);
 
+  // Order Logistics Radar State
+  const [trackingInput, setTrackingInput] = useState("PRNC-940182");
+  const [isQueryingTracking, setIsQueryingTracking] = useState(false);
+  const [trackingResult, setTrackingResult] = useState<{
+    orderId: string;
+    status: string;
+    route: string;
+    courier: string;
+    seal: string;
+    estDelivery: string;
+    weight: string;
+    step: number;
+  } | null>({
+    orderId: "PRNC-940182",
+    status: "DELIVERED",
+    route: "BOM (MUMBAI) → LHR (LONDON HEATHROW)",
+    courier: "INSURED WHITE-GLOVE AIR EXPRESS",
+    seal: "TAMPER-EVIDENT ARCHIVE SEAL #8812",
+    estDelivery: "DELIVERED TO CLIENT MANOR",
+    weight: "1.42 KG BESPOKE HARD-SHELL VAULT",
+    step: 4,
+  });
+
+  // Authenticity Verifier State
+  const [authSerialInput, setAuthSerialInput] = useState("PRNC-AUTH-7721-VIP");
+  const [isVerifyingAuth, setIsVerifyingAuth] = useState(false);
+  const [authCertificate, setAuthCertificate] = useState<{
+    serial: string;
+    weaveBatch: string;
+    tailorDesk: string;
+    hash: string;
+    verifiedDate: string;
+  } | null>({
+    serial: "PRNC-AUTH-7721-VIP",
+    weaveBatch: "SERIES 01 // 240 GSM COMBED HEAVYWEIGHT JERSEY",
+    tailorDesk: "ATELIER DESK NO. 4 // LONDON MAYFAIR",
+    hash: "SHA256: 7F4A-98E2-PRNC-VAULT-AUTHENTIC",
+    verifiedDate: "OCT 2026",
+  });
+
+  const handleLookupTracking = (orderCode?: string) => {
+    const code = (orderCode || trackingInput).trim().toUpperCase();
+    if (!code) {
+      addToast("PLEASE ENTER AN ORDER IDENTIFIER", "error");
+      return;
+    }
+    setTrackingInput(code);
+    setIsQueryingTracking(true);
+    setTimeout(() => {
+      setIsQueryingTracking(false);
+      const isDelivered = code.includes("940") || code.includes("DELIVERED");
+      const isInTransit = code.includes("930") || code.includes("TRANSIT");
+      setTrackingResult({
+        orderId: code,
+        status: isDelivered ? "DELIVERED" : isInTransit ? "IN TRANSIT (AIR)" : "VAULT PACKAGING",
+        route: isDelivered ? "BOM (MUMBAI) → LHR (LONDON HEATHROW)" : isInTransit ? "BLR (BENGALURU) → JFK (NEW YORK)" : "APAC ATELIER HUB (MUMBAI)",
+        courier: "INSURED WHITE-GLOVE AIR EXPRESS",
+        seal: `TAMPER-EVIDENT ARCHIVE SEAL #${Math.floor(1000 + Math.random() * 9000)}`,
+        estDelivery: isDelivered ? "DELIVERED TO CLIENT MANOR" : isInTransit ? "IN TRANSIT // ARRIVING IN 2 DAYS" : "SCHEDULED FOR AIR FREIGHT TOMORROW",
+        weight: "1.42 KG BESPOKE HARD-SHELL VAULT",
+        step: isDelivered ? 4 : isInTransit ? 3 : 2,
+      });
+      addToast(`CARRIER LOGISTICS RECORD RETRIEVED: ${code}`, "success");
+    }, 1000);
+  };
+
+  const handleVerifyAuthenticity = (serialCode?: string) => {
+    const code = (serialCode || authSerialInput).trim().toUpperCase();
+    if (!code) {
+      addToast("PLEASE ENTER GARMENT SERIAL TAG", "error");
+      return;
+    }
+    setAuthSerialInput(code);
+    setIsVerifyingAuth(true);
+    setTimeout(() => {
+      setIsVerifyingAuth(false);
+      setAuthCertificate({
+        serial: code,
+        weaveBatch: "SERIES 01 // 240 GSM COMBED HEAVYWEIGHT JERSEY",
+        tailorDesk: "ATELIER DESK NO. 4 // LONDON MAYFAIR",
+        hash: `SHA256: ${code.replace(/[^A-Z0-9]/g, "").slice(0, 8)}-VERIFIED-GENUINE`,
+        verifiedDate: "OCT 2026",
+      });
+      addToast(`CRYPTOGRAPHIC AUTHENTICITY CONFIRMED: ${code}`, "success");
+    }, 1100);
+  };
+
   const handleGenerateTicket = (e: React.FormEvent) => {
     e.preventDefault();
     setIsGeneratingTicket(true);
@@ -290,6 +377,312 @@ export default function SupportPage() {
                 RESET FILTERS &amp; SEARCH
               </button>
             </div>
+          )}
+        </div>
+
+        {/* Live Logistics Radar & Courier Chronicler */}
+        <div className="mt-8 p-6 bg-bg-surface/40 border border-border-subtle/50 space-y-6 text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle/30 pb-4 gap-2">
+            <div>
+              <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block uppercase">
+                DISPATCH &amp; TRANSIT TELEMETRY
+              </span>
+              <h3 className="font-display text-lg tracking-[0.15em] font-semibold uppercase text-text-primary mt-0.5">
+                LIVE LOGISTICS RADAR
+              </h3>
+            </div>
+            <span className="text-[8px] font-mono text-emerald-400 uppercase tracking-widest border border-emerald-500/30 px-2.5 py-1 self-start sm:self-auto bg-emerald-500/10 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              GLOBAL CARRIER API ACTIVE
+            </span>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleLookupTracking();
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="text-[9px] font-mono text-chrome tracking-widest uppercase">
+                  ENTER ARCHIVE ORDER ID / AIR WAYBILL
+                </label>
+                <span className="text-[8px] font-mono text-chrome/50 uppercase tracking-wider">
+                  SECURE VAULT COURIER
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={trackingInput}
+                  onChange={(e) => setTrackingInput(e.target.value.toUpperCase())}
+                  placeholder="E.G. PRNC-940182"
+                  className="flex-1 bg-bg-surface border border-border-subtle focus:border-accent px-4 py-2.5 outline-none text-xs text-text-primary font-mono tracking-widest uppercase rounded-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                />
+                <button
+                  type="submit"
+                  disabled={isQueryingTracking}
+                  className="bg-accent hover:bg-accent-hover text-bg-primary font-mono text-[10px] font-bold uppercase tracking-[0.2em] px-6 py-2.5 transition-all cursor-pointer whitespace-nowrap outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+                >
+                  {isQueryingTracking ? "SCANNING SATELLITE RADAR..." : "LOCATE AIR CARGO ↗"}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-[8px] font-mono text-chrome uppercase tracking-wider">
+                SAMPLE WAYBILLS:
+              </span>
+              {[
+                { code: "PRNC-940182", tag: "DELIVERED" },
+                { code: "PRNC-930571", tag: "AIR TRANSIT" },
+                { code: "PRNC-992144", tag: "VAULT PACKAGING" },
+              ].map((sample) => (
+                <button
+                  key={sample.code}
+                  type="button"
+                  onClick={() => handleLookupTracking(sample.code)}
+                  className="text-[8px] font-mono border border-border-subtle hover:border-accent px-2 py-1 bg-bg-primary/50 text-text-muted hover:text-accent transition-colors uppercase cursor-pointer"
+                >
+                  {sample.code} [{sample.tag}]
+                </button>
+              ))}
+            </div>
+          </form>
+
+          {trackingResult && (
+            <motion.div
+              initial={{ opacity: 0, y: 8 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="p-5 bg-bg-primary/80 border border-border-subtle space-y-4"
+            >
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-subtle/40 pb-3">
+                <div>
+                  <span className="text-[8px] font-mono text-chrome uppercase tracking-widest block">
+                    WAYBILL IDENTIFIER
+                  </span>
+                  <span className="text-base font-mono font-bold text-accent tracking-[0.2em] block">
+                    {trackingResult.orderId}
+                  </span>
+                </div>
+                <div className="flex items-center gap-2">
+                  <span
+                    className={`text-[9px] font-mono font-bold uppercase tracking-widest px-3 py-1 border ${
+                      trackingResult.status.includes("DELIVERED")
+                        ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                        : trackingResult.status.includes("TRANSIT")
+                        ? "bg-accent/10 text-accent border-accent/40"
+                        : "bg-chrome/10 text-chrome border-chrome/30"
+                    }`}
+                  >
+                    STATUS: {trackingResult.status}
+                  </span>
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined" && navigator.clipboard) {
+                        navigator.clipboard.writeText(trackingResult.orderId);
+                        addToast(`WAYBILL COPIED: ${trackingResult.orderId}`, "success");
+                      }
+                    }}
+                    className="px-2.5 py-1 text-[8px] font-mono uppercase tracking-widest border border-border-subtle hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer"
+                  >
+                    COPY ⎘
+                  </button>
+                </div>
+              </div>
+
+              {/* Progress Stepper */}
+              <div className="space-y-2 pt-1">
+                <div className="flex justify-between items-center text-[8px] font-mono text-chrome uppercase tracking-widest">
+                  <span>DISPATCH STAGES</span>
+                  <span>STAGE 0{trackingResult.step} OF 04</span>
+                </div>
+                <div className="grid grid-cols-4 gap-1.5">
+                  {[
+                    "VAULT PACKAGING",
+                    "CUSTOMS CLEARANCE",
+                    "AIR TRANSIT",
+                    "CLIENT DELIVERY",
+                  ].map((stepName, idx) => {
+                    const stepNum = idx + 1;
+                    const isCompleted = trackingResult.step >= stepNum;
+                    const isCurrent = trackingResult.step === stepNum;
+                    return (
+                      <div key={stepName} className="space-y-1">
+                        <div
+                          className={`h-1.5 w-full transition-all duration-300 ${
+                            isCompleted
+                              ? "bg-accent"
+                              : "bg-border-subtle/40"
+                          }`}
+                        />
+                        <span
+                          className={`text-[7px] font-mono uppercase tracking-tight block truncate ${
+                            isCurrent
+                              ? "text-accent font-bold"
+                              : isCompleted
+                              ? "text-text-primary"
+                              : "text-chrome/50"
+                          }`}
+                        >
+                          {stepNum}. {stepName}
+                        </span>
+                      </div>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left pt-2 border-t border-border-subtle/30">
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">FLIGHT ROUTING</span>
+                  <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">{trackingResult.route}</span>
+                </div>
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">COURIER PROTOCOL</span>
+                  <span className="text-[10px] font-mono font-bold text-accent uppercase mt-0.5 block">{trackingResult.courier}</span>
+                </div>
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">SECURITY SEAL</span>
+                  <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">{trackingResult.seal}</span>
+                </div>
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">ESTIMATED ARRIVAL / STATUS</span>
+                  <span className="text-[10px] font-mono font-bold text-emerald-400 uppercase mt-0.5 block">{trackingResult.estDelivery}</span>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </div>
+
+        {/* Cryptographic Authenticity Certificate Validator */}
+        <div className="mt-8 p-6 bg-bg-surface/40 border border-border-subtle/50 space-y-6 text-left">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle/30 pb-4 gap-2">
+            <div>
+              <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block uppercase">
+                AUTHENTICITY CERTIFICATE REGISTRY
+              </span>
+              <h3 className="font-display text-lg tracking-[0.15em] font-semibold uppercase text-text-primary mt-0.5">
+                GARMENT PROVENANCE VALIDATOR
+              </h3>
+            </div>
+            <span className="text-[8px] font-mono text-accent uppercase tracking-widest border border-accent/40 px-2.5 py-1 self-start sm:self-auto bg-accent/10">
+              SHA-256 DIGITAL ATELIER SEAL
+            </span>
+          </div>
+
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleVerifyAuthenticity();
+            }}
+            className="space-y-4"
+          >
+            <div>
+              <div className="flex justify-between items-center mb-1.5">
+                <label className="text-[9px] font-mono text-chrome tracking-widest uppercase">
+                  ENTER NFC TAG / EMBEDDED SERIAL HASH
+                </label>
+                <span className="text-[8px] font-mono text-chrome/50 uppercase tracking-wider">
+                  FOUND ON INTERIOR CARE LABEL
+                </span>
+              </div>
+              <div className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="text"
+                  value={authSerialInput}
+                  onChange={(e) => setAuthSerialInput(e.target.value.toUpperCase())}
+                  placeholder="E.G. PRNC-AUTH-7721-VIP"
+                  className="flex-1 bg-bg-surface border border-border-subtle focus:border-accent px-4 py-2.5 outline-none text-xs text-text-primary font-mono tracking-widest uppercase rounded-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                />
+                <button
+                  type="submit"
+                  disabled={isVerifyingAuth}
+                  className="bg-accent hover:bg-accent-hover text-bg-primary font-mono text-[10px] font-bold uppercase tracking-[0.2em] px-6 py-2.5 transition-all cursor-pointer whitespace-nowrap outline-none focus:ring-1 focus:ring-accent disabled:opacity-50"
+                >
+                  {isVerifyingAuth ? "VERIFYING ATELIER CIPHER..." : "VERIFY PIECE ↗"}
+                </button>
+              </div>
+            </div>
+
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <span className="text-[8px] font-mono text-chrome uppercase tracking-wider">
+                SAMPLE TAGS:
+              </span>
+              {[
+                { serial: "PRNC-AUTH-7721-VIP", label: "SOVEREIGN TEE" },
+                { serial: "PRNC-AUTH-5540-HOOD", label: "FRENCH TERRY" },
+                { serial: "PRNC-AUTH-9081-CAP", label: "METRIC CAP" },
+              ].map((sample) => (
+                <button
+                  key={sample.serial}
+                  type="button"
+                  onClick={() => handleVerifyAuthenticity(sample.serial)}
+                  className="text-[8px] font-mono border border-border-subtle hover:border-accent px-2 py-1 bg-bg-primary/50 text-text-muted hover:text-accent transition-colors uppercase cursor-pointer"
+                >
+                  {sample.serial} [{sample.label}]
+                </button>
+              ))}
+            </div>
+          </form>
+
+          {authCertificate && (
+            <motion.div
+              initial={{ opacity: 0, scale: 0.99 }}
+              animate={{ opacity: 1, scale: 1 }}
+              className="p-5 bg-accent/5 border-2 border-accent/40 space-y-4 relative overflow-hidden"
+            >
+              <div className="absolute -right-10 -bottom-10 opacity-5 font-display text-8xl font-black text-accent pointer-events-none select-none">
+                PRINCE
+              </div>
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-accent/20 pb-3">
+                <div className="flex items-center gap-2">
+                  <div className="w-6 h-6 rounded-full border border-accent flex items-center justify-center text-accent text-xs font-bold">
+                    ✓
+                  </div>
+                  <div>
+                    <span className="text-[8px] font-mono text-accent uppercase tracking-widest block font-bold">
+                      OFFICIAL ATELIER AUTHENTICATION RECORD
+                    </span>
+                    <span className="text-sm font-mono font-bold text-text-primary tracking-widest block">
+                      {authCertificate.serial}
+                    </span>
+                  </div>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (typeof window !== "undefined" && navigator.clipboard) {
+                      navigator.clipboard.writeText(authCertificate.hash);
+                      addToast(`CERTIFICATE HASH COPIED: ${authCertificate.hash}`, "success");
+                    }
+                  }}
+                  className="px-3 py-1 bg-accent/20 text-accent hover:bg-accent hover:text-bg-primary text-[8px] font-mono font-bold uppercase tracking-widest transition-colors cursor-pointer border border-accent/40"
+                >
+                  COPY CRYPTO SEAL ⎘
+                </button>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">TEXTILE ARCHITECTURE &amp; WEAVE</span>
+                  <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">{authCertificate.weaveBatch}</span>
+                </div>
+                <div>
+                  <span className="text-[8px] font-mono text-chrome block uppercase">MASTER ATELIER DESK</span>
+                  <span className="text-[10px] font-mono font-bold text-accent uppercase mt-0.5 block">{authCertificate.tailorDesk}</span>
+                </div>
+                <div className="sm:col-span-2">
+                  <span className="text-[8px] font-mono text-chrome block uppercase">CRYPTOGRAPHIC SHA-256 SEAL</span>
+                  <span className="text-[9px] font-mono text-text-muted break-all uppercase mt-0.5 block bg-bg-surface/60 p-1.5 border border-border-subtle/50">
+                    {authCertificate.hash}
+                  </span>
+                </div>
+              </div>
+            </motion.div>
           )}
         </div>
 
