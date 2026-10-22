@@ -3,12 +3,17 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useFilterStore } from "@/lib/store/filterStore";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
+import { useToastStore } from "@/lib/store/toastStore";
 
 const availableColors = ["Obsidian Black", "Royal Purple", "Gunmetal Grey", "Pure Black", "Soft White"];
 const availableSizes = ["S", "M", "L", "XL"];
 
 export default function FilterPanel() {
   const [isOpen, setIsOpen] = useState(false);
+  const { formatPrice } = useCurrencyStore();
+  const { addToast } = useToastStore();
+
   const {
     category,
     color,
@@ -24,6 +29,15 @@ export default function FilterPanel() {
     setSortBy,
     reset,
   } = useFilterStore();
+
+  const activeFiltersCount = [
+    category !== undefined,
+    color !== undefined,
+    size !== undefined,
+    priceRange[1] < 15000,
+    search.trim().length > 0,
+    sortBy !== "newest",
+  ].filter(Boolean).length;
 
   const handlePriceChange = (e: React.ChangeEvent<HTMLInputElement>, index: 0 | 1) => {
     const val = parseInt(e.target.value);
@@ -54,7 +68,12 @@ export default function FilterPanel() {
               d="M10.5 6h9.75M10.5 6a1.5 1.5 0 1 1-3 0m3 0a1.5 1.5 0 1 0-3 0M3.75 6H7.5m3 12h9.75m-9.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-3.75 0H7.5m9-6h3.75m-3.75 0a1.5 1.5 0 0 1-3 0m3 0a1.5 1.5 0 0 0-3 0m-9.75 0h9.75"
             />
           </svg>
-          FILTER & SORT
+          <span>FILTER &amp; SORT</span>
+          {activeFiltersCount > 0 && (
+            <span className="w-4 h-4 rounded-full bg-white text-accent flex items-center justify-center text-[9px] font-mono font-bold leading-none shadow-xs">
+              {activeFiltersCount}
+            </span>
+          )}
         </button>
       </div>
 
@@ -218,10 +237,37 @@ export default function FilterPanel() {
                 <div className="space-y-2">
                   <div className="flex justify-between items-center text-[10px] text-accent tracking-[0.2em] font-bold uppercase">
                     <span>Price Range</span>
-                    <span className="font-sans font-semibold text-text-primary">
-                      ₹{priceRange[0]} - ₹{priceRange[1]}
+                    <span className="font-mono font-semibold text-text-primary text-xs">
+                      {formatPrice(priceRange[0] * 100)} — {formatPrice(priceRange[1] * 100)}
                     </span>
                   </div>
+
+                  {/* Quick Price Preset Chips */}
+                  <div className="flex gap-1.5 pt-1">
+                    {[
+                      { label: "ALL", range: [0, 15000] as [number, number] },
+                      { label: "< 5K", range: [0, 5000] as [number, number] },
+                      { label: "5K-8K", range: [5000, 8000] as [number, number] },
+                      { label: "> 8K", range: [8000, 15000] as [number, number] },
+                    ].map((preset) => {
+                      const isSel = priceRange[0] === preset.range[0] && priceRange[1] === preset.range[1];
+                      return (
+                        <button
+                          key={preset.label}
+                          type="button"
+                          onClick={() => setPriceRange(preset.range)}
+                          className={`flex-1 py-1 text-[8px] font-mono font-bold uppercase border transition-all cursor-pointer outline-none focus:border-accent ${
+                            isSel
+                              ? "bg-accent border-accent text-white shadow-xs"
+                              : "border-border-subtle/50 text-chrome hover:border-accent hover:text-accent bg-bg-primary/50"
+                          }`}
+                        >
+                          {preset.label}
+                        </button>
+                      );
+                    })}
+                  </div>
+
                   <div className="space-y-4 pt-2">
                     <input
                       type="range"
@@ -239,16 +285,24 @@ export default function FilterPanel() {
               {/* Reset Footer */}
               <div className="border-t border-border-subtle/50 pt-4 mt-6 flex gap-4">
                 <button
-                  onClick={reset}
+                  type="button"
+                  onClick={() => {
+                    reset();
+                    addToast("ALL CATALOG FILTERS CLEARED", "info");
+                  }}
                   className="flex-1 py-3 border border-border-subtle hover:border-error hover:text-error text-chrome transition-colors text-[10px] font-bold uppercase tracking-widest cursor-pointer outline-none focus:border-error focus:ring-1 focus:ring-error/30 focus:shadow-[0_0_12px_rgba(239,68,68,0.15)]"
                 >
                   RESET ALL
                 </button>
                 <button
-                  onClick={() => setIsOpen(false)}
+                  type="button"
+                  onClick={() => {
+                    setIsOpen(false);
+                    addToast(`CATALOG FILTERS ACTUATED (${activeFiltersCount ? `${activeFiltersCount} ACTIVE` : "ALL ARCHIVES"})`, "success");
+                  }}
                   className="flex-1 py-3 bg-white text-black hover:bg-accent hover:text-white transition-colors text-[10px] font-bold uppercase tracking-widest cursor-pointer outline-none focus:bg-accent focus:text-white focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.25)]"
                 >
-                  APPLY FILTERS
+                  APPLY {activeFiltersCount > 0 ? `(${activeFiltersCount})` : "FILTERS"}
                 </button>
               </div>
             </motion.div>
