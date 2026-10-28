@@ -28,6 +28,9 @@ export default function CartDrawer() {
   const [giftRecipient, setGiftRecipient] = useState("");
   const [giftNote, setGiftNote] = useState("");
   const [monogramInitials, setMonogramInitials] = useState("");
+  const [carbonOffset, setCarbonOffset] = useState(false);
+  const [deliveryInstruction, setDeliveryInstruction] = useState<"SIGNATURE" | "CONCIERGE" | "VAULT">("SIGNATURE");
+  const [isDeliveryProtocolOpen, setIsDeliveryProtocolOpen] = useState(false);
 
   const getEstimatedDeliveryDate = () => {
     const today = new Date();
@@ -335,7 +338,9 @@ export default function CartDrawer() {
 
             {/* Footer Summary */}
             {items.length > 0 && (() => {
-              const subtotalBeforeDiscount = getTotalPrice() + (giftWrap ? 25000 : 0);
+              const carbonOffsetFee = 15000; // ₹150 in cents
+              const packagingFee = giftWrap ? 25000 : 0;
+              const subtotalBeforeDiscount = getTotalPrice() + packagingFee + (carbonOffset ? carbonOffsetFee : 0);
               const discountAmount = appliedPromo
                 ? Math.round((getTotalPrice() * appliedPromo.percent) / 100)
                 : 0;
@@ -458,6 +463,129 @@ export default function CartDrawer() {
                     </div>
                   </div>
 
+                  {/* Carbon-Neutral Air Freight Offset */}
+                  <div className="border border-border-subtle/40 p-3.5 bg-bg-surface/20 space-y-2">
+                    <div className="flex items-center justify-between">
+                      <div className="flex flex-col text-left">
+                        <span className="text-[10px] text-text-primary tracking-wider uppercase font-bold flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                          CARBON-NEUTRAL AIR FREIGHT OFFSET
+                        </span>
+                        <span className="text-[9px] text-chrome uppercase font-mono">
+                          + {formatPrice(carbonOffsetFee)} // 1.24 KG CO2e NEUTRALIZED VIA TAIGA CANOPY
+                        </span>
+                      </div>
+                      <input
+                        type="checkbox"
+                        checked={carbonOffset}
+                        onChange={(e) => {
+                          setCarbonOffset(e.target.checked);
+                          addToast(
+                            e.target.checked
+                              ? `CARBON-NEUTRAL FREIGHT OFFSET ATTACHED (+ ${formatPrice(carbonOffsetFee)})`
+                              : "CARBON-NEUTRAL OFFSET REMOVED",
+                            e.target.checked ? "success" : "info"
+                          );
+                        }}
+                        className="accent-accent w-4 h-4 cursor-pointer outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                      />
+                    </div>
+                    {carbonOffset && (
+                      <motion.div
+                        initial={{ opacity: 0, y: -4 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        className="p-2 bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-between text-[8px] font-mono text-emerald-400"
+                      >
+                        <span className="uppercase tracking-widest font-bold">
+                          ✓ HIMALAYAN TAIGA REFORESTATION ATTESTED
+                        </span>
+                        <span className="uppercase tracking-wider">
+                          CERT: #PRNC-CO2-942
+                        </span>
+                      </motion.div>
+                    )}
+                  </div>
+
+                  {/* White-Glove Dispatch Security Protocol */}
+                  <div className="border border-border-subtle/40 p-3.5 bg-bg-surface/20 space-y-2.5 text-left">
+                    <div className="flex items-center justify-between">
+                      <span className="text-[9px] font-mono font-bold text-accent uppercase tracking-widest">
+                        WHITE-GLOVE DISPATCH SECURITY
+                      </span>
+                      <button
+                        type="button"
+                        onClick={() => setIsDeliveryProtocolOpen(!isDeliveryProtocolOpen)}
+                        className="text-[9px] font-mono text-chrome hover:text-accent uppercase tracking-wider cursor-pointer"
+                      >
+                        {isDeliveryProtocolOpen ? "COLLAPSE" : "CHANGE"}
+                      </button>
+                    </div>
+
+                    <div className="flex items-center gap-1.5">
+                      <span className="text-[9px] font-mono font-bold text-text-primary uppercase tracking-wide">
+                        {deliveryInstruction === "SIGNATURE"
+                          ? "✦ DIRECT CLIENT SIGNATURE MANDATE"
+                          : deliveryInstruction === "CONCIERGE"
+                          ? "✦ RESIDENCE CONCIERGE ATTESTATION"
+                          : "✦ HIGH-SECURITY VAULT LOCKER DROP"}
+                      </span>
+                    </div>
+
+                    <AnimatePresence>
+                      {isDeliveryProtocolOpen && (
+                        <motion.div
+                          initial={{ opacity: 0, height: 0 }}
+                          animate={{ opacity: 1, height: "auto" }}
+                          exit={{ opacity: 0, height: 0 }}
+                          className="space-y-1.5 pt-1 overflow-hidden"
+                        >
+                          {[
+                            {
+                              id: "SIGNATURE" as const,
+                              title: "DIRECT SIGNATURE",
+                              desc: "PHYSICAL ID & SIGN-OFF REQUIRED UPON HANDOFF",
+                            },
+                            {
+                              id: "CONCIERGE" as const,
+                              title: "RESIDENCE CONCIERGE",
+                              desc: "WHITE-GLOVE INTAKE AT RESIDENTIAL FRONT DESK",
+                            },
+                            {
+                              id: "VAULT" as const,
+                              title: "VAULT LOCKER",
+                              desc: "ENCRYPTED OTP DROP AT BESPOKE LOCKER TERMINAL",
+                            },
+                          ].map((inst) => {
+                            const isSelected = deliveryInstruction === inst.id;
+                            return (
+                              <button
+                                key={inst.id}
+                                type="button"
+                                onClick={() => {
+                                  setDeliveryInstruction(inst.id);
+                                  setIsDeliveryProtocolOpen(false);
+                                  addToast(`DISPATCH PROTOCOL: ${inst.title} ACTIVE`, "success");
+                                }}
+                                className={`w-full p-2 text-left border transition-all cursor-pointer flex flex-col ${
+                                  isSelected
+                                    ? "bg-accent/10 border-accent text-accent"
+                                    : "bg-bg-surface border-border-subtle hover:border-accent text-chrome hover:text-text-primary"
+                                }`}
+                              >
+                                <span className="text-[9px] font-mono font-bold uppercase tracking-wider">
+                                  {inst.title}
+                                </span>
+                                <span className="text-[8px] font-mono uppercase text-chrome/70">
+                                  {inst.desc}
+                                </span>
+                              </button>
+                            );
+                          })}
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+
                   {/* Promo / Concierge Voucher Section */}
                   <div className="border border-border-subtle/40 p-3 bg-bg-surface/20 space-y-2.5">
                     <div className="flex justify-between items-center">
@@ -526,6 +654,22 @@ export default function CartDrawer() {
 
                   {/* Subtotal breakdown */}
                   <div className="space-y-1 pt-1">
+                    {giftWrap && (
+                      <div className="flex justify-between items-center text-xs text-chrome uppercase tracking-wider">
+                        <span>Gift Box Packaging</span>
+                        <span className="font-sans tabular-nums text-text-primary">
+                          +{formatPrice(packagingFee)}
+                        </span>
+                      </div>
+                    )}
+                    {carbonOffset && (
+                      <div className="flex justify-between items-center text-xs text-emerald-400 uppercase tracking-wider">
+                        <span>Carbon-Neutral Air Freight</span>
+                        <span className="font-sans tabular-nums">
+                          +{formatPrice(carbonOffsetFee)}
+                        </span>
+                      </div>
+                    )}
                     {appliedPromo && (
                       <div className="flex justify-between items-center text-xs text-chrome uppercase tracking-wider">
                         <span>Standard Archive Subtotal</span>
