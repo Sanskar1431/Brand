@@ -8,6 +8,8 @@ import FilterPanel from "./FilterPanel";
 import { motion, AnimatePresence } from "framer-motion";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { useCurrencyStore } from "@/lib/store/currencyStore";
+import { useToastStore } from "@/lib/store/toastStore";
 
 interface ShopCatalogProps {
   initialProducts: Product[];
@@ -34,6 +36,9 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
   const [filteredProducts, setFilteredProducts] = useState<Product[]>(initialProducts);
   const [visibleCount, setVisibleCount] = useState(24); // pagination count (Section 7.1)
   const [gridColumns, setGridColumns] = useState<2 | 3 | 4>(4);
+  const [viewMode, setViewMode] = useState<"matrix" | "runway">("matrix");
+  const { formatPrice } = useCurrencyStore();
+  const { addToast } = useToastStore();
   const router = useRouter();
 
   const activeCategory = categoryFilter || category;
@@ -145,6 +150,49 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
           </p>
         </div>
 
+        {/* Curated Drop Focus Themes */}
+        <div className="w-full pb-3 mb-4 flex items-center gap-2 overflow-x-auto scrollbar-hide text-[9px] font-mono uppercase tracking-wider select-none">
+          <span className="text-accent font-bold tracking-widest whitespace-nowrap flex items-center gap-1.5">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-pulse" />
+            CURATION FOCUS:
+          </span>
+          {[
+            { label: "ALL PIECES", searchKey: "" },
+            { label: "HEAVYWEIGHT (≥ 280 GSM)", searchKey: "heavyweight" },
+            { label: "FRENCH TERRY", searchKey: "terry" },
+            { label: "OBSIDIAN NOIR", colorKey: "Obsidian Black" },
+            { label: "ROYAL PURPLE", colorKey: "Royal Purple" },
+          ].map((theme) => {
+            const isActive = theme.searchKey !== undefined
+              ? (search.toLowerCase() === theme.searchKey && !color)
+              : color === theme.colorKey;
+            return (
+              <button
+                key={theme.label}
+                type="button"
+                onClick={() => {
+                  if (theme.searchKey !== undefined) {
+                    setSearch(theme.searchKey);
+                    setColor(undefined);
+                  }
+                  if (theme.colorKey !== undefined) {
+                    setColor(theme.colorKey);
+                    setSearch("");
+                  }
+                  addToast(`CURATION: ${theme.label}`, "info");
+                }}
+                className={`px-3 py-1 border transition-all cursor-pointer whitespace-nowrap ${
+                  isActive
+                    ? "bg-accent/20 border-accent text-accent font-bold"
+                    : "border-border-subtle/60 text-chrome hover:text-text-primary hover:border-accent bg-bg-surface/10"
+                }`}
+              >
+                {theme.label}
+              </button>
+            );
+          })}
+        </div>
+
         {/* Category switcher quick navigation carousel */}
         <div className="w-full overflow-x-auto pb-4 mb-10 scrollbar-hide flex gap-3 border-b border-border-subtle/20 select-none">
           {[
@@ -233,16 +281,16 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
 
         {/* Quick Price Bracket Presets & Grid Density Switcher */}
         <div className="w-full pb-4 mb-8 flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border-subtle/20 select-none">
-          {/* Price Brackets */}
+          {/* Price Brackets with Multi-Currency */}
           <div className="flex items-center gap-2 overflow-x-auto scrollbar-hide">
             <span className="text-chrome text-[10px] uppercase tracking-wider font-bold mr-1">
               Price Range:
             </span>
             {[
               { label: "ALL PRICES", range: [0, 15000] },
-              { label: "UNDER ₹5,000", range: [0, 5000] },
-              { label: "₹5,000 - ₹8,000", range: [5000, 8000] },
-              { label: "ABOVE ₹8,000", range: [8000, 15000] },
+              { label: `UNDER ${formatPrice(500000)}`, range: [0, 5000] },
+              { label: `${formatPrice(500000)} - ${formatPrice(800000)}`, range: [5000, 8000] },
+              { label: `ABOVE ${formatPrice(800000)}`, range: [8000, 15000] },
             ].map((bracket) => {
               const isSelected =
                 priceRange[0] === bracket.range[0] && priceRange[1] === bracket.range[1];
@@ -250,7 +298,10 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
                 <button
                   key={bracket.label}
                   type="button"
-                  onClick={() => setPriceRange(bracket.range as [number, number])}
+                  onClick={() => {
+                    setPriceRange(bracket.range as [number, number]);
+                    addToast(`PRICE BRACKET: ${bracket.label}`, "info");
+                  }}
                   className={`px-3 py-1.5 border text-[9px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                     isSelected
                       ? "bg-accent text-white border-accent shadow-sm"
@@ -263,25 +314,65 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
             })}
           </div>
 
-          {/* Grid Layout Density Switcher */}
-          <div className="flex items-center gap-1.5 self-end sm:self-auto">
-            <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest mr-1">
-              GRID:
-            </span>
-            {([2, 3, 4] as const).map((cols) => (
+          {/* View Mode & Grid Density Switcher */}
+          <div className="flex flex-wrap items-center gap-2 self-end sm:self-auto">
+            {/* View Mode Switcher */}
+            <div className="flex items-center border border-border-subtle bg-bg-surface/30 p-0.5">
               <button
-                key={cols}
                 type="button"
-                onClick={() => setGridColumns(cols)}
-                className={`px-2.5 py-1 text-[9px] font-mono font-bold uppercase tracking-wider border transition-all cursor-pointer ${
-                  gridColumns === cols
-                    ? "bg-text-primary text-bg-primary border-text-primary"
-                    : "border-border-subtle text-chrome hover:text-text-primary hover:border-border-subtle/80 bg-bg-surface/20"
+                onClick={() => {
+                  setViewMode("matrix");
+                  addToast("ARCHIVE MATRIX VIEW ACTIVE", "info");
+                }}
+                className={`px-2.5 py-1 text-[8px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  viewMode === "matrix"
+                    ? "bg-accent text-white"
+                    : "text-chrome hover:text-text-primary"
                 }`}
               >
-                {cols} COL
+                MATRIX
               </button>
-            ))}
+              <button
+                type="button"
+                onClick={() => {
+                  setViewMode("runway");
+                  addToast("RUNWAY LOOKBOOK PRESENTATION ACTIVE", "info");
+                }}
+                className={`px-2.5 py-1 text-[8px] font-mono font-bold uppercase tracking-wider transition-all cursor-pointer ${
+                  viewMode === "runway"
+                    ? "bg-accent text-white"
+                    : "text-chrome hover:text-text-primary"
+                }`}
+              >
+                RUNWAY
+              </button>
+            </div>
+
+            {/* Grid Layout Density Switcher (Only visible in Matrix mode) */}
+            {viewMode === "matrix" && (
+              <div className="flex items-center gap-1">
+                <span className="text-[8px] font-mono text-chrome/70 uppercase tracking-widest mr-1">
+                  GRID:
+                </span>
+                {([2, 3, 4] as const).map((cols) => (
+                  <button
+                    key={cols}
+                    type="button"
+                    onClick={() => {
+                      setGridColumns(cols);
+                      addToast(`ARCHIVE GRID: ${cols} COLUMNS`, "info");
+                    }}
+                    className={`px-2 py-1 text-[8px] font-mono font-bold uppercase tracking-wider border transition-all cursor-pointer ${
+                      gridColumns === cols
+                        ? "bg-text-primary text-bg-primary border-text-primary"
+                        : "border-border-subtle text-chrome hover:text-text-primary hover:border-border-subtle/80 bg-bg-surface/20"
+                    }`}
+                  >
+                    {cols} COL
+                  </button>
+                ))}
+              </div>
+            )}
           </div>
         </div>
 
@@ -351,11 +442,14 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
             {(priceRange[0] > 0 || priceRange[1] < 15000) && (
               <button
                 type="button"
-                onClick={() => setPriceRange([0, 15000])}
+                onClick={() => {
+                  setPriceRange([0, 15000]);
+                  addToast("PRICE FILTER RESET", "info");
+                }}
                 className="inline-flex items-center gap-1.5 px-3 py-1 bg-bg-surface border border-border-subtle hover:border-error text-text-primary hover:text-error text-[10px] font-mono tracking-wider uppercase transition-all rounded cursor-pointer outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
                 title="Reset price range"
               >
-                <span>PRICE: ₹{priceRange[0]} - ₹{priceRange[1]}</span>
+                <span>PRICE: {formatPrice(priceRange[0] * 100)} - {formatPrice(priceRange[1] * 100)}</span>
                 <span className="text-chrome hover:text-error">✕</span>
               </button>
             )}
@@ -389,42 +483,138 @@ export default function ShopCatalog({ initialProducts, categoryFilter }: ShopCat
           </div>
         )}
 
-        {/* Product Grid (Section 7.1.1 asymmetric crop, grid rhythm) */}
+        {/* Product Display (Matrix Grid or Editorial Runway Mode) */}
         {filteredProducts.length > 0 ? (
-          <div
-            className={`grid gap-8 transition-all duration-300 ${
-              gridColumns === 2
-                ? "grid-cols-1 md:grid-cols-2"
-                : gridColumns === 3
-                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
-            }`}
-          >
-            <AnimatePresence mode="popLayout">
-              {paginatedProducts.map((product, index) => {
-                // Occasional 'feature' cells span 2 columns (every 8th item starting from index 6)
-                const isFeatureItem = index > 0 && index % 8 === 6;
-                return (
+          viewMode === "runway" ? (
+            /* Editorial Runway Lookbook Layout */
+            <div className="space-y-12">
+              <AnimatePresence mode="popLayout">
+                {paginatedProducts.map((product, index) => (
                   <motion.div
                     key={product.id}
                     layout
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ duration: 0.4 }}
-                    className={isFeatureItem ? "md:col-span-2 md:row-span-2" : ""}
+                    initial={{ opacity: 0, y: 30 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    exit={{ opacity: 0, y: -20 }}
+                    transition={{ duration: 0.5, delay: index * 0.05 }}
+                    className="border border-border-subtle bg-bg-surface/30 p-6 md:p-8 hover:border-accent/60 transition-all text-left"
                   >
-                    <ProductCard
-                      product={product}
-                      variant={isFeatureItem ? "feature" : "standard"}
-                      // Alternating aspect ratios slightly to break visual monotony (Section 7.1.1)
-                      aspectRatio={index % 2 === 0 ? "aspect-[3/4]" : "aspect-[2/3]"}
-                    />
+                    <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                      {/* Visual Presentation */}
+                      <div className="lg:col-span-5 relative aspect-[3/4] bg-bg-primary overflow-hidden border border-border-subtle/50 group">
+                        <div className="w-full h-full bg-gradient-to-b from-bg-elevated to-bg-primary flex items-center justify-center">
+                          <span className="text-xs font-mono font-bold tracking-[0.25em] text-chrome/60 uppercase">
+                            LOOKBOOK // {product.id}
+                          </span>
+                        </div>
+                        <div className="absolute top-3 left-3 bg-bg-primary/90 border border-border-subtle px-2.5 py-1 text-[8px] font-mono text-accent uppercase tracking-widest font-bold">
+                          {product.category === "tshirt" ? "ARCHIVE TOP" : "ARCHIVE PANT"}
+                        </div>
+                        <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity">
+                          <Link
+                            href={`/product/${product.slug}`}
+                            className="px-4 py-2 bg-accent text-white text-[9px] font-mono font-bold uppercase tracking-widest shadow-lg"
+                          >
+                            OPEN PIECE ↗
+                          </Link>
+                        </div>
+                      </div>
+
+                      {/* Editorial Specs & Metadata */}
+                      <div className="lg:col-span-7 space-y-5">
+                        <div className="border-b border-border-subtle/40 pb-4">
+                          <span className="text-[9px] font-mono text-accent uppercase tracking-[0.25em] font-bold block mb-1">
+                            RUNWAY SPECIFICATION PROTOCOL // {product.id}
+                          </span>
+                          <h3 className="font-display text-2xl md:text-3xl uppercase tracking-wider font-semibold text-text-primary">
+                            {product.name}
+                          </h3>
+                          <div className="flex items-center gap-4 mt-2">
+                            <span className="text-xl font-sans font-bold text-accent">
+                              {formatPrice(product.price)}
+                            </span>
+                            <span className="text-[9px] font-mono uppercase tracking-wider px-2 py-0.5 border border-border-subtle text-chrome">
+                              IN STOCK & DISPATCH READY
+                            </span>
+                          </div>
+                        </div>
+
+                        <p className="text-xs text-chrome/80 leading-relaxed uppercase font-sans max-w-xl">
+                          {product.description}
+                        </p>
+
+                        <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 pt-2">
+                          <div className="p-3 bg-bg-primary/60 border border-border-subtle/40">
+                            <span className="text-[8px] font-mono text-chrome/60 uppercase block">TEXTILE WEAVE</span>
+                            <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block truncate">
+                              {product.fabric}
+                            </span>
+                          </div>
+                          <div className="p-3 bg-bg-primary/60 border border-border-subtle/40">
+                            <span className="text-[8px] font-mono text-chrome/60 uppercase block">COLORWAY ARCHIVES</span>
+                            <span className="text-[10px] font-mono font-bold text-accent uppercase mt-0.5 block truncate">
+                              {product.colors.map(c => c.name).join(" / ")}
+                            </span>
+                          </div>
+                          <div className="p-3 bg-bg-primary/60 border border-border-subtle/40 col-span-2 sm:col-span-1">
+                            <span className="text-[8px] font-mono text-chrome/60 uppercase block">AVAILABLE SIZES</span>
+                            <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">
+                              {product.sizes.join(" · ")}
+                            </span>
+                          </div>
+                        </div>
+
+                        <div className="pt-2 flex flex-wrap items-center gap-3">
+                          <Link
+                            href={`/product/${product.slug}`}
+                            className="px-6 py-3 bg-accent text-white hover:bg-accent-hover text-[10px] font-mono font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-md"
+                          >
+                            INSPECT FULL ATELIER PIECE ↗
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
                   </motion.div>
-                );
-              })}
-            </AnimatePresence>
-          </div>
+                ))}
+              </AnimatePresence>
+            </div>
+          ) : (
+            /* Standard Matrix Grid */
+            <div
+              className={`grid gap-8 transition-all duration-300 ${
+                gridColumns === 2
+                  ? "grid-cols-1 md:grid-cols-2"
+                  : gridColumns === 3
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+              }`}
+            >
+              <AnimatePresence mode="popLayout">
+                {paginatedProducts.map((product, index) => {
+                  // Occasional 'feature' cells span 2 columns (every 8th item starting from index 6)
+                  const isFeatureItem = index > 0 && index % 8 === 6;
+                  return (
+                    <motion.div
+                      key={product.id}
+                      layout
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ duration: 0.4 }}
+                      className={isFeatureItem ? "md:col-span-2 md:row-span-2" : ""}
+                    >
+                      <ProductCard
+                        product={product}
+                        variant={isFeatureItem ? "feature" : "standard"}
+                        // Alternating aspect ratios slightly to break visual monotony (Section 7.1.1)
+                        aspectRatio={index % 2 === 0 ? "aspect-[3/4]" : "aspect-[2/3]"}
+                      />
+                    </motion.div>
+                  );
+                })}
+              </AnimatePresence>
+            </div>
+          )
         ) : (
           /* Empty Search Result */
           <div className="text-center py-24 px-6 border border-dashed border-border-subtle/60 rounded-3xl flex flex-col items-center justify-center space-y-8 bg-bg-surface/10">
