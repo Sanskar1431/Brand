@@ -123,6 +123,33 @@ export default function ProductDetailClient({
   const [reserveTimeLeft, setReserveTimeLeft] = useState(900);
   const [isModelSpecsOpen, setIsModelSpecsOpen] = useState(false);
 
+  // Drape Simulator & Atelier Provenance State
+  const [drapePhysics, setDrapePhysics] = useState<"STATIC" | "WIND" | "STRIDE">("STATIC");
+  const [isConsultOpen, setIsConsultOpen] = useState(false);
+  const [consultSlot, setConsultSlot] = useState("TODAY // 16:00 GMT");
+  const [consultEmail, setConsultEmail] = useState("");
+  const [bookedConsultTicket, setBookedConsultTicket] = useState<{ id: string; slot: string } | null>(null);
+
+  const handleCopyProvenance = () => {
+    if (typeof window !== "undefined" && navigator.clipboard) {
+      const hash = `SHA256: 7F4A-${product.id.toUpperCase()}-ATELIER-MAYFAIR-2026`;
+      navigator.clipboard.writeText(hash);
+      addToast(`ATELIER PROVENANCE HASH COPIED: ${hash}`, "success");
+    }
+  };
+
+  const handleBookConsult = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!consultEmail.trim() || !consultEmail.includes("@")) {
+      addToast("PLEASE ENTER A VALID CLIENT EMAIL FOR CONSULTATION", "error");
+      return;
+    }
+    const ticketId = `PRNC-CONSULT-${Math.floor(1000 + Math.random() * 9000)}`;
+    setBookedConsultTicket({ id: ticketId, slot: consultSlot });
+    addToast(`BESPOKE TAILORING SALON SCHEDULED: ${ticketId}`, "success");
+    setConsultEmail("");
+  };
+
   // Vault Reservation timer loop
   useEffect(() => {
     let interval: any;
@@ -864,6 +891,286 @@ export default function ProductDetailClient({
               </p>
             </div>
           </div>
+        </div>
+
+        {/* ATELIER PROVENANCE LEDGER & DRAPE SIMULATOR */}
+        <div className="border-t border-border-subtle/30 pt-16 mb-20 space-y-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border-subtle/30 pb-6">
+            <div>
+              <span className="text-[10px] text-accent tracking-[0.25em] font-mono font-bold uppercase block mb-1">
+                ATELIER SPECIFICATION LAB
+              </span>
+              <h3 className="font-display text-2xl sm:text-3xl tracking-wider uppercase font-semibold text-text-primary">
+                PROVENANCE LEDGER &amp; DRAPE PHYSICS
+              </h3>
+            </div>
+            <div className="flex items-center gap-3">
+              <button
+                type="button"
+                onClick={handleCopyProvenance}
+                className="px-3.5 py-1.5 bg-bg-surface border border-border-subtle hover:border-accent text-[9px] font-mono font-bold tracking-widest text-chrome hover:text-accent uppercase transition-all cursor-pointer flex items-center gap-1.5 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+              >
+                <span>COPY SHA-256 PROVENANCE ⎘</span>
+              </button>
+              <button
+                type="button"
+                onClick={() => setIsConsultOpen(!isConsultOpen)}
+                className="px-3.5 py-1.5 bg-accent text-bg-primary hover:bg-accent-hover text-[9px] font-mono font-bold tracking-widest uppercase transition-all cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_12px_rgba(212,163,89,0.25)]"
+              >
+                {isConsultOpen ? "CLOSE SALON DESK ✕" : "BOOK TAILOR CONSULT ↗"}
+              </button>
+            </div>
+          </div>
+
+          {/* Interactive Drape & Physics Simulator Panel */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
+            {/* Drape Controls & Gauges */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="border border-border-subtle p-5 bg-bg-surface/30 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-mono font-bold text-accent tracking-widest uppercase">
+                    DRAPE DISPLACEMENT SIMULATOR
+                  </span>
+                  <span className="text-[8px] font-mono text-chrome/60 uppercase">
+                    PHYSICS: 240-450 GSM DENSITY MATRIX
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                  {[
+                    { id: "STATIC" as const, label: "STATIC DOCK", desc: "STRUCTURED FRAME" },
+                    { id: "WIND" as const, label: "WIND (15 KTS)", desc: "AERO-DISPLACEMENT" },
+                    { id: "STRIDE" as const, label: "KINETIC STRIDE", desc: "DYNAMIC OSCILLATION" },
+                  ].map((mode) => (
+                    <button
+                      key={mode.id}
+                      type="button"
+                      onClick={() => {
+                        setDrapePhysics(mode.id);
+                        addToast(`DRAPE SIMULATOR: ${mode.label} ENGAGED`, "info");
+                      }}
+                      className={`p-3 text-left border transition-all cursor-pointer flex flex-col justify-between ${
+                        drapePhysics === mode.id
+                          ? "bg-accent/15 border-accent text-accent"
+                          : "bg-bg-primary/40 border-border-subtle text-chrome hover:text-text-primary hover:border-chrome"
+                      } outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                    >
+                      <span className="text-[9px] font-mono font-bold uppercase tracking-wider">
+                        {mode.label}
+                      </span>
+                      <span className="text-[7.5px] font-mono text-chrome/70 uppercase mt-1">
+                        {mode.desc}
+                      </span>
+                    </button>
+                  ))}
+                </div>
+
+                {/* Real-time Textile Physics Metrics */}
+                <div className="p-4 bg-bg-primary/80 border border-border-subtle/60 space-y-3">
+                  <div className="flex justify-between items-center text-[8.5px] font-mono text-chrome uppercase">
+                    <span>ARCHITECTURAL RIGIDITY RETENTION</span>
+                    <span className="text-text-primary font-bold">
+                      {drapePhysics === "STATIC" ? "98%" : drapePhysics === "WIND" ? "92%" : "95%"}
+                    </span>
+                  </div>
+                  <div className="w-full h-1 bg-border-subtle/30 overflow-hidden">
+                    <div
+                      className="h-full bg-accent transition-all duration-500 ease-out"
+                      style={{
+                        width:
+                          drapePhysics === "STATIC" ? "98%" : drapePhysics === "WIND" ? "92%" : "95%",
+                      }}
+                    />
+                  </div>
+
+                  <div className="flex justify-between items-center text-[8.5px] font-mono text-chrome uppercase">
+                    <span>FIBER MEMORY RECOVERY (DROP AXIS)</span>
+                    <span className="text-accent font-bold">
+                      {drapePhysics === "STATIC" ? "100%" : drapePhysics === "WIND" ? "97%" : "99%"}
+                    </span>
+                  </div>
+                  <div className="w-full h-1 bg-border-subtle/30 overflow-hidden">
+                    <div
+                      className="h-full bg-accent transition-all duration-500 ease-out"
+                      style={{
+                        width:
+                          drapePhysics === "STATIC" ? "100%" : drapePhysics === "WIND" ? "97%" : "99%",
+                      }}
+                    />
+                  </div>
+
+                  <p className="text-[8px] font-mono text-chrome/60 uppercase pt-1">
+                    {drapePhysics === "STATIC"
+                      ? "• STATIC REST: Garment holds clean dropped shoulder lines and vertical rectangular silhouette without torso collapse."
+                      : drapePhysics === "WIND"
+                      ? "• AERO DISPLACEMENT: 15-knot laminar airflow produces minimal flutter while preserving square armhole geometry."
+                      : "• KINETIC STRIDE: Natural pedestrian velocity produces fluid pendulum motion with immediate rebound to true architectural axis."}
+                  </p>
+                </div>
+              </div>
+            </div>
+
+            {/* Cryptographic Ledger Breakdown */}
+            <div className="lg:col-span-6 space-y-6">
+              <div className="border border-border-subtle p-5 bg-bg-surface/30 space-y-4">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-mono font-bold text-accent tracking-widest uppercase">
+                    ATELIER BATCH CERTIFICATE RECORD
+                  </span>
+                  <span className="text-[8px] font-mono text-emerald-400 border border-emerald-500/30 px-2 py-0.5 bg-emerald-500/10 uppercase tracking-widest">
+                    AUTHENTICATED
+                  </span>
+                </div>
+
+                <div className="grid grid-cols-2 gap-3 text-left">
+                  <div className="p-3 bg-bg-primary/60 border border-border-subtle/40">
+                    <span className="text-[8px] font-mono text-chrome/60 block uppercase">BATCH NUMBER</span>
+                    <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">
+                      #PRNC-{product.id.slice(0, 3).toUpperCase()}-2026-V8
+                    </span>
+                  </div>
+                  <div className="p-3 bg-bg-primary/60 border border-border-subtle/40">
+                    <span className="text-[8px] font-mono text-chrome/60 block uppercase">MASTER TAILOR DESK</span>
+                    <span className="text-[10px] font-mono font-bold text-accent uppercase mt-0.5 block">
+                      MAYFAIR DESK NO. 04
+                    </span>
+                  </div>
+                  <div className="p-3 bg-bg-primary/60 border border-border-subtle/40">
+                    <span className="text-[8px] font-mono text-chrome/60 block uppercase">YARN SPUN RATIO</span>
+                    <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">
+                      32/1 COMBED TWIST
+                    </span>
+                  </div>
+                  <div className="p-3 bg-bg-primary/60 border border-border-subtle/40">
+                    <span className="text-[8px] font-mono text-chrome/60 block uppercase">TENSILE RATING</span>
+                    <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">
+                      520 NEWTON RESISTANCE
+                    </span>
+                  </div>
+                </div>
+
+                <div className="p-3 bg-bg-primary/80 border border-border-subtle/60 text-left">
+                  <span className="text-[8px] font-mono text-chrome block uppercase mb-1">
+                    DIGITAL ATELIER CIPHER SEAL (SHA-256)
+                  </span>
+                  <span className="text-[9px] font-mono text-accent break-all select-all font-bold">
+                    SHA256: 7F4A-{product.id.toUpperCase()}-ATELIER-MAYFAIR-LONDON-2026-GENUINE
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          {/* Bespoke Tailoring Consultation Drawer */}
+          <AnimatePresence>
+            {isConsultOpen && (
+              <motion.div
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="p-6 bg-bg-surface/50 border border-accent/40 space-y-6 text-left">
+                  <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-accent/30 pb-4 gap-2">
+                    <div>
+                      <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold block uppercase">
+                        PRIVATE CLIENT SERVICE
+                      </span>
+                      <h4 className="font-display text-lg tracking-[0.15em] font-semibold uppercase text-text-primary mt-0.5">
+                        BESPOKE TAILORING SALON CONSULTATION
+                      </h4>
+                    </div>
+                    <span className="text-[8px] font-mono text-chrome/70 uppercase tracking-widest border border-border-subtle/50 px-2.5 py-1 bg-bg-primary/50 self-start sm:self-auto">
+                      COMPLIMENTARY FOR ARCHIVE PATRONS
+                    </span>
+                  </div>
+
+                  {bookedConsultTicket ? (
+                    <motion.div
+                      initial={{ opacity: 0, scale: 0.98 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      className="p-5 bg-accent/10 border border-accent/40 space-y-3"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+                        <div>
+                          <span className="text-[8px] font-mono text-accent uppercase tracking-widest block font-bold">
+                            CONSULTATION PASS ISSUED
+                          </span>
+                          <span className="text-base font-mono font-bold text-text-primary tracking-widest mt-0.5 block">
+                            {bookedConsultTicket.id}
+                          </span>
+                        </div>
+                        <span className="text-[9px] font-mono font-bold text-accent uppercase tracking-wider px-3 py-1 border border-accent/30 bg-bg-primary/60">
+                          WINDOW: {bookedConsultTicket.slot}
+                        </span>
+                      </div>
+                      <p className="text-[9px] font-mono text-chrome uppercase leading-relaxed">
+                        A senior atelier draper will connect with your private contact cipher prior to the window. You will review garment drape modifications and custom initial debossing.
+                      </p>
+                      <button
+                        type="button"
+                        onClick={() => setBookedConsultTicket(null)}
+                        className="text-[9px] font-mono text-accent hover:underline uppercase tracking-wider cursor-pointer"
+                      >
+                        BOOK ANOTHER CONSULTATION PROTOCOL
+                      </button>
+                    </motion.div>
+                  ) : (
+                    <form onSubmit={handleBookConsult} className="space-y-4">
+                      <div>
+                        <label className="text-[9px] font-mono text-chrome tracking-widest uppercase block mb-1.5">
+                          SELECT CONSULTATION WINDOW (LONDON GMT)
+                        </label>
+                        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                          {[
+                            "TODAY // 16:00 GMT",
+                            "TOMORROW // 11:30 GMT",
+                            "WEEKEND // 14:00 GMT",
+                          ].map((slot) => (
+                            <button
+                              key={slot}
+                              type="button"
+                              onClick={() => setConsultSlot(slot)}
+                              className={`p-2.5 text-left border transition-all cursor-pointer ${
+                                consultSlot === slot
+                                  ? "bg-accent text-bg-primary border-accent font-bold"
+                                  : "bg-bg-primary border-border-subtle hover:border-accent text-chrome hover:text-text-primary"
+                              } text-[9px] font-mono uppercase tracking-wider outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]`}
+                            >
+                              {slot}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="space-y-1.5">
+                        <label className="text-[9px] font-mono text-chrome tracking-widest uppercase block">
+                          CLIENT MANOR OR DISPATCH EMAIL
+                        </label>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                          <input
+                            type="email"
+                            required
+                            placeholder="PATRON@RESIDENCE.COM..."
+                            value={consultEmail}
+                            onChange={(e) => setConsultEmail(e.target.value)}
+                            className="flex-1 bg-bg-primary border border-border-subtle focus:border-accent p-2.5 text-xs text-text-primary uppercase font-mono outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                          />
+                          <button
+                            type="submit"
+                            className="bg-accent hover:bg-accent-hover text-bg-primary font-mono text-[10px] font-bold uppercase tracking-[0.2em] px-6 py-2.5 transition-all cursor-pointer whitespace-nowrap outline-none focus:ring-1 focus:ring-accent shadow-md"
+                          >
+                            DISPATCH RESERVATION ↗
+                          </button>
+                        </div>
+                      </div>
+                    </form>
+                  )}
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </div>
 
         {/* 3. RELATED PRODUCTS CAROUSEL (Section 7.2.4) */}
