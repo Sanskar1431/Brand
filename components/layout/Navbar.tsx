@@ -31,6 +31,22 @@ export default function Navbar() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
+  const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
+  const [commandFilter, setCommandFilter] = useState("");
+
+  // Keyboard shortcut listener for Command Palette (⌘K or Ctrl+K)
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "k") {
+        e.preventDefault();
+        setIsCommandPaletteOpen((prev) => !prev);
+      } else if (e.key === "Escape") {
+        setIsCommandPaletteOpen(false);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
 
   useEffect(() => {
     try {
@@ -181,6 +197,20 @@ export default function Navbar() {
                   className={`w-[3px] rounded-full bg-accent`}
                 />
               ))}
+            </button>
+
+            {/* Atelier Command Palette Trigger (⌘K) */}
+            <button
+              onClick={() => {
+                setIsCommandPaletteOpen(true);
+                addToast("ATELIER COMMAND PALETTE ACTIVE [⌘K]", "info");
+              }}
+              className="flex items-center gap-1.5 px-2.5 py-1 text-[8.5px] font-mono font-bold tracking-widest border border-border-subtle/50 hover:border-accent text-chrome hover:text-accent transition-all cursor-pointer mr-1 outline-none focus:border-accent focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] bg-bg-surface/30"
+              title="Open Atelier Command & Concierge Palette (⌘K)"
+              aria-label="Open Command Palette"
+            >
+              <span className="text-accent font-bold">⌘K</span>
+              <span className="hidden sm:inline uppercase">COMMAND</span>
             </button>
 
             {/* Currency Switcher */}
@@ -404,6 +434,171 @@ export default function Navbar() {
                 >
                   SUPPORT
                 </Link>
+              </div>
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* Atelier VIP Concierge Command Palette (⌘K) */}
+      <AnimatePresence>
+        {isCommandPaletteOpen && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 bg-black/85 backdrop-blur-md z-[70] flex flex-col justify-start pt-20 px-6 md:px-12 select-none"
+          >
+            <div className="max-w-2xl mx-auto w-full space-y-4 text-left">
+              {/* Header Bar with Timezones */}
+              <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle/40 pb-3 gap-2">
+                <div className="flex items-center gap-2">
+                  <span className="w-2 h-2 rounded-full bg-accent animate-pulse" />
+                  <span className="text-[10px] text-accent tracking-[0.25em] font-mono font-bold uppercase">
+                    ATELIER CONCIERGE COMMAND PALETTE
+                  </span>
+                </div>
+                <div className="flex items-center gap-3 text-[8px] font-mono text-chrome/70">
+                  <span>MAYFAIR 17:00 GMT</span>
+                  <span>•</span>
+                  <span>NYC 12:00 EST</span>
+                  <span>•</span>
+                  <span>MUMBAI 22:30 IST</span>
+                </div>
+              </div>
+
+              {/* Command Filter Input */}
+              <div className="relative">
+                <input
+                  type="text"
+                  autoFocus
+                  placeholder="TYPE A COMMAND, ACTION, OR PROTOCOL..."
+                  value={commandFilter}
+                  onChange={(e) => setCommandFilter(e.target.value)}
+                  className="w-full bg-bg-surface border border-accent/50 focus:border-accent p-3.5 pr-10 text-xs font-mono uppercase tracking-widest text-text-primary outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.25)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setIsCommandPaletteOpen(false)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-chrome hover:text-accent text-xs font-mono uppercase p-1 cursor-pointer"
+                  title="Close (Esc)"
+                >
+                  ✕
+                </button>
+              </div>
+
+              {/* Fast Protocol Actions */}
+              <div className="space-y-2">
+                <span className="text-[8.5px] font-mono text-chrome tracking-widest uppercase block">
+                  VIP CONCIERGE DISPATCH ACTIONS
+                </span>
+                <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined" && navigator.clipboard) {
+                        navigator.clipboard.writeText("+1-800-840-7762");
+                        addToast("VIP HOTLINE COPIED: +1 (800) 840-PRNC", "success");
+                        setIsCommandPaletteOpen(false);
+                      }
+                    }}
+                    className="p-3 bg-bg-surface/50 border border-border-subtle hover:border-accent text-left transition-all cursor-pointer group outline-none focus:border-accent"
+                  >
+                    <span className="text-[8px] font-mono text-accent uppercase block font-bold">
+                      HOTLINE PROTOCOL
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-text-primary group-hover:text-accent transition-colors block mt-0.5">
+                      +1 (800) 840-PRNC ⎘
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      if (typeof window !== "undefined" && navigator.clipboard) {
+                        navigator.clipboard.writeText("concierge@prince-archive.com");
+                        addToast("ENCRYPTED CONCIERGE EMAIL COPIED", "success");
+                        setIsCommandPaletteOpen(false);
+                      }
+                    }}
+                    className="p-3 bg-bg-surface/50 border border-border-subtle hover:border-accent text-left transition-all cursor-pointer group outline-none focus:border-accent"
+                  >
+                    <span className="text-[8px] font-mono text-accent uppercase block font-bold">
+                      ENCRYPTED CIPHER
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-text-primary group-hover:text-accent transition-colors block mt-0.5 truncate">
+                      CONCIERGE INQUIRY ⎘
+                    </span>
+                  </button>
+
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setIsCommandPaletteOpen(false);
+                      router.push("/support");
+                      addToast("INITIALIZING LIVE AIR WAYBILL RADAR", "info");
+                    }}
+                    className="p-3 bg-bg-surface/50 border border-border-subtle hover:border-accent text-left transition-all cursor-pointer group outline-none focus:border-accent"
+                  >
+                    <span className="text-[8px] font-mono text-accent uppercase block font-bold">
+                      WAYBILL RADAR
+                    </span>
+                    <span className="text-[10px] font-mono font-bold text-text-primary group-hover:text-accent transition-colors block mt-0.5">
+                      LOCATE DISPATCH ↗
+                    </span>
+                  </button>
+                </div>
+              </div>
+
+              {/* Navigation Gateways List */}
+              <div className="space-y-2 pt-2 border-t border-border-subtle/30 max-h-[45vh] overflow-y-auto">
+                <span className="text-[8.5px] font-mono text-chrome tracking-widest uppercase block">
+                  ARCHIVE DESTINATION SECTORS
+                </span>
+                <div className="space-y-1">
+                  {[
+                    { label: "EXPLORE COMPLETE ARCHIVE (11 PIECES)", route: "/shop", badge: "CATALOG" },
+                    { label: "SIGNATURE TEES // 240-280 GSM COMB", route: "/shop/tshirt", badge: "TOPS" },
+                    { label: "PREMIUM JOGGERS // 400 GSM FRENCH TERRY", route: "/shop/jogger", badge: "PANTS" },
+                    { label: "CLIENT FIT & BESPOKE MONOGRAM VAULT", route: "/profile", badge: "PROFILE" },
+                    { label: "CURATED WISHLIST & VALUATION LEDGER", route: "/wishlist", badge: "PORTFOLIO" },
+                    { label: "VERIFY CRYPTOGRAPHIC AUTHENTICITY", route: "/support", badge: "SECURITY" },
+                    { label: "ATELIER ARCHITECTURAL BRAND STORY", route: "/about", badge: "ABOUT" },
+                    { label: "DISPATCH CLIENT CONCIERGE TICKET", route: "/contact", badge: "DESK" },
+                  ]
+                    .filter((item) =>
+                      commandFilter
+                        ? item.label.toLowerCase().includes(commandFilter.toLowerCase()) ||
+                          item.badge.toLowerCase().includes(commandFilter.toLowerCase())
+                        : true
+                    )
+                    .map((dest, idx) => (
+                      <button
+                        key={idx}
+                        type="button"
+                        onClick={() => {
+                          setIsCommandPaletteOpen(false);
+                          setCommandFilter("");
+                          router.push(dest.route);
+                          addToast(`NAVIGATING TO: ${dest.badge}`, "info");
+                        }}
+                        className="w-full p-2.5 bg-bg-surface/30 hover:bg-bg-surface border border-border-subtle/40 hover:border-accent flex items-center justify-between text-left transition-all cursor-pointer group outline-none focus:border-accent"
+                      >
+                        <span className="text-[10px] font-mono text-text-primary group-hover:text-accent uppercase tracking-wider font-semibold">
+                          {dest.label}
+                        </span>
+                        <span className="text-[8px] font-mono text-accent border border-accent/40 px-2 py-0.5 bg-accent/10 tracking-widest uppercase">
+                          {dest.badge} ↗
+                        </span>
+                      </button>
+                    ))}
+                </div>
+              </div>
+
+              {/* Palette Footer Tip */}
+              <div className="flex justify-between items-center text-[8px] font-mono text-chrome/50 pt-2 border-t border-border-subtle/30">
+                <span>PRESS [ESC] TO CLOSE PALETTE</span>
+                <span>PRINCE SOVEREIGN CLIENT PROTOCOL</span>
               </div>
             </div>
           </motion.div>
