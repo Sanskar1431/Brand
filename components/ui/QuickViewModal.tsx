@@ -9,6 +9,7 @@ import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { motion, AnimatePresence } from "framer-motion";
 import { useCurrencyStore } from "@/lib/store/currencyStore";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 
 interface QuickViewModalProps {
   product: Product | null;
@@ -20,7 +21,16 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
   const { addItem } = useCartStore();
   const { setOpenCart } = useUIStore();
   const { addToast } = useToastStore();
-  const { formatPrice } = useCurrencyStore();
+  const { formatPrice, currency } = useCurrencyStore();
+  const router = useRouter();
+
+  const handleExpressCheckout = () => {
+    if (!product || !activeColor) return;
+    addItem(product, activeColor.name, selectedSize, 1);
+    addToast(`INITIALIZING EXPRESS GATEWAY FOR ${product.name}`, "info");
+    onClose();
+    router.push("/checkout");
+  };
   const isWishlisted = useWishlistStore((state) =>
     product ? state.items.some((item) => item.id === product.id) : false
   );
@@ -195,9 +205,20 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                 <h3 className="font-display text-2xl tracking-wider font-semibold uppercase text-text-primary mt-1">
                   {product.name}
                 </h3>
-                <p className="font-sans text-lg font-bold text-text-primary mt-2 tabular-nums">
-                  {formatPrice(product.price)}
-                </p>
+                <div className="flex items-center justify-between gap-2 mt-2">
+                  <p className="font-sans text-lg font-bold text-text-primary tabular-nums">
+                    {formatPrice(product.price)}
+                  </p>
+                  <span className="text-[8px] font-mono text-accent border border-accent/40 px-2 py-0.5 bg-accent/10 uppercase tracking-widest font-bold">
+                    {currency} RATE ACTIVE
+                  </span>
+                </div>
+                <div className="flex items-center gap-1.5 pt-1 text-[8px] font-mono text-emerald-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                  <span className="uppercase tracking-widest">
+                    READY FOR IMMEDIATE 24H AIR DISPATCH
+                  </span>
+                </div>
               </div>
 
               <p className="text-xs text-chrome leading-relaxed font-sans border-t border-border-subtle/30 pt-4">
@@ -457,15 +478,22 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                   </div>
                 </div>
               ) : (
-                <div className="flex gap-2">
-                  <button
-                    onClick={handleAddToCart}
-                    className="flex-1 bg-accent text-white hover:bg-accent-hover py-4 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
-                  >
-                    ADD TO ARCHIVES
-                  </button>
-                  <button
-                    onClick={handleToggleWishlist}
+                <div className="space-y-2">
+                  <div className="flex gap-2">
+                    <button
+                      onClick={handleAddToCart}
+                      className="flex-1 bg-accent text-white hover:bg-accent-hover py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-lg cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+                    >
+                      ADD TO ARCHIVES
+                    </button>
+                    <button
+                      onClick={handleExpressCheckout}
+                      className="flex-1 bg-bg-primary hover:bg-bg-surface border border-accent/60 hover:border-accent text-accent py-3.5 text-xs font-bold uppercase tracking-[0.2em] transition-colors shadow-md cursor-pointer outline-none focus:ring-1 focus:ring-accent"
+                    >
+                      EXPRESS CHECKOUT ↗
+                    </button>
+                    <button
+                      onClick={handleToggleWishlist}
                     className={`px-4 border transition-all cursor-pointer outline-none flex items-center justify-center focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)] ${
                       isWishlisted
                         ? "border-accent bg-accent/10 text-accent"
@@ -489,6 +517,7 @@ export default function QuickViewModal({ product, isOpen, onClose }: QuickViewMo
                       />
                     </svg>
                   </button>
+                  </div>
                 </div>
               )}
               <Link
