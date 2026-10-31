@@ -13,6 +13,30 @@ function SuccessContent() {
   const [paymentMethod, setPaymentMethod] = useState<string>("CARD");
   const [isDispatchingReceipt, setIsDispatchingReceipt] = useState(false);
   const [receiptSent, setReceiptSent] = useState(false);
+  const [flightSeconds, setFlightSeconds] = useState(52140); // ~14h 29m
+
+  // Flight cargo cutoff countdown ticker
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setFlightSeconds((prev) => (prev > 0 ? prev - 1 : 86400));
+    }, 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  const formatCountdown = (secs: number) => {
+    const h = Math.floor(secs / 3600);
+    const m = Math.floor((secs % 3600) / 60);
+    const s = secs % 60;
+    return `${h.toString().padStart(2, "0")}:${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}`;
+  };
+
+  const handleCopyCertificate = () => {
+    if (typeof window !== "undefined" && navigator.clipboard) {
+      const certHash = `SHA256: 8C3A-${orderId}-SOVEREIGN-ACQUISITION-AUTHENTICATED-2026`;
+      navigator.clipboard.writeText(certHash);
+      addToast(`DIGITAL ACQUISITION CERTIFICATE COPIED: ${certHash}`, "success");
+    }
+  };
   const { addToast } = useToastStore();
 
   useEffect(() => {
@@ -189,6 +213,85 @@ function SuccessContent() {
                 </p>
               </div>
             ))}
+          </div>
+        </div>
+
+        {/* Atelier Cryptographic Acquisition Certificate */}
+        <div className="border-2 border-accent/40 bg-accent/5 p-5 max-w-lg mx-auto text-left space-y-4 relative overflow-hidden select-none">
+          <div className="absolute -right-8 -bottom-8 opacity-5 font-display text-8xl font-black text-accent pointer-events-none select-none">
+            PRINCE
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-accent/20 pb-3 gap-2">
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full border border-accent flex items-center justify-center text-accent text-xs font-bold">
+                ✦
+              </span>
+              <div>
+                <span className="text-[8px] font-mono text-accent uppercase tracking-widest font-bold block">
+                  DIGITAL ACQUISITION CERTIFICATE
+                </span>
+                <span className="text-xs font-mono font-bold text-text-primary tracking-widest block">
+                  CERT-{orderId}-VIP
+                </span>
+              </div>
+            </div>
+            <button
+              type="button"
+              onClick={handleCopyCertificate}
+              className="px-2.5 py-1 text-[8px] font-mono font-bold tracking-widest uppercase bg-accent/20 hover:bg-accent text-accent hover:text-bg-primary transition-colors border border-accent/40 cursor-pointer outline-none focus:ring-1 focus:ring-accent"
+            >
+              COPY CRYPTO SEAL ⎘
+            </button>
+          </div>
+
+          <div className="grid grid-cols-2 gap-3 text-left">
+            <div>
+              <span className="text-[8px] font-mono text-chrome block uppercase">PATRON TIER</span>
+              <span className="text-[10px] font-mono font-bold text-accent uppercase mt-0.5 block">
+                SOVEREIGN ARCHIVE MEMBER
+              </span>
+            </div>
+            <div>
+              <span className="text-[8px] font-mono text-chrome block uppercase">ATELIER SEAL DESK</span>
+              <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">
+                MAYFAIR ATELIER DESK NO. 4
+              </span>
+            </div>
+            <div className="col-span-2">
+              <span className="text-[8px] font-mono text-chrome block uppercase">CRYPTOGRAPHIC PROVENANCE CIPHER</span>
+              <span className="text-[8.5px] font-mono text-text-muted break-all uppercase mt-0.5 block bg-bg-surface/60 p-1.5 border border-border-subtle/50">
+                SHA256: 8C3A-{orderId}-SOVEREIGN-ACQUISITION-AUTHENTICATED-2026
+              </span>
+            </div>
+          </div>
+        </div>
+
+        {/* Live Air Cargo Telemetry & Flight Cutoff Radar */}
+        <div className="border border-border-subtle bg-bg-surface/40 p-4 max-w-lg mx-auto text-left space-y-2.5 select-none">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between border-b border-border-subtle/30 pb-2 gap-1.5">
+            <span className="text-[8.5px] font-mono text-emerald-400 uppercase tracking-widest font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+              AIR CARGO FLIGHT DEPARTURE TELEMETRY
+            </span>
+            <span className="text-[8px] font-mono text-chrome/60 uppercase">
+              CARRIER: WHITE-GLOVE AIR
+            </span>
+          </div>
+
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
+            <div>
+              <span className="text-[8px] font-mono text-chrome block uppercase">SCHEDULED FREIGHT FLIGHT</span>
+              <span className="text-[10px] font-mono font-bold text-text-primary uppercase mt-0.5 block">
+                BOM (MUMBAI) → LHR (LONDON HEATHROW)
+              </span>
+            </div>
+            <div className="text-right sm:text-right">
+              <span className="text-[8px] font-mono text-chrome block uppercase">FLIGHT CUTOFF COUNTDOWN</span>
+              <span className="text-xs font-mono font-bold text-accent tracking-widest uppercase mt-0.5 block">
+                {formatCountdown(flightSeconds)}
+              </span>
+            </div>
           </div>
         </div>
 
