@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
+import { useToastStore } from "@/lib/store/toastStore";
 
 export default function AboutPage() {
   const [selectedFabricIndex, setSelectedFabricIndex] = useState(0);
@@ -12,6 +13,25 @@ export default function AboutPage() {
   const [activeWeaveIndex, setActiveWeaveIndex] = useState(0);
   const [washTemp, setWashTemp] = useState<"COLD" | "WARM" | "HOT">("COLD");
   const [dryingMethod, setDryingMethod] = useState<"LINE" | "TUMBLE">("LINE");
+  const { addToast } = useToastStore();
+
+  // Swatch Comparator State
+  const [compFabricA, setCompFabricA] = useState(0);
+  const [compFabricB, setCompFabricB] = useState(1);
+  const [swatchEmail, setSwatchEmail] = useState("");
+  const [swatchDispatched, setSwatchDispatched] = useState<string | null>(null);
+
+  const handleRequestSwatch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!swatchEmail.trim() || !swatchEmail.includes("@")) {
+      addToast("PLEASE ENTER A VALID CLIENT EMAIL", "error");
+      return;
+    }
+    const code = `SWATCH-PRNC-${Math.floor(1000 + Math.random() * 9000)}`;
+    setSwatchDispatched(code);
+    addToast(`ATELIER SWATCH SPECIMEN ARCHIVE DISPATCHED: ${code}`, "success");
+    setSwatchEmail("");
+  };
 
   const weaveSpecs = [
     {
@@ -640,6 +660,171 @@ export default function AboutPage() {
                 </p>
               </motion.div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Section 5.5: Interactive Textile Specimen Comparator & Swatch Kit Request */}
+      <section className="relative w-full py-24 bg-bg-surface/60 border-t border-border-subtle/30 text-left select-none">
+        <div className="max-w-5xl mx-auto px-6 space-y-10">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 border-b border-border-subtle/30 pb-6">
+            <div>
+              <span className="text-xs text-accent tracking-[0.25em] font-bold uppercase block mb-1">
+                TEXTILE BENCHMARKING
+              </span>
+              <h3 className="font-display text-3xl sm:text-4xl tracking-wider font-semibold uppercase text-text-primary">
+                FABRIC SPECIMEN COMPARATOR
+              </h3>
+            </div>
+            <span className="text-[9px] font-mono text-chrome/70 uppercase tracking-widest border border-border-subtle/60 px-3 py-1 bg-bg-primary/50 self-start md:self-auto">
+              LABORATORY DENSITY METRICS
+            </span>
+          </div>
+
+          {/* Comparator Selectors & Comparison Grid */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-8 items-start">
+            {/* Fabric A Column */}
+            <div className="p-6 bg-bg-primary/70 border border-border-subtle space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] font-mono text-accent uppercase font-bold tracking-widest">
+                  SPECIMEN 01
+                </span>
+                <select
+                  value={compFabricA}
+                  onChange={(e) => setCompFabricA(Number(e.target.value))}
+                  className="bg-bg-surface border border-border-subtle text-[10px] font-mono uppercase px-2 py-1 text-text-primary outline-none focus:border-accent"
+                >
+                  {fabrics.map((f, i) => (
+                    <option key={f.id} value={i} className="bg-bg-primary">
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">TEXTILE DENSITY</span>
+                  <span className="text-accent font-bold">{fabrics[compFabricA].density}</span>
+                </div>
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">RIGIDITY INDEX</span>
+                  <span className="text-text-primary font-bold">{fabrics[compFabricA].rigidity} / 100</span>
+                </div>
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">AIR PERMEABILITY</span>
+                  <span className="text-text-primary font-bold">{fabrics[compFabricA].breathability}% CFM</span>
+                </div>
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">DURABILITY RATING</span>
+                  <span className="text-text-primary font-bold">{fabrics[compFabricA].durability} / 100</span>
+                </div>
+              </div>
+
+              <p className="text-[10px] font-sans text-chrome/80 leading-relaxed uppercase border-t border-border-subtle/30 pt-3">
+                {fabrics[compFabricA].drapeBehavior}
+              </p>
+            </div>
+
+            {/* Fabric B Column */}
+            <div className="p-6 bg-bg-primary/70 border border-border-subtle space-y-4">
+              <div className="flex justify-between items-center">
+                <span className="text-[9px] font-mono text-accent uppercase font-bold tracking-widest">
+                  SPECIMEN 02
+                </span>
+                <select
+                  value={compFabricB}
+                  onChange={(e) => setCompFabricB(Number(e.target.value))}
+                  className="bg-bg-surface border border-border-subtle text-[10px] font-mono uppercase px-2 py-1 text-text-primary outline-none focus:border-accent"
+                >
+                  {fabrics.map((f, i) => (
+                    <option key={f.id} value={i} className="bg-bg-primary">
+                      {f.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div className="space-y-3 pt-2">
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">TEXTILE DENSITY</span>
+                  <span className="text-accent font-bold">{fabrics[compFabricB].density}</span>
+                </div>
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">RIGIDITY INDEX</span>
+                  <span className="text-text-primary font-bold">{fabrics[compFabricB].rigidity} / 100</span>
+                </div>
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">AIR PERMEABILITY</span>
+                  <span className="text-text-primary font-bold">{fabrics[compFabricB].breathability}% CFM</span>
+                </div>
+                <div className="flex justify-between text-xs font-mono">
+                  <span className="text-chrome">DURABILITY RATING</span>
+                  <span className="text-text-primary font-bold">{fabrics[compFabricB].durability} / 100</span>
+                </div>
+              </div>
+
+              <p className="text-[10px] font-sans text-chrome/80 leading-relaxed uppercase border-t border-border-subtle/30 pt-3">
+                {fabrics[compFabricB].drapeBehavior}
+              </p>
+            </div>
+          </div>
+
+          {/* Complimentary Swatch Specimen Dispatch Form */}
+          <div className="p-6 bg-bg-primary border border-accent/40 space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border-subtle/40 pb-3">
+              <div>
+                <span className="text-[9px] text-accent tracking-[0.25em] font-mono font-bold uppercase block">
+                  COMPLIMENTARY ATELIER SERVICE
+                </span>
+                <h4 className="font-display text-base font-semibold uppercase text-text-primary mt-0.5">
+                  REQUEST TACTILE FABRIC SWATCH ARCHIVE
+                </h4>
+              </div>
+              <span className="text-[8px] font-mono text-emerald-400 border border-emerald-500/30 px-2 py-0.5 bg-emerald-500/10 uppercase tracking-widest self-start sm:self-auto">
+                PRE-CUT ARCHIVAL CARDS (3x)
+              </span>
+            </div>
+
+            {swatchDispatched ? (
+              <div className="p-4 bg-accent/10 border border-accent/30 space-y-2">
+                <div className="flex justify-between items-center">
+                  <span className="text-[9px] font-mono text-accent font-bold uppercase">
+                    SWATCH DISPATCH IDENTIFIER: {swatchDispatched}
+                  </span>
+                  <span className="text-[8px] font-mono text-text-primary uppercase">
+                    DISPATCH COURIER: AIR MAIL
+                  </span>
+                </div>
+                <p className="text-[9px] font-mono text-chrome uppercase leading-relaxed">
+                  Your tactile specimen dossier containing 280 GSM Combed Cotton, 450 GSM French Terry, and 520 GSM Fleece swatches has been scheduled for priority delivery.
+                </p>
+                <button
+                  type="button"
+                  onClick={() => setSwatchDispatched(null)}
+                  className="text-[9px] font-mono text-accent hover:underline uppercase tracking-wider cursor-pointer"
+                >
+                  REQUEST ANOTHER SPECIMEN DOSSIER
+                </button>
+              </div>
+            ) : (
+              <form onSubmit={handleRequestSwatch} className="flex flex-col sm:flex-row gap-2">
+                <input
+                  type="email"
+                  required
+                  placeholder="ENTER CLIENT EMAIL FOR SWATCH DOSSIER..."
+                  value={swatchEmail}
+                  onChange={(e) => setSwatchEmail(e.target.value)}
+                  className="flex-1 bg-bg-surface border border-border-subtle focus:border-accent p-3 text-xs text-text-primary uppercase font-mono outline-none focus:ring-1 focus:ring-accent/30 focus:shadow-[0_0_12px_rgba(212,163,89,0.15)]"
+                />
+                <button
+                  type="submit"
+                  className="bg-accent hover:bg-accent-hover text-bg-primary font-mono text-[10px] font-bold uppercase tracking-[0.2em] px-8 py-3 transition-all cursor-pointer whitespace-nowrap outline-none focus:ring-1 focus:ring-accent shadow-md"
+                >
+                  DISPATCH SWATCH DOSSIER ↗
+                </button>
+              </form>
+            )}
           </div>
         </div>
       </section>
