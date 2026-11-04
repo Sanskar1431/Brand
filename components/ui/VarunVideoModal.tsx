@@ -13,7 +13,7 @@ interface VarunVideoModalProps {
 export default function VarunVideoModal({
   isOpen,
   onClose,
-  defaultVideoUrl = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4",
+  defaultVideoUrl = "https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4",
 }: VarunVideoModalProps) {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -45,7 +45,8 @@ export default function VarunVideoModal({
         setVideoUrl(process.env.NEXT_PUBLIC_VARUN_VIDEO_URL);
         setInputUrl(process.env.NEXT_PUBLIC_VARUN_VIDEO_URL);
       } else {
-        setInputUrl(defaultVideoUrl);
+        setVideoUrl("https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4");
+        setInputUrl("https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4");
       }
     }
   }, [defaultVideoUrl]);
@@ -162,6 +163,22 @@ export default function VarunVideoModal({
     localStorage.setItem("prince_varun_blob_video_url", trimmed);
     setIsEditingUrl(false);
     addToast("BLOB VIDEO URL ATTACHED & SAVED", "success");
+  };
+
+  const handleSeek = (offsetSec: number) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = Math.max(0, Math.min(videoRef.current.duration || 0, videoRef.current.currentTime + offsetSec));
+    }
+  };
+
+  const handleProgressBarClick = (e: React.MouseEvent<HTMLDivElement>) => {
+    const bar = e.currentTarget;
+    const rect = bar.getBoundingClientRect();
+    const clickX = e.clientX - rect.left;
+    const ratio = Math.max(0, Math.min(1, clickX / rect.width));
+    if (videoRef.current && duration > 0) {
+      videoRef.current.currentTime = ratio * duration;
+    }
   };
 
   const formatTime = (secs: number) => {
@@ -306,10 +323,24 @@ export default function VarunVideoModal({
               )}
             </div>
 
+            {/* Interactive Progress Scrubber Bar */}
+            <div
+              onClick={handleProgressBarClick}
+              className="relative w-full h-2 bg-bg-primary border-t border-b border-border-subtle/40 hover:h-3 transition-all cursor-pointer group/progress"
+              title="Click to seek"
+            >
+              <div
+                className="h-full bg-accent transition-all duration-100 ease-linear relative"
+                style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
+              >
+                <span className="absolute right-0 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white shadow-md opacity-0 group-hover/progress:opacity-100 transition-opacity" />
+              </div>
+            </div>
+
             {/* Luxury Transport & Fullscreen Controls Bar */}
-            <div className="px-4 py-3 bg-bg-primary/95 border-t border-border-subtle/50 flex flex-col sm:flex-row items-center justify-between gap-3 select-none">
+            <div className="px-4 py-3 bg-bg-primary/95 flex flex-col sm:flex-row items-center justify-between gap-3 select-none">
               {/* Play/Pause & Time */}
-              <div className="flex items-center gap-3 w-full sm:w-auto justify-between sm:justify-start">
+              <div className="flex items-center gap-2 sm:gap-3 w-full sm:w-auto justify-between sm:justify-start">
                 <button
                   type="button"
                   onClick={togglePlay}
@@ -325,6 +356,24 @@ export default function VarunVideoModal({
                       <path fillRule="evenodd" d="M4.5 5.653c0-1.427 1.529-2.33 2.779-1.643l11.54 6.347c1.295.712 1.295 2.573 0 3.286L7.28 19.99c-1.25.687-2.779-.217-2.779-1.643V5.653Z" clipRule="evenodd" />
                     </svg>
                   )}
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSeek(-10)}
+                  className="px-2 py-1 text-[8px] font-mono border border-border-subtle hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer"
+                  title="Rewind 10 seconds"
+                >
+                  -10s
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => handleSeek(10)}
+                  className="px-2 py-1 text-[8px] font-mono border border-border-subtle hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer"
+                  title="Forward 10 seconds"
+                >
+                  +10s
                 </button>
 
                 <button
