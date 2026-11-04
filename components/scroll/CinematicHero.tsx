@@ -7,6 +7,7 @@ import { motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Link from "next/link";
+import VarunVideoModal from "../ui/VarunVideoModal";
 
 // Register ScrollTrigger
 if (typeof window !== "undefined") {
@@ -23,6 +24,7 @@ export default function CinematicHero() {
   const { isReducedMode, particleCount } = useDeviceCapability();
   const [convergence, setConvergence] = useState(0);
   const [particleOpacity, setParticleOpacity] = useState(0);
+  const [isVarunVideoOpen, setIsVarunVideoOpen] = useState(false);
 
   useEffect(() => {
     if (isReducedMode) return;
@@ -143,7 +145,17 @@ export default function CinematicHero() {
             >
               OUR PHILOSOPHY
             </Link>
+            <button
+              type="button"
+              onClick={() => setIsVarunVideoOpen(true)}
+              className="w-full sm:w-auto border border-accent bg-accent/15 text-accent hover:bg-accent hover:text-bg-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg shadow-accent/10 flex items-center justify-center gap-2 outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+            >
+              <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+              <span>VARUN</span>
+              <span className="text-[10px]">▶</span>
+            </button>
           </div>
+          <VarunVideoModal isOpen={isVarunVideoOpen} onClose={() => setIsVarunVideoOpen(false)} />
         </motion.div>
       </section>
     );
@@ -189,7 +201,7 @@ export default function CinematicHero() {
           </p>
         </div>
 
-        <div ref={ctaRef} className="flex gap-4 mt-12 opacity-0">
+        <div ref={ctaRef} className="flex flex-wrap justify-center gap-4 mt-12 opacity-0">
           <Link
             href="/shop"
             className="hero-cta-btn bg-accent text-white px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] hover:bg-accent-hover transition-colors shadow-lg shadow-accent/20 cursor-pointer outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
@@ -202,7 +214,18 @@ export default function CinematicHero() {
           >
             THE BRAND STORY
           </Link>
+          <button
+            type="button"
+            onClick={() => setIsVarunVideoOpen(true)}
+            className="hero-cta-btn border border-accent bg-accent/15 text-accent hover:bg-accent hover:text-bg-primary px-8 py-4 text-xs font-bold uppercase tracking-[0.2em] transition-all cursor-pointer shadow-lg shadow-accent/10 flex items-center gap-2 outline-none focus:ring-1 focus:ring-accent focus:shadow-[0_0_15px_rgba(212,163,89,0.35)]"
+            title="Play Varun Video with iOS Fullscreen support"
+          >
+            <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+            <span>VARUN</span>
+            <span className="text-[10px]">▶</span>
+          </button>
         </div>
+        <VarunVideoModal isOpen={isVarunVideoOpen} onClose={() => setIsVarunVideoOpen(false)} />
       </div>
     </div>
   );
