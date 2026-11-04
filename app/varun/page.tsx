@@ -10,7 +10,10 @@ export default function VarunVideoPage() {
   const [isMuted, setIsMuted] = useState(false);
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
-  const videoUrl =
+  const [hasError, setHasError] = useState(false);
+  const [activeSource, setActiveSource] = useState("/api/video");
+
+  const rawBlobUrl =
     "https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4";
 
   const togglePlay = () => {
@@ -18,8 +21,14 @@ export default function VarunVideoPage() {
     if (videoRef.current.paused) {
       videoRef.current
         .play()
-        .then(() => setIsPlaying(true))
-        .catch(() => setIsPlaying(false));
+        .then(() => {
+          setIsPlaying(true);
+          setHasError(false);
+        })
+        .catch((err) => {
+          console.warn("Play error:", err);
+          setIsPlaying(false);
+        });
     } else {
       videoRef.current.pause();
       setIsPlaying(false);
@@ -88,23 +97,38 @@ export default function VarunVideoPage() {
     const video = videoRef.current;
     if (!video) return;
 
-    const onPlay = () => setIsPlaying(true);
+    const onPlay = () => {
+      setIsPlaying(true);
+      setHasError(false);
+    };
     const onPause = () => setIsPlaying(false);
     const onTimeUpdate = () => setCurrentTime(video.currentTime);
-    const onLoadedMetadata = () => setDuration(video.duration);
+    const onLoadedMetadata = () => {
+      setDuration(video.duration);
+      setHasError(false);
+    };
+    const onError = () => {
+      console.warn("Primary stream failed, switching to direct blob");
+      setHasError(true);
+      if (activeSource === "/api/video") {
+        setActiveSource(rawBlobUrl);
+      }
+    };
 
     video.addEventListener("play", onPlay);
     video.addEventListener("pause", onPause);
     video.addEventListener("timeupdate", onTimeUpdate);
     video.addEventListener("loadedmetadata", onLoadedMetadata);
+    video.addEventListener("error", onError);
 
     return () => {
       video.removeEventListener("play", onPlay);
       video.removeEventListener("pause", onPause);
       video.removeEventListener("timeupdate", onTimeUpdate);
       video.removeEventListener("loadedmetadata", onLoadedMetadata);
+      video.removeEventListener("error", onError);
     };
-  }, []);
+  }, [activeSource, rawBlobUrl]);
 
   return (
     <div className="min-h-screen bg-bg-primary text-text-primary flex flex-col items-center justify-center p-4 sm:p-8">
@@ -140,22 +164,54 @@ export default function VarunVideoPage() {
         >
           <video
             ref={videoRef}
-            src={videoUrl}
+            src={activeSource}
             playsInline
-            controls={false}
+            controls
             preload="metadata"
             className="w-full h-full object-contain cursor-pointer flex-1"
-            onClick={togglePlay}
           />
 
-          {/* Big Center Play Trigger (if paused) */}
-          {!isPlaying && (
+          {/* Big Center Play Trigger (if paused and no error) */}
+          {!isPlaying && !hasError && (
             <div
               onClick={togglePlay}
-              className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] cursor-pointer"
+              className="absolute inset-0 flex items-center justify-center bg-black/40 backdrop-blur-[2px] cursor-pointer pointer-events-none"
             >
-              <div className="w-20 h-20 rounded-full border-2 border-accent bg-bg-surface/80 flex items-center justify-center shadow-[0_0_30px_rgba(212,163,89,0.5)] group-hover:scale-105 transition-transform">
+              <div className="w-20 h-20 rounded-full border-2 border-accent bg-bg-surface/80 flex items-center justify-center shadow-[0_0_30px_rgba(212,163,89,0.5)] group-hover:scale-105 transition-transform pointer-events-auto">
                 <span className="text-accent text-2xl font-bold ml-1">▶</span>
+              </div>
+            </div>
+          )}
+
+          {/* Fallback Error Overlay */}
+          {hasError && (
+            <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/80 p-6 text-center z-20">
+              <p className="text-accent font-bold font-mono text-sm uppercase mb-2">
+                STREAM BUFFERS OR NETWORK BLOCKED
+              </p>
+              <p className="text-chrome text-xs max-w-md mb-4 font-mono">
+                Click below to switch stream source or open directly in your device media player.
+              </p>
+              <div className="flex flex-wrap gap-3 justify-center">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setActiveSource(rawBlobUrl);
+                    setHasError(false);
+                    videoRef.current?.load();
+                  }}
+                  className="px-4 py-2 bg-accent text-bg-primary font-bold text-xs uppercase"
+                >
+                  TRY DIRECT BLOB URL
+                </button>
+                <a
+                  href={rawBlobUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-4 py-2 border border-accent text-accent hover:bg-accent hover:text-bg-primary font-bold text-xs uppercase"
+                >
+                  OPEN RAW IN NEW TAB ↗
+                </a>
               </div>
             </div>
           )}
@@ -233,17 +289,30 @@ export default function VarunVideoPage() {
               SOLO LEVELING S02E01 [HINDI] 1080P FHD
             </p>
             <p className="text-chrome/70 text-[10px] truncate max-w-xl">
-              Source: {videoUrl}
+              Active Stream: {activeSource}
             </p>
           </div>
-          <a
-            href={videoUrl}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-3 py-1.5 border border-chrome/30 text-chrome hover:text-accent hover:border-accent transition-colors uppercase text-[10px]"
-          >
-            OPEN RAW BLOB ↗
-          </a>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={() => {
+                const nextSrc = activeSource === "/api/video" ? rawBlobUrl : "/api/video";
+                setActiveSource(nextSrc);
+                videoRef.current?.load();
+              }}
+              className="px-3 py-1.5 border border-accent/50 text-accent hover:bg-accent hover:text-bg-primary transition-colors uppercase text-[10px]"
+            >
+              SWITCH TO {activeSource === "/api/video" ? "DIRECT BLOB" : "PROXY STREAM"}
+            </button>
+            <a
+              href={rawBlobUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="px-3 py-1.5 border border-chrome/30 text-chrome hover:text-accent hover:border-accent transition-colors uppercase text-[10px]"
+            >
+              OPEN RAW BLOB ↗
+            </a>
+          </div>
         </div>
       </div>
     </div>

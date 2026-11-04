@@ -282,8 +282,13 @@ export default function VarunVideoModal({
                 playsInline
                 webkit-playsinline="true"
                 x5-playsinline="true"
-                controlsList="nodownload"
-                preload="auto"
+                controls
+                preload="metadata"
+                onError={() => {
+                  if (videoUrl === "/api/video") {
+                    setVideoUrl("https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4");
+                  }
+                }}
                 onTimeUpdate={() => {
                   if (videoRef.current) {
                     setCurrentTime(videoRef.current.currentTime);
