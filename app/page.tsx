@@ -4,10 +4,12 @@ import CollectionReveal from "@/components/scroll/CollectionReveal";
 import SignatureProducts from "@/components/scroll/SignatureProducts";
 import SocialProof from "@/components/scroll/SocialProof";
 import CinematicCTA from "@/components/scroll/CinematicCTA";
+import FrontPageVarunDirectButton from "@/components/ui/FrontPageVarunDirectButton";
 
 export default function Home() {
   return (
     <div className="relative w-full overflow-hidden bg-bg-primary">
+      <FrontPageVarunDirectButton />
       <CinematicHero />
       <EnvironmentTransition />
       <CollectionReveal />

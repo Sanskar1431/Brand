@@ -11,6 +11,7 @@ import { useWishlistStore } from "@/lib/store/wishlistStore";
 import { useRouter } from "next/navigation";
 import { useCurrencyStore } from "@/lib/store/currencyStore";
 import { useToastStore } from "@/lib/store/toastStore";
+import VarunVideoModal from "@/components/ui/VarunVideoModal";
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -33,6 +34,7 @@ export default function Navbar() {
   const [recentSearches, setRecentSearches] = useState<string[]>([]);
   const [isCommandPaletteOpen, setIsCommandPaletteOpen] = useState(false);
   const [commandFilter, setCommandFilter] = useState("");
+  const [isVarunVideoOpen, setIsVarunVideoOpen] = useState(false);
 
   // Keyboard shortcut listener for Command Palette (⌘K or Ctrl+K)
   useEffect(() => {
@@ -197,6 +199,18 @@ export default function Navbar() {
                   className={`w-[3px] rounded-full bg-accent`}
                 />
               ))}
+            </button>
+
+            {/* Direct VARUN Video Action Button */}
+            <button
+              onClick={() => setIsVarunVideoOpen(true)}
+              className="flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 bg-accent text-bg-primary hover:bg-white text-[9.5px] font-mono font-bold tracking-widest uppercase transition-all cursor-pointer shadow-[0_0_15px_rgba(212,163,89,0.35)] mr-1 outline-none focus:ring-1 focus:ring-accent"
+              title="Play Varun Video with iOS Fullscreen Support"
+              aria-label="Play Varun Video"
+            >
+              <span className="w-1.5 h-1.5 rounded-full bg-bg-primary animate-ping" />
+              <span>VARUN</span>
+              <span className="text-[9px]">▶</span>
             </button>
 
             {/* Atelier Command Palette Trigger (⌘K) */}
@@ -744,6 +758,7 @@ export default function Navbar() {
           </motion.div>
         )}
       </AnimatePresence>
+      <VarunVideoModal isOpen={isVarunVideoOpen} onClose={() => setIsVarunVideoOpen(false)} />
     </>
   );
 }

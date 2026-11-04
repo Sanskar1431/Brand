@@ -178,6 +178,17 @@ export default function CinematicHero() {
         <p className="text-chrome/50 tracking-[0.4em] uppercase text-xs mt-4 font-sans font-bold">
           RULE WITHOUT SPEAKING
         </p>
+        <div className="mt-8">
+          <button
+            type="button"
+            onClick={() => setIsVarunVideoOpen(true)}
+            className="px-8 py-3.5 bg-accent/20 hover:bg-accent text-accent hover:text-bg-primary border border-accent transition-all duration-300 font-display text-xs font-bold uppercase tracking-[0.25em] shadow-[0_0_20px_rgba(212,163,89,0.3)] cursor-pointer flex items-center gap-2.5 outline-none focus:ring-2 focus:ring-accent"
+          >
+            <span className="w-2 h-2 rounded-full bg-accent animate-ping" />
+            <span>VARUN</span>
+            <span className="text-[11px]">▶</span>
+          </button>
+        </div>
       </div>
 
       {/* Scene 1: Headline & Subheadline Reveal Container */}
@@ -226,6 +237,20 @@ export default function CinematicHero() {
           </button>
         </div>
         <VarunVideoModal isOpen={isVarunVideoOpen} onClose={() => setIsVarunVideoOpen(false)} />
+      </div>
+
+      {/* Direct Front Page VARUN Action Button (Immediate View Without Scroll) */}
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 z-30 pointer-events-auto flex flex-col items-center gap-2">
+        <button
+          type="button"
+          onClick={() => setIsVarunVideoOpen(true)}
+          className="group flex items-center gap-2.5 px-7 py-3 bg-accent text-bg-primary font-bold uppercase tracking-[0.25em] text-xs hover:bg-white hover:text-bg-primary transition-all duration-300 shadow-[0_0_25px_rgba(212,163,89,0.4)] cursor-pointer outline-none focus:ring-2 focus:ring-accent"
+          title="Direct Front Page Video Button"
+        >
+          <span className="w-2 h-2 rounded-full bg-bg-primary animate-pulse" />
+          <span>VARUN</span>
+          <span className="text-xs">▶</span>
+        </button>
       </div>
     </div>
   );
