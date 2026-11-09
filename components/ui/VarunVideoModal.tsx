@@ -29,6 +29,33 @@ export default function VarunVideoModal({
   const [currentTime, setCurrentTime] = useState(0);
   const [duration, setDuration] = useState(0);
   const [isIOSDevice, setIsIOSDevice] = useState(false);
+  const [playbackRate, setPlaybackRate] = useState(1);
+  const [isPiPActive, setIsPiPActive] = useState(false);
+
+  const handlePlaybackRate = (rate: number) => {
+    setPlaybackRate(rate);
+    if (videoRef.current) {
+      videoRef.current.playbackRate = rate;
+    }
+  };
+
+  const togglePiP = async () => {
+    if (!videoRef.current) return;
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+        setIsPiPActive(false);
+      } else if (
+        document.pictureInPictureEnabled &&
+        typeof videoRef.current.requestPictureInPicture === "function"
+      ) {
+        await videoRef.current.requestPictureInPicture();
+        setIsPiPActive(true);
+      }
+    } catch (err) {
+      console.warn("PiP error:", err);
+    }
+  };
 
   // Detect iOS Safari / WebKit and load stored blob URL
   useEffect(() => {
@@ -405,6 +432,38 @@ export default function VarunVideoModal({
 
               {/* Fullscreen Actions (Including iOS Support) */}
               <div className="flex items-center gap-2 w-full sm:w-auto justify-end">
+                {/* Speed selector */}
+                <div className="flex items-center gap-0.5 bg-bg-surface border border-border-subtle p-0.5">
+                  {[1, 1.25, 1.5, 2].map((rate) => (
+                    <button
+                      key={rate}
+                      type="button"
+                      onClick={() => handlePlaybackRate(rate)}
+                      className={`px-1.5 py-0.5 text-[8px] font-mono transition-colors cursor-pointer ${
+                        playbackRate === rate
+                          ? "bg-accent text-bg-primary font-bold"
+                          : "text-chrome hover:text-accent"
+                      }`}
+                    >
+                      {rate}x
+                    </button>
+                  ))}
+                </div>
+
+                {/* PiP trigger */}
+                <button
+                  type="button"
+                  onClick={togglePiP}
+                  className={`px-2 py-1 text-[8.5px] font-mono border transition-all cursor-pointer ${
+                    isPiPActive
+                      ? "border-accent text-accent bg-accent/15"
+                      : "border-border-subtle hover:border-accent text-chrome hover:text-accent"
+                  }`}
+                  title="Picture-in-Picture"
+                >
+                  PiP ⧉
+                </button>
+
                 <button
                   type="button"
                   onClick={() => setIsMaximized(!isMaximized)}
