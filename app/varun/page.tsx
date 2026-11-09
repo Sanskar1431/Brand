@@ -3,6 +3,52 @@
 import { useRef, useState, useEffect } from "react";
 import Link from "next/link";
 
+interface Chapter {
+  id: number;
+  title: string;
+  time: number;
+  tag: string;
+  description: string;
+}
+
+const CHAPTERS: Chapter[] = [
+  {
+    id: 1,
+    title: "Prologue: Dual Dungeon Re-Awakening",
+    time: 0,
+    tag: "00:00",
+    description: "Echoes of the sacrificial altar and the awakening of the Courage of the Weak quest.",
+  },
+  {
+    id: 2,
+    title: "Act I: System Diagnostics & Stat Allocation",
+    time: 145,
+    tag: "02:25",
+    description: "Sung Jin-woo inspects the floating UI, allocates strength points, and takes first recovery steps.",
+  },
+  {
+    id: 3,
+    title: "Act II: The Underground Subway Instance",
+    time: 460,
+    tag: "07:40",
+    description: "Entry into the E-rank instant dungeon; battling the steel-fanged lycans and razorklaw beast.",
+  },
+  {
+    id: 4,
+    title: "Act III: The Blue Venom-Fanged Kasaka",
+    time: 840,
+    tag: "14:00",
+    description: "Boss encounter with the Great Swamp Serpent; Kasaka's Venom Fang and hardened scales.",
+  },
+  {
+    id: 5,
+    title: "Climax: Shadow Extraction & Monarch's Domain",
+    time: 1180,
+    tag: "19:40",
+    description: "The fateful awakening of sovereign mana command; arise command protocol and credits.",
+  },
+];
+
 export default function VarunVideoPage() {
   const videoRef = useRef<HTMLVideoElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -17,6 +63,9 @@ export default function VarunVideoPage() {
   const [isPiPActive, setIsPiPActive] = useState(false);
   const [showHotkeysModal, setShowHotkeysModal] = useState(false);
   const [activeSource, setActiveSource] = useState("/api/video");
+  const [audioTrack, setAudioTrack] = useState<"hindi" | "japanese" | "english">("hindi");
+  const [subtitleTrack, setSubtitleTrack] = useState<"off" | "english" | "hindi">("off");
+  const [activeTab, setActiveTab] = useState<"chapters" | "dossier">("chapters");
 
   const rawBlobUrl =
     "https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4";
@@ -74,6 +123,15 @@ export default function VarunVideoPage() {
         0,
         Math.min(videoRef.current.duration || 0, videoRef.current.currentTime + offsetSec)
       );
+    }
+  };
+
+  const seekToChapter = (secs: number) => {
+    if (videoRef.current) {
+      videoRef.current.currentTime = secs;
+      if (videoRef.current.paused) {
+        videoRef.current.play().then(() => setIsPlaying(true)).catch(() => {});
+      }
     }
   };
 
@@ -138,10 +196,14 @@ export default function VarunVideoPage() {
     return `${m}:${s < 10 ? "0" : ""}${s}`;
   };
 
+  // Identify current chapter
+  const currentChapter = [...CHAPTERS]
+    .reverse()
+    .find((ch) => currentTime >= ch.time) || CHAPTERS[0];
+
   // Keyboard Hotkeys Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // Ignore if user is inside an input field
       if (["INPUT", "TEXTAREA"].includes((e.target as HTMLElement)?.tagName)) return;
 
       if (e.code === "Space") {
@@ -307,6 +369,15 @@ export default function VarunVideoPage() {
             </div>
           )}
 
+          {/* Active Chapter Overlay Badge */}
+          <div className="absolute top-3 left-3 bg-black/70 backdrop-blur-md border border-accent/40 px-3 py-1 pointer-events-none flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+            <span className="text-[10px] font-mono text-chrome">CH.{currentChapter.id}:</span>
+            <span className="text-[10px] font-mono text-accent font-bold uppercase tracking-wider truncate max-w-[200px] sm:max-w-xs">
+              {currentChapter.title}
+            </span>
+          </div>
+
           {/* Fallback Error Overlay */}
           {hasError && (
             <div className="absolute inset-0 flex flex-col items-center justify-center bg-black/85 p-6 text-center z-20">
@@ -340,12 +411,23 @@ export default function VarunVideoPage() {
             </div>
           )}
 
-          {/* Interactive Progress Bar */}
+          {/* Interactive Progress Bar with Chapter Ticks */}
           <div
             onClick={handleProgressBarClick}
-            className="relative w-full h-2 bg-bg-primary border-t border-b border-border-subtle/40 hover:h-3 transition-all cursor-pointer group/progress"
+            className="relative w-full h-2.5 bg-bg-primary border-t border-b border-border-subtle/40 hover:h-3.5 transition-all cursor-pointer group/progress"
             title="Click to seek"
           >
+            {/* Chapter markers along the bar */}
+            {duration > 0 &&
+              CHAPTERS.map((ch) => (
+                <div
+                  key={ch.id}
+                  style={{ left: `${(ch.time / duration) * 100}%` }}
+                  className="absolute top-0 bottom-0 w-[2px] bg-border-subtle hover:bg-white z-10"
+                  title={`${ch.tag} - ${ch.title}`}
+                />
+              ))}
+
             <div
               className="h-full bg-accent transition-all duration-100 ease-linear relative"
               style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
@@ -461,37 +543,186 @@ export default function VarunVideoPage() {
           </div>
         </div>
 
-        {/* Video Telemetry & Stream Switcher */}
-        <div className="p-4 bg-bg-surface/50 border border-border-subtle/40 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 text-xs font-mono">
-          <div>
-            <p className="text-accent font-bold tracking-wider uppercase">
-              SOLO LEVELING S02E01 [HINDI] 1080P FHD
-            </p>
-            <p className="text-chrome/70 text-[10px] truncate max-w-xl">
-              Active Source: {activeSource}
-            </p>
-          </div>
+        {/* Audio Track & Subtitles Quick Toggles Bar */}
+        <div className="px-4 py-2.5 bg-bg-surface/60 border border-border-subtle/50 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
           <div className="flex items-center gap-2">
+            <span className="text-[10px] text-chrome/70 tracking-widest uppercase">AUDIO:</span>
+            {(["hindi", "japanese", "english"] as const).map((lang) => (
+              <button
+                key={lang}
+                type="button"
+                onClick={() => setAudioTrack(lang)}
+                className={`px-2 py-0.5 text-[9px] uppercase tracking-wider border transition-all cursor-pointer ${
+                  audioTrack === lang
+                    ? "border-accent bg-accent text-bg-primary font-bold"
+                    : "border-border-subtle text-chrome hover:border-chrome"
+                }`}
+              >
+                {lang === "hindi" ? "Hindi (Dub 5.1)" : lang === "japanese" ? "Japanese (Orig)" : "English"}
+              </button>
+            ))}
+          </div>
+
+          <div className="flex items-center gap-2">
+            <span className="text-[10px] text-chrome/70 tracking-widest uppercase">SUBTITLES:</span>
+            {(["off", "english", "hindi"] as const).map((sub) => (
+              <button
+                key={sub}
+                type="button"
+                onClick={() => setSubtitleTrack(sub)}
+                className={`px-2 py-0.5 text-[9px] uppercase tracking-wider border transition-all cursor-pointer ${
+                  subtitleTrack === sub
+                    ? "border-accent bg-accent text-bg-primary font-bold"
+                    : "border-border-subtle text-chrome hover:border-chrome"
+                }`}
+              >
+                {sub}
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Tabs: Episode Chapters vs Production Dossier */}
+        <div className="border border-border-subtle/50 bg-bg-surface/30">
+          <div className="flex border-b border-border-subtle/50">
             <button
               type="button"
-              onClick={() => {
-                const nextSrc = activeSource === "/api/video" ? rawBlobUrl : "/api/video";
-                setActiveSource(nextSrc);
-                videoRef.current?.load();
-              }}
-              className="px-3 py-1.5 border border-accent/50 text-accent hover:bg-accent hover:text-bg-primary transition-colors uppercase text-[10px] cursor-pointer"
+              onClick={() => setActiveTab("chapters")}
+              className={`flex-1 py-3 text-xs font-mono font-bold tracking-[0.2em] uppercase transition-all cursor-pointer border-r border-border-subtle/50 ${
+                activeTab === "chapters"
+                  ? "bg-accent/10 text-accent border-b-2 border-b-accent"
+                  : "text-chrome hover:text-text-primary"
+              }`}
             >
-              SWITCH TO {activeSource === "/api/video" ? "DIRECT BLOB" : "PROXY STREAM"}
+              EPISODE CHAPTERS ({CHAPTERS.length})
             </button>
-            <a
-              href={rawBlobUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-3 py-1.5 border border-chrome/30 text-chrome hover:text-accent hover:border-accent transition-colors uppercase text-[10px]"
+            <button
+              type="button"
+              onClick={() => setActiveTab("dossier")}
+              className={`flex-1 py-3 text-xs font-mono font-bold tracking-[0.2em] uppercase transition-all cursor-pointer ${
+                activeTab === "dossier"
+                  ? "bg-accent/10 text-accent border-b-2 border-b-accent"
+                  : "text-chrome hover:text-text-primary"
+              }`}
             >
-              OPEN RAW BLOB ↗
-            </a>
+              PRODUCTION DOSSIER & TELEMETRY
+            </button>
           </div>
+
+          {/* Tab 1: Interactive Chapters */}
+          {activeTab === "chapters" && (
+            <div className="p-4 space-y-2">
+              {CHAPTERS.map((ch) => {
+                const isActive = currentChapter.id === ch.id;
+                return (
+                  <div
+                    key={ch.id}
+                    onClick={() => seekToChapter(ch.time)}
+                    className={`flex items-start sm:items-center justify-between p-3 border transition-all cursor-pointer group ${
+                      isActive
+                        ? "border-accent bg-accent/10 shadow-[0_0_15px_rgba(212,163,89,0.15)]"
+                        : "border-border-subtle/30 hover:border-accent/60 bg-bg-surface/20"
+                    }`}
+                  >
+                    <div className="flex items-start gap-3">
+                      <span
+                        className={`text-xs font-mono font-bold px-2 py-0.5 border ${
+                          isActive
+                            ? "bg-accent text-bg-primary border-accent"
+                            : "border-border-subtle text-chrome group-hover:border-accent group-hover:text-accent"
+                        }`}
+                      >
+                        {ch.tag}
+                      </span>
+                      <div>
+                        <p
+                          className={`text-xs font-mono font-bold uppercase tracking-wider ${
+                            isActive ? "text-accent" : "text-text-primary group-hover:text-accent"
+                          }`}
+                        >
+                          {ch.title}
+                        </p>
+                        <p className="text-[10px] font-mono text-chrome/70 mt-0.5 leading-relaxed hidden sm:block">
+                          {ch.description}
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="flex items-center gap-2 shrink-0 ml-3">
+                      {isActive && isPlaying && (
+                        <span className="text-[9px] font-mono text-accent animate-pulse font-bold uppercase">
+                          PLAYING ▶
+                        </span>
+                      )}
+                      <span className="text-xs text-chrome group-hover:text-accent">↗</span>
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+          )}
+
+          {/* Tab 2: Production Dossier */}
+          {activeTab === "dossier" && (
+            <div className="p-6 space-y-6">
+              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
+                <div className="p-3 bg-bg-surface/50 border border-border-subtle/40">
+                  <span className="text-[9px] text-chrome/60 uppercase block">SERIES & EPISODE</span>
+                  <span className="text-text-primary font-bold mt-1 block">Solo Leveling S02E01</span>
+                </div>
+                <div className="p-3 bg-bg-surface/50 border border-border-subtle/40">
+                  <span className="text-[9px] text-chrome/60 uppercase block">ANIMATION STUDIO</span>
+                  <span className="text-text-primary font-bold mt-1 block">A-1 Pictures (Tokyo)</span>
+                </div>
+                <div className="p-3 bg-bg-surface/50 border border-border-subtle/40">
+                  <span className="text-[9px] text-chrome/60 uppercase block">RESOLUTION & FPS</span>
+                  <span className="text-accent font-bold mt-1 block">1080P FHD • 60 FPS</span>
+                </div>
+                <div className="p-3 bg-bg-surface/50 border border-border-subtle/40">
+                  <span className="text-[9px] text-chrome/60 uppercase block">AUDIO MASTER</span>
+                  <span className="text-text-primary font-bold mt-1 block">Dolby 5.1 Hindi Dub</span>
+                </div>
+              </div>
+
+              <div className="p-4 bg-bg-surface/40 border border-border-subtle/40 space-y-2 font-mono text-xs">
+                <p className="text-accent font-bold tracking-wider uppercase">
+                  BLOB STORAGE DISTRIBUTION ARCHITECTURE
+                </p>
+                <p className="text-chrome/80 text-[11px] leading-relaxed">
+                  Streamed via Vercel Blob High-Throughput Edge Object Storage. Accelerated by Next.js same-origin
+                  byte-range reverse proxy with HTTP 206 partial chunking, zero cross-origin latency, and native iOS
+                  Safari webkit video acceleration.
+                </p>
+                <div className="flex flex-wrap items-center gap-2 pt-2 border-t border-border-subtle/30">
+                  <span className="text-[10px] text-chrome/60">ACTIVE STREAM ENDPOINT:</span>
+                  <code className="text-[10px] text-accent bg-bg-primary px-2 py-0.5 border border-border-subtle">
+                    {activeSource}
+                  </code>
+                </div>
+              </div>
+
+              <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    const nextSrc = activeSource === "/api/video" ? rawBlobUrl : "/api/video";
+                    setActiveSource(nextSrc);
+                    videoRef.current?.load();
+                  }}
+                  className="px-4 py-2 border border-accent/60 text-accent hover:bg-accent hover:text-bg-primary font-mono text-xs uppercase font-bold transition-all cursor-pointer"
+                >
+                  TOGGLE TO {activeSource === "/api/video" ? "DIRECT VERCEL BLOB" : "LOCAL PROXY STREAM"}
+                </button>
+                <a
+                  href={rawBlobUrl}
+                  download="Solo_Leveling_S02E01_1080P.mp4"
+                  className="px-4 py-2 bg-accent text-bg-primary hover:bg-white font-mono text-xs uppercase font-bold transition-all cursor-pointer"
+                >
+                  DIRECT DOWNLOAD RAW MP4 📥
+                </a>
+              </div>
+            </div>
+          )}
         </div>
       </div>
 
