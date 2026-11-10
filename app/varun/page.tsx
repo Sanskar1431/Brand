@@ -69,6 +69,9 @@ export default function VarunVideoPage() {
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [sleepRemainingSecs, setSleepRemainingSecs] = useState<number | null>(null);
   const [showSleepModal, setShowSleepModal] = useState(false);
+  const [capturedImage, setCapturedImage] = useState<string | null>(null);
+  const [showCaptureModal, setShowCaptureModal] = useState(false);
+  const [copyToast, setCopyToast] = useState<string | null>(null);
 
   const rawBlobUrl =
     "https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4";
@@ -203,6 +206,73 @@ export default function VarunVideoPage() {
   const currentChapter = [...CHAPTERS]
     .reverse()
     .find((ch) => currentTime >= ch.time) || CHAPTERS[0];
+
+  // Timestamp URL query listener (?t=seconds)
+  useEffect(() => {
+    if (typeof window !== "undefined") {
+      const params = new URLSearchParams(window.location.search);
+      const t = params.get("t") || params.get("time");
+      if (t) {
+        const parsed = parseInt(t, 10);
+        if (!isNaN(parsed) && parsed > 0) {
+          const video = videoRef.current;
+          if (video) {
+            const handleSeekOnLoad = () => {
+              video.currentTime = parsed;
+              video.removeEventListener("loadedmetadata", handleSeekOnLoad);
+            };
+            if (video.readyState >= 1) {
+              video.currentTime = parsed;
+            } else {
+              video.addEventListener("loadedmetadata", handleSeekOnLoad);
+            }
+          }
+        }
+      }
+    }
+  }, []);
+
+  const captureFrame = () => {
+    const video = videoRef.current;
+    if (!video) return;
+
+    try {
+      const canvas = document.createElement("canvas");
+      canvas.width = video.videoWidth || 1920;
+      canvas.height = video.videoHeight || 1080;
+      const ctx = canvas.getContext("2d");
+      if (!ctx) return;
+
+      // Draw current video frame
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+      // Draw luxury brutalist watermark
+      ctx.font = "bold 24px monospace";
+      ctx.fillStyle = "rgba(212, 163, 89, 0.95)";
+      ctx.fillText(
+        `PRINCE ARCHIVES // S02E01 • ${formatTime(currentTime)} • 1080P FHD`,
+        35,
+        canvas.height - 35
+      );
+
+      const dataUrl = canvas.toDataURL("image/png");
+      setCapturedImage(dataUrl);
+      setShowCaptureModal(true);
+    } catch {
+      setCopyToast("Browser security prevents frame export on direct cross-origin stream");
+      setTimeout(() => setCopyToast(null), 3500);
+    }
+  };
+
+  const copyTimestampLink = () => {
+    if (typeof window === "undefined") return;
+    const url = new URL(window.location.href);
+    url.searchParams.set("t", Math.floor(currentTime).toString());
+    navigator.clipboard.writeText(url.toString()).then(() => {
+      setCopyToast(`TIMESTAMP COPIED: ${formatTime(currentTime)}`);
+      setTimeout(() => setCopyToast(null), 3000);
+    });
+  };
 
   // Sleep Timer countdown & auto-pause
   useEffect(() => {
@@ -595,6 +665,26 @@ export default function VarunVideoPage() {
                 ))}
               </div>
 
+              {/* Capture Frame */}
+              <button
+                type="button"
+                onClick={captureFrame}
+                className="px-2 py-1 text-[8.5px] font-mono border border-border-subtle hover:border-accent text-chrome hover:text-accent transition-all cursor-pointer"
+                title="Capture 4K Wallpaper Frame"
+              >
+                SNAP 📷
+              </button>
+
+              {/* Share Timestamp */}
+              <button
+                type="button"
+                onClick={copyTimestampLink}
+                className="px-2 py-1 text-[8.5px] font-mono border border-border-subtle hover:border-accent text-chrome hover:text-accent transition-all cursor-pointer"
+                title="Copy Exact Timestamp Link"
+              >
+                SHARE 🔗
+              </button>
+
               {/* Picture-in-Picture */}
               <button
                 type="button"
@@ -872,6 +962,74 @@ export default function VarunVideoPage() {
           </div>
         </div>
       )}
+      {/* Toast Notification */}
+      {copyToast && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-50 px-4 py-2 bg-accent text-bg-primary font-mono text-xs font-bold uppercase tracking-wider shadow-[0_0_20px_rgba(212,163,89,0.5)]">
+          {copyToast}
+        </div>
+      )}
+
+      {/* Frame Capture Wallpaper Modal */}
+      {showCaptureModal && capturedImage && (
+        <div
+          role="dialog"
+          aria-label="Frame Wallpaper Capture"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-sm p-4"
+          onClick={() => setShowCaptureModal(false)}
+        >
+          <div
+            className="w-full max-w-2xl bg-bg-surface border border-accent/40 p-5 shadow-[0_0_40px_rgba(212,163,89,0.3)] space-y-4 font-mono text-xs"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-border-subtle pb-3">
+              <span className="text-accent font-bold tracking-widest uppercase">
+                ARCHIVAL FRAME WALLPAPER // {formatTime(currentTime)}
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowCaptureModal(false)}
+                className="text-chrome hover:text-accent font-bold cursor-pointer"
+                aria-label="Close wallpaper capture modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Preview Image */}
+            <div className="relative aspect-video w-full bg-black border border-border-subtle/50 overflow-hidden">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={capturedImage}
+                alt="Captured Video Frame"
+                className="w-full h-full object-contain"
+              />
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-2">
+              <span className="text-[10px] text-chrome/70">
+                Resolution: 1920x1080 FHD • Watermarked with Prince Atelier Serial
+              </span>
+              <div className="flex items-center gap-2">
+                <a
+                  href={capturedImage}
+                  download={`Prince_SoloLeveling_${Math.floor(currentTime)}s.png`}
+                  className="px-4 py-2 bg-accent text-bg-primary font-bold uppercase text-xs hover:bg-white transition-colors cursor-pointer"
+                >
+                  DOWNLOAD PNG 📥
+                </a>
+                <button
+                  type="button"
+                  onClick={() => setShowCaptureModal(false)}
+                  className="px-3 py-2 border border-border-subtle text-chrome hover:text-text-primary text-xs uppercase cursor-pointer"
+                >
+                  CLOSE
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Sleep Timer Configuration Modal */}
       {showSleepModal && (
         <div
