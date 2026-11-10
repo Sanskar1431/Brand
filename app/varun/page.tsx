@@ -66,6 +66,9 @@ export default function VarunVideoPage() {
   const [audioTrack, setAudioTrack] = useState<"hindi" | "japanese" | "english">("hindi");
   const [subtitleTrack, setSubtitleTrack] = useState<"off" | "english" | "hindi">("off");
   const [activeTab, setActiveTab] = useState<"chapters" | "dossier">("chapters");
+  const [showVisualizer, setShowVisualizer] = useState(false);
+  const [sleepRemainingSecs, setSleepRemainingSecs] = useState<number | null>(null);
+  const [showSleepModal, setShowSleepModal] = useState(false);
 
   const rawBlobUrl =
     "https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4";
@@ -201,6 +204,33 @@ export default function VarunVideoPage() {
     .reverse()
     .find((ch) => currentTime >= ch.time) || CHAPTERS[0];
 
+  // Sleep Timer countdown & auto-pause
+  useEffect(() => {
+    if (sleepRemainingSecs === null || sleepRemainingSecs <= 0) return;
+    const interval = setInterval(() => {
+      setSleepRemainingSecs((prev) => {
+        if (prev === null || prev <= 1) {
+          if (videoRef.current) {
+            videoRef.current.pause();
+            setIsPlaying(false);
+          }
+          return null;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [sleepRemainingSecs]);
+
+  const setSleepTimer = (mins: number | null) => {
+    if (mins === null) {
+      setSleepRemainingSecs(null);
+    } else {
+      setSleepRemainingSecs(mins * 60);
+    }
+    setShowSleepModal(false);
+  };
+
   // Keyboard Hotkeys Listener
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
@@ -326,6 +356,34 @@ export default function VarunVideoPage() {
               AMPLIGHT: {isAmbientGlow ? "ON" : "OFF"}
             </button>
 
+            {/* Equalizer Spectrum Toggle */}
+            <button
+              type="button"
+              onClick={() => setShowVisualizer((prev) => !prev)}
+              className={`px-2.5 py-1 text-[9px] font-mono border transition-all cursor-pointer ${
+                showVisualizer
+                  ? "border-accent text-accent bg-accent/15"
+                  : "border-border-subtle text-chrome hover:border-accent hover:text-accent"
+              }`}
+              title="Toggle Acoustic Equalizer Spectrum"
+            >
+              EQ: {showVisualizer ? "ON" : "OFF"}
+            </button>
+
+            {/* Sleep Timer Trigger */}
+            <button
+              type="button"
+              onClick={() => setShowSleepModal(true)}
+              className={`px-2.5 py-1 text-[9px] font-mono border transition-all cursor-pointer ${
+                sleepRemainingSecs !== null
+                  ? "border-accent text-accent bg-accent/15"
+                  : "border-border-subtle text-chrome hover:border-accent hover:text-accent"
+              }`}
+              title="Set Automatic Sleep Timer"
+            >
+              SLEEP: {sleepRemainingSecs !== null ? `${Math.floor(sleepRemainingSecs / 60)}m ${sleepRemainingSecs % 60}s` : "OFF"}
+            </button>
+
             {/* Keyboard Hotkeys Guide Trigger */}
             <button
               type="button"
@@ -365,6 +423,27 @@ export default function VarunVideoPage() {
             >
               <div className="w-20 h-20 rounded-full border-2 border-accent bg-bg-surface/80 flex items-center justify-center shadow-[0_0_30px_rgba(212,163,89,0.5)] group-hover:scale-105 transition-transform pointer-events-auto">
                 <span className="text-accent text-2xl font-bold ml-1">▶</span>
+              </div>
+            </div>
+          )}
+
+          {/* Acoustic Frequency Equalizer Visualizer Overlay */}
+          {showVisualizer && (
+            <div className="absolute top-3 right-3 bg-black/80 backdrop-blur-md border border-accent/40 p-2 pointer-events-none flex flex-col items-end gap-1 z-20">
+              <span className="text-[8px] font-mono text-accent uppercase tracking-widest font-bold">
+                ACOUSTIC FREQ SPECTRUM
+              </span>
+              <div className="flex items-end gap-1 h-7">
+                {[65, 40, 85, 55, 95, 70, 45, 80, 60, 90, 50, 75].map((baseHeight, idx) => (
+                  <div
+                    key={idx}
+                    style={{
+                      height: isPlaying ? `${Math.max(15, (baseHeight * (0.6 + (idx % 3) * 0.2)))}%` : "15%",
+                      transition: "height 0.15s ease",
+                    }}
+                    className="w-1 bg-gradient-to-t from-accent/50 to-accent rounded-t-xs"
+                  />
+                ))}
               </div>
             </div>
           )}
@@ -789,6 +868,59 @@ export default function VarunVideoPage() {
               className="w-full py-2 bg-accent text-bg-primary font-bold uppercase tracking-wider text-center cursor-pointer hover:bg-white transition-colors"
             >
               GOT IT
+            </button>
+          </div>
+        </div>
+      )}
+      {/* Sleep Timer Configuration Modal */}
+      {showSleepModal && (
+        <div
+          role="dialog"
+          aria-label="Sleep Timer"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-sm p-4"
+          onClick={() => setShowSleepModal(false)}
+        >
+          <div
+            className="w-full max-w-sm bg-bg-surface border border-accent/40 p-6 shadow-[0_0_40px_rgba(212,163,89,0.3)] space-y-4 font-mono text-xs"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between border-b border-border-subtle pb-3">
+              <span className="text-accent font-bold tracking-widest uppercase">
+                EPISODE SLEEP TIMER
+              </span>
+              <button
+                type="button"
+                onClick={() => setShowSleepModal(false)}
+                className="text-chrome hover:text-accent font-bold cursor-pointer"
+                aria-label="Close sleep timer dialog"
+              >
+                ✕
+              </button>
+            </div>
+
+            <p className="text-chrome/80 text-[11px] leading-relaxed">
+              Playback will automatically pause once the countdown expires.
+            </p>
+
+            <div className="grid grid-cols-2 gap-2 pt-1">
+              {[15, 30, 45, 60].map((mins) => (
+                <button
+                  key={mins}
+                  type="button"
+                  onClick={() => setSleepTimer(mins)}
+                  className="py-2.5 px-3 border border-border-subtle hover:border-accent text-chrome hover:text-accent text-center uppercase tracking-wider font-bold transition-all cursor-pointer bg-bg-primary/50"
+                >
+                  {mins} MINUTES
+                </button>
+              ))}
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setSleepTimer(null)}
+              className="w-full py-2 border border-rose-500/40 text-rose-400 hover:bg-rose-500/10 uppercase tracking-wider text-center cursor-pointer transition-colors"
+            >
+              DISABLE TIMER (OFF)
             </button>
           </div>
         </div>
