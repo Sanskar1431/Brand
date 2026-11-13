@@ -11,6 +11,47 @@ interface Chapter {
   description: string;
 }
 
+type AudioProfile = "cinematic" | "vocal" | "bass" | "flat";
+
+interface ProfileDetail {
+  id: AudioProfile;
+  name: string;
+  badge: string;
+  eqDesc: string;
+  curve: string;
+}
+
+const AUDIO_PROFILES: ProfileDetail[] = [
+  {
+    id: "cinematic",
+    name: "CINEMATIC SURROUND",
+    badge: "3D AURA",
+    eqDesc: "Expanded dynamic range, spatial width & atmospheric reverberation.",
+    curve: "Low +4dB / Mid 0dB / High +3dB",
+  },
+  {
+    id: "vocal",
+    name: "VOICE CLARITY",
+    badge: "1kHz - 3.5kHz",
+    eqDesc: "Focused vocal presence filter tailored for crystal-clear Hindi dubbing dialogue.",
+    curve: "Low -2dB / Mid +5dB / High +2dB",
+  },
+  {
+    id: "bass",
+    name: "BASS IMPACT",
+    badge: "SUB-BASS 60Hz",
+    eqDesc: "Enhanced low-end sub-bass resonance for dungeon explosions & combat impact.",
+    curve: "Low +8dB / Mid -1dB / High 0dB",
+  },
+  {
+    id: "flat",
+    name: "STUDIO FLAT",
+    badge: "REFERENCE",
+    eqDesc: "Pure uncolored 1080p studio reference master frequency response.",
+    curve: "Flat 0dB across all bands",
+  },
+];
+
 const CHAPTERS: Chapter[] = [
   {
     id: 1,
@@ -66,6 +107,15 @@ export default function VarunVideoPage() {
   const [audioTrack, setAudioTrack] = useState<"hindi" | "japanese" | "english">("hindi");
   const [subtitleTrack, setSubtitleTrack] = useState<"off" | "english" | "hindi">("off");
   const [activeTab, setActiveTab] = useState<"chapters" | "dossier">("chapters");
+  const [audioProfile, setAudioProfile] = useState<AudioProfile>("cinematic");
+
+  const cycleAudioProfile = () => {
+    const currentIndex = AUDIO_PROFILES.findIndex((p) => p.id === audioProfile);
+    const nextProfile = AUDIO_PROFILES[(currentIndex + 1) % AUDIO_PROFILES.length];
+    setAudioProfile(nextProfile.id);
+    setCopyToast(`AUDIO PROFILE: ${nextProfile.name} [${nextProfile.badge}]`);
+    setTimeout(() => setCopyToast(null), 2500);
+  };
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [sleepRemainingSecs, setSleepRemainingSecs] = useState<number | null>(null);
   const [showSleepModal, setShowSleepModal] = useState(false);
@@ -388,6 +438,9 @@ export default function VarunVideoPage() {
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
         handleVolumeChange(volume - 0.1);
+      } else if (e.key === "e" || e.key === "E") {
+        e.preventDefault();
+        cycleAudioProfile();
       } else if (e.key === "?") {
         setShowHotkeysModal((prev) => !prev);
       }
@@ -873,6 +926,41 @@ export default function VarunVideoPage() {
           </div>
         </div>
 
+        {/* Cinema Audio Dynamic Profile Bar */}
+        <div className="px-4 py-2.5 bg-bg-surface/80 border-l border-r border-b border-border-subtle/50 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] text-accent tracking-widest uppercase font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+              SOUND PROFILE:
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {AUDIO_PROFILES.map((prof) => (
+                <button
+                  key={prof.id}
+                  type="button"
+                  onClick={() => {
+                    setAudioProfile(prof.id);
+                    setCopyToast(`AUDIO PROFILE: ${prof.name}`);
+                    setTimeout(() => setCopyToast(null), 2500);
+                  }}
+                  className={`px-2 py-0.5 text-[9px] uppercase tracking-wider border transition-all cursor-pointer ${
+                    audioProfile === prof.id
+                      ? "border-accent bg-accent/20 text-accent font-bold shadow-[0_0_8px_rgba(212,163,89,0.25)]"
+                      : "border-border-subtle text-chrome hover:border-chrome"
+                  }`}
+                  title={`${prof.name}: ${prof.eqDesc}`}
+                >
+                  {prof.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-[9px] font-mono text-chrome/60 hidden sm:block">
+            CURVE: <span className="text-text-primary">{AUDIO_PROFILES.find((p) => p.id === audioProfile)?.curve}</span> (HotKey: <kbd className="text-accent bg-bg-primary px-1 border border-border-subtle font-bold">E</kbd>)
+          </div>
+        </div>
+
         {/* Tabs: Episode Chapters vs Production Dossier */}
         <div className="border border-border-subtle/50 bg-bg-surface/30">
           <div className="flex border-b border-border-subtle/50">
@@ -1059,6 +1147,10 @@ export default function VarunVideoPage() {
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Picture-in-Picture</span>
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">P</kbd>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border-subtle/30">
+                <span>Cycle Audio EQ Profile</span>
+                <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">E</kbd>
               </div>
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Forward 10 Seconds</span>
