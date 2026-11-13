@@ -72,6 +72,9 @@ export default function VarunVideoPage() {
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
   const [showCaptureModal, setShowCaptureModal] = useState(false);
   const [copyToast, setCopyToast] = useState<string | null>(null);
+  const [loopA, setLoopA] = useState<number | null>(null);
+  const [loopB, setLoopB] = useState<number | null>(null);
+  const [isLoopActive, setIsLoopActive] = useState(false);
 
   const rawBlobUrl =
     "https://knlayhbwsv3ccvs3.public.blob.vercel-storage.com/Solo%20Leveling%20S02E01%20%5BHindi%5D_1080P%20FHD.mp4";
@@ -262,6 +265,61 @@ export default function VarunVideoPage() {
       setCopyToast("Browser security prevents frame export on direct cross-origin stream");
       setTimeout(() => setCopyToast(null), 3500);
     }
+  };
+
+  // A-B Loop repetition check
+  useEffect(() => {
+    if (isLoopActive && loopA !== null && loopB !== null && loopB > loopA) {
+      if (currentTime >= loopB || currentTime < loopA) {
+        if (videoRef.current) {
+          videoRef.current.currentTime = loopA;
+        }
+      }
+    }
+  }, [currentTime, isLoopActive, loopA, loopB]);
+
+  const setPointA = () => {
+    setLoopA(currentTime);
+    if (loopB !== null && loopB <= currentTime) {
+      setLoopB(null);
+      setIsLoopActive(false);
+    }
+    setCopyToast(`LOOP POINT A SET: ${formatTime(currentTime)}`);
+    setTimeout(() => setCopyToast(null), 2500);
+  };
+
+  const setPointB = () => {
+    const a = loopA ?? 0;
+    if (currentTime > a) {
+      if (loopA === null) setLoopA(0);
+      setLoopB(currentTime);
+      setIsLoopActive(true);
+      setCopyToast(`A-B REPEAT ACTIVE: ${formatTime(a)} ➔ ${formatTime(currentTime)}`);
+      setTimeout(() => setCopyToast(null), 3000);
+    } else {
+      setCopyToast("Loop Point B must follow Point A");
+      setTimeout(() => setCopyToast(null), 2500);
+    }
+  };
+
+  const clearLoop = () => {
+    setLoopA(null);
+    setLoopB(null);
+    setIsLoopActive(false);
+    setCopyToast("A-B LOOP CLEARED");
+    setTimeout(() => setCopyToast(null), 2000);
+  };
+
+  const stepFrame = (forward: boolean) => {
+    const video = videoRef.current;
+    if (!video) return;
+    video.pause();
+    setIsPlaying(false);
+    const frameDuration = 1 / 60; // 60fps precision
+    video.currentTime = Math.max(
+      0,
+      Math.min(duration || 0, video.currentTime + (forward ? frameDuration : -frameDuration))
+    );
   };
 
   const copyTimestampLink = () => {
@@ -577,6 +635,18 @@ export default function VarunVideoPage() {
                 />
               ))}
 
+            {/* Highlighted A-B Loop Region */}
+            {duration > 0 && loopA !== null && loopB !== null && isLoopActive && (
+              <div
+                style={{
+                  left: `${(loopA / duration) * 100}%`,
+                  width: `${Math.max(0, ((loopB - loopA) / duration) * 100)}%`,
+                }}
+                className="absolute top-0 bottom-0 bg-accent/30 border-l-2 border-r-2 border-accent z-10 pointer-events-none shadow-[0_0_8px_rgba(212,163,89,0.5)]"
+                title={`Looping ${formatTime(loopA)} - ${formatTime(loopB)}`}
+              />
+            )}
+
             <div
               className="h-full bg-accent transition-all duration-100 ease-linear relative"
               style={{ width: `${(currentTime / (duration || 1)) * 100}%` }}
@@ -615,6 +685,24 @@ export default function VarunVideoPage() {
                 +10s
               </button>
 
+              {/* 1/60s Precision Frame Stepping */}
+              <button
+                type="button"
+                onClick={() => stepFrame(false)}
+                className="px-1.5 py-1 text-[8px] font-mono border border-border-subtle hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer"
+                title="Step backward 1 frame (1/60s)"
+              >
+                ◄ 1F
+              </button>
+              <button
+                type="button"
+                onClick={() => stepFrame(true)}
+                className="px-1.5 py-1 text-[8px] font-mono border border-border-subtle hover:border-accent text-chrome hover:text-accent transition-colors cursor-pointer"
+                title="Step forward 1 frame (1/60s)"
+              >
+                1F ►
+              </button>
+
               {/* Volume Slider & Mute Toggle */}
               <div className="flex items-center gap-1.5 ml-1 border-l border-border-subtle/50 pl-2">
                 <button
@@ -647,6 +735,40 @@ export default function VarunVideoPage() {
 
             {/* Speed, PiP, Fullscreen */}
             <div className="flex items-center gap-2">
+              {/* A-B Loop Repeat Controller */}
+              <div className="flex items-center gap-1 bg-bg-primary/80 border border-border-subtle/60 p-0.5">
+                <button
+                  type="button"
+                  onClick={setPointA}
+                  className={`px-1.5 py-0.5 text-[8px] font-mono transition-colors cursor-pointer ${
+                    loopA !== null ? "bg-accent/20 text-accent border border-accent/40 font-bold" : "text-chrome hover:text-accent"
+                  }`}
+                  title={loopA !== null ? `Point A: ${formatTime(loopA)}` : "Set Loop Start Point A"}
+                >
+                  {loopA !== null ? `A:${formatTime(loopA)}` : "[A]"}
+                </button>
+                <button
+                  type="button"
+                  onClick={setPointB}
+                  className={`px-1.5 py-0.5 text-[8px] font-mono transition-colors cursor-pointer ${
+                    loopB !== null ? "bg-accent/20 text-accent border border-accent/40 font-bold" : "text-chrome hover:text-accent"
+                  }`}
+                  title={loopB !== null ? `Point B: ${formatTime(loopB)}` : "Set Loop End Point B"}
+                >
+                  {loopB !== null ? `B:${formatTime(loopB)}` : "[B]"}
+                </button>
+                {(loopA !== null || loopB !== null) && (
+                  <button
+                    type="button"
+                    onClick={clearLoop}
+                    className="px-1 py-0.5 text-[8px] font-mono text-rose-400 hover:text-rose-300 transition-colors cursor-pointer"
+                    title="Clear A-B Repeat"
+                  >
+                    ✕
+                  </button>
+                )}
+              </div>
+
               {/* Playback Speed Selector */}
               <div className="flex items-center gap-1 bg-bg-primary/80 border border-border-subtle/60 p-0.5">
                 {[0.75, 1, 1.25, 1.5, 2].map((rate) => (
