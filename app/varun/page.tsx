@@ -52,6 +52,54 @@ const AUDIO_PROFILES: ProfileDetail[] = [
   },
 ];
 
+type ColorGrade = "original" | "amber" | "noir" | "vivid" | "silver";
+
+interface ColorGradeDetail {
+  id: ColorGrade;
+  name: string;
+  badge: string;
+  filter: string;
+  description: string;
+}
+
+const COLOR_GRADES: ColorGradeDetail[] = [
+  {
+    id: "original",
+    name: "STUDIO ORIGINAL",
+    badge: "1080P MASTER",
+    filter: "none",
+    description: "Standard unmodified 1080p anime studio color profile.",
+  },
+  {
+    id: "amber",
+    name: "CYBER AMBER",
+    badge: "PRINCE GOLD",
+    filter: "sepia(0.25) saturate(1.35) contrast(1.1) hue-rotate(-10deg)",
+    description: "Signature Prince luxury brutalist gold-warmed tonal grade.",
+  },
+  {
+    id: "noir",
+    name: "NOIR MONOCHROME",
+    badge: "SILVER NOIR",
+    filter: "grayscale(1) contrast(1.4) brightness(0.95)",
+    description: "High-contrast archival monochrome with intense shadow depth.",
+  },
+  {
+    id: "vivid",
+    name: "ANIME VIVID",
+    badge: "COMBAT SAT",
+    filter: "saturate(1.6) contrast(1.15) brightness(1.05)",
+    description: "Hyper-saturated magical spell radiance and neon combat effects.",
+  },
+  {
+    id: "silver",
+    name: "COLD SILVER",
+    badge: "DAGGER COLD",
+    filter: "saturate(0.7) hue-rotate(185deg) contrast(1.2)",
+    description: "Icy blue-gray steel tones emphasizing blade reflections and frost mana.",
+  },
+];
+
 const CHAPTERS: Chapter[] = [
   {
     id: 1,
@@ -108,6 +156,15 @@ export default function VarunVideoPage() {
   const [subtitleTrack, setSubtitleTrack] = useState<"off" | "english" | "hindi">("off");
   const [activeTab, setActiveTab] = useState<"chapters" | "dossier">("chapters");
   const [audioProfile, setAudioProfile] = useState<AudioProfile>("cinematic");
+  const [colorGrade, setColorGrade] = useState<ColorGrade>("original");
+
+  const cycleColorGrade = () => {
+    const currentIndex = COLOR_GRADES.findIndex((g) => g.id === colorGrade);
+    const nextGrade = COLOR_GRADES[(currentIndex + 1) % COLOR_GRADES.length];
+    setColorGrade(nextGrade.id);
+    setCopyToast(`COLOR GRADE: ${nextGrade.name} [${nextGrade.badge}]`);
+    setTimeout(() => setCopyToast(null), 2500);
+  };
 
   const cycleAudioProfile = () => {
     const currentIndex = AUDIO_PROFILES.findIndex((p) => p.id === audioProfile);
@@ -438,6 +495,9 @@ export default function VarunVideoPage() {
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
         handleVolumeChange(volume - 0.1);
+      } else if (e.key === "c" || e.key === "C") {
+        e.preventDefault();
+        cycleColorGrade();
       } else if (e.key === "e" || e.key === "E") {
         e.preventDefault();
         cycleAudioProfile();
@@ -593,7 +653,10 @@ export default function VarunVideoPage() {
             playsInline
             controls
             preload="metadata"
-            className="w-full h-full object-contain cursor-pointer flex-1"
+            style={{
+              filter: COLOR_GRADES.find((g) => g.id === colorGrade)?.filter || "none",
+            }}
+            className="w-full h-full object-contain cursor-pointer flex-1 transition-[filter] duration-300"
           />
 
           {/* Big Center Play Trigger (if paused and no error) */}
@@ -961,6 +1024,41 @@ export default function VarunVideoPage() {
           </div>
         </div>
 
+        {/* Video Color Grading LUT Presets Bar */}
+        <div className="px-4 py-2.5 bg-bg-surface/70 border-l border-r border-b border-border-subtle/50 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] text-accent tracking-widest uppercase font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+              COLOR GRADE (LUT):
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {COLOR_GRADES.map((grade) => (
+                <button
+                  key={grade.id}
+                  type="button"
+                  onClick={() => {
+                    setColorGrade(grade.id);
+                    setCopyToast(`COLOR GRADE: ${grade.name}`);
+                    setTimeout(() => setCopyToast(null), 2500);
+                  }}
+                  className={`px-2 py-0.5 text-[9px] uppercase tracking-wider border transition-all cursor-pointer ${
+                    colorGrade === grade.id
+                      ? "border-accent bg-accent/20 text-accent font-bold shadow-[0_0_8px_rgba(212,163,89,0.25)]"
+                      : "border-border-subtle text-chrome hover:border-chrome"
+                  }`}
+                  title={`${grade.name}: ${grade.description}`}
+                >
+                  {grade.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-[9px] font-mono text-chrome/60 hidden sm:block">
+            STYLE: <span className="text-text-primary">{COLOR_GRADES.find((g) => g.id === colorGrade)?.badge}</span> (HotKey: <kbd className="text-accent bg-bg-primary px-1 border border-border-subtle font-bold">C</kbd>)
+          </div>
+        </div>
+
         {/* Tabs: Episode Chapters vs Production Dossier */}
         <div className="border border-border-subtle/50 bg-bg-surface/30">
           <div className="flex border-b border-border-subtle/50">
@@ -1151,6 +1249,10 @@ export default function VarunVideoPage() {
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Cycle Audio EQ Profile</span>
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">E</kbd>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border-subtle/30">
+                <span>Cycle Color Grade LUT</span>
+                <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">C</kbd>
               </div>
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Forward 10 Seconds</span>
