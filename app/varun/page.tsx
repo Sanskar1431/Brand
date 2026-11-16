@@ -100,6 +100,64 @@ const COLOR_GRADES: ColorGradeDetail[] = [
   },
 ];
 
+interface QuoteItem {
+  id: number;
+  speaker: string;
+  role: string;
+  hindiText: string;
+  englishText: string;
+  time: number;
+  tag: string;
+}
+
+const ICONIC_QUOTES: QuoteItem[] = [
+  {
+    id: 1,
+    speaker: "Sung Jin-woo",
+    role: "The Shadow Monarch",
+    hindiText: "उठो... (Arise...)",
+    englishText: "I am the monarch of shadows. Rise from death and serve your sovereign.",
+    time: 1180,
+    tag: "19:40",
+  },
+  {
+    id: 2,
+    speaker: "Sung Jin-woo",
+    role: "The Weakest Hunter",
+    hindiText: "कमज़ोरों का साहस लापरवाही नहीं, जीने की ज़िद है...",
+    englishText: "The Courage of the Weak is not reckless bravery... it is the will to survive against impossible odds.",
+    time: 145,
+    tag: "02:25",
+  },
+  {
+    id: 3,
+    speaker: "Sung Jin-woo",
+    role: "Dungeon Assassin",
+    hindiText: "जो राक्षस ख़ून नहीं बहा सकता, उसे जीने का कोई हक़ नहीं...",
+    englishText: "A monster that doesn't bleed has no right to live. Let's see how hard your venom scales really are.",
+    time: 840,
+    tag: "14:00",
+  },
+  {
+    id: 4,
+    speaker: "Association Telemetry",
+    role: "Hunter Rating System",
+    hindiText: "ई-रैंक कमज़ोर से लेकर सर्वोच्च शिकारी तक...",
+    englishText: "Mana density surge detected in the underground instance. An anomaly is rewriting the hunter ranks.",
+    time: 460,
+    tag: "07:40",
+  },
+  {
+    id: 5,
+    speaker: "Prince Sovereign",
+    role: "Atelier Creed",
+    hindiText: "बिना बोले राज करो — Rule Without Speaking.",
+    englishText: "True power speaks through discipline, raw edges, and silent authority.",
+    time: 1335,
+    tag: "22:15",
+  },
+];
+
 const CHAPTERS: Chapter[] = [
   {
     id: 1,
@@ -154,7 +212,15 @@ export default function VarunVideoPage() {
   const [activeSource, setActiveSource] = useState("/api/video");
   const [audioTrack, setAudioTrack] = useState<"hindi" | "japanese" | "english">("hindi");
   const [subtitleTrack, setSubtitleTrack] = useState<"off" | "english" | "hindi">("off");
-  const [activeTab, setActiveTab] = useState<"chapters" | "dossier">("chapters");
+  const [activeTab, setActiveTab] = useState<"chapters" | "quotes" | "dossier">("chapters");
+
+  const copyQuote = (quote: QuoteItem) => {
+    const textToCopy = `"${quote.hindiText}" — ${quote.speaker} (${quote.role}) [Solo Leveling S02E01 @ ${quote.tag}]`;
+    navigator.clipboard.writeText(textToCopy).then(() => {
+      setCopyToast(`COPIED QUOTE: "${quote.speaker} @ ${quote.tag}"`);
+      setTimeout(() => setCopyToast(null), 3000);
+    });
+  };
   const [audioProfile, setAudioProfile] = useState<AudioProfile>("cinematic");
   const [colorGrade, setColorGrade] = useState<ColorGrade>("original");
 
@@ -1061,11 +1127,11 @@ export default function VarunVideoPage() {
 
         {/* Tabs: Episode Chapters vs Production Dossier */}
         <div className="border border-border-subtle/50 bg-bg-surface/30">
-          <div className="flex border-b border-border-subtle/50">
+          <div className="flex flex-wrap border-b border-border-subtle/50">
             <button
               type="button"
               onClick={() => setActiveTab("chapters")}
-              className={`flex-1 py-3 text-xs font-mono font-bold tracking-[0.2em] uppercase transition-all cursor-pointer border-r border-border-subtle/50 ${
+              className={`flex-1 py-3 text-xs font-mono font-bold tracking-[0.15em] uppercase transition-all cursor-pointer border-r border-border-subtle/50 ${
                 activeTab === "chapters"
                   ? "bg-accent/10 text-accent border-b-2 border-b-accent"
                   : "text-chrome hover:text-text-primary"
@@ -1075,14 +1141,25 @@ export default function VarunVideoPage() {
             </button>
             <button
               type="button"
+              onClick={() => setActiveTab("quotes")}
+              className={`flex-1 py-3 text-xs font-mono font-bold tracking-[0.15em] uppercase transition-all cursor-pointer border-r border-border-subtle/50 ${
+                activeTab === "quotes"
+                  ? "bg-accent/10 text-accent border-b-2 border-b-accent"
+                  : "text-chrome hover:text-text-primary"
+              }`}
+            >
+              ICONIC QUOTEBOOK ({ICONIC_QUOTES.length})
+            </button>
+            <button
+              type="button"
               onClick={() => setActiveTab("dossier")}
-              className={`flex-1 py-3 text-xs font-mono font-bold tracking-[0.2em] uppercase transition-all cursor-pointer ${
+              className={`flex-1 py-3 text-xs font-mono font-bold tracking-[0.15em] uppercase transition-all cursor-pointer ${
                 activeTab === "dossier"
                   ? "bg-accent/10 text-accent border-b-2 border-b-accent"
                   : "text-chrome hover:text-text-primary"
               }`}
             >
-              PRODUCTION DOSSIER & TELEMETRY
+              PRODUCTION DOSSIER
             </button>
           </div>
 
@@ -1139,7 +1216,60 @@ export default function VarunVideoPage() {
             </div>
           )}
 
-          {/* Tab 2: Production Dossier */}
+          {/* Tab 2: Iconic Quotebook */}
+          {activeTab === "quotes" && (
+            <div className="p-4 space-y-3">
+              {ICONIC_QUOTES.map((q) => (
+                <div
+                  key={q.id}
+                  className="p-4 bg-bg-surface/40 border border-border-subtle/40 hover:border-accent/60 transition-all space-y-2 group"
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2 border-b border-border-subtle/30 pb-2">
+                    <div className="flex items-center gap-2">
+                      <span className="text-accent font-mono font-bold text-xs uppercase tracking-wider">
+                        {q.speaker}
+                      </span>
+                      <span className="text-chrome/50 font-mono text-[10px]">/</span>
+                      <span className="text-[10px] font-mono text-chrome/70 uppercase">
+                        {q.role}
+                      </span>
+                    </div>
+                    <span className="text-[10px] font-mono px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">
+                      {q.tag}
+                    </span>
+                  </div>
+
+                  <p className="text-sm font-display text-text-primary font-semibold tracking-wide leading-relaxed pt-1">
+                    &ldquo;{q.hindiText}&rdquo;
+                  </p>
+
+                  <p className="text-xs font-mono text-chrome/80 leading-relaxed italic">
+                    {q.englishText}
+                  </p>
+
+                  <div className="flex items-center justify-end gap-2 pt-2 border-t border-border-subtle/20">
+                    <button
+                      type="button"
+                      onClick={() => copyQuote(q)}
+                      className="px-3 py-1 text-[9px] font-mono border border-border-subtle hover:border-accent text-chrome hover:text-accent uppercase transition-all cursor-pointer"
+                    >
+                      COPY QUOTE 📋
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => seekToChapter(q.time)}
+                      className="px-3 py-1 text-[9px] font-mono bg-accent text-bg-primary hover:bg-white font-bold uppercase transition-all cursor-pointer flex items-center gap-1"
+                    >
+                      <span>JUMP TO SCENE</span>
+                      <span>▶</span>
+                    </button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* Tab 3: Production Dossier */}
           {activeTab === "dossier" && (
             <div className="p-6 space-y-6">
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 font-mono text-xs">
