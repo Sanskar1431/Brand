@@ -199,6 +199,82 @@ const ASPECT_RATIOS: AspectRatioDetail[] = [
   },
 ];
 
+interface ShadowSoldier {
+  id: string;
+  name: string;
+  koreanName: string;
+  hindiTitle: string;
+  rank: string;
+  combatPower: number;
+  manaCost: number;
+  ability: string;
+  description: string;
+  defaultExtracted: boolean;
+}
+
+const SHADOW_ROSTER: ShadowSoldier[] = [
+  {
+    id: "igris",
+    name: "Igris the Blood-Red",
+    koreanName: "핏빛의 이그리트",
+    hindiTitle: "रक्त-लाल सेनापति इग्रिस",
+    rank: "KNIGHT COMMANDER",
+    combatPower: 45000,
+    manaCost: 250,
+    ability: "Dual Greatsword Storm & Telekinesis",
+    description: "Loyal commander of the shadow vanguard. Fought with chivalry to the death in the Throne Room.",
+    defaultExtracted: true,
+  },
+  {
+    id: "tank",
+    name: "Tank (Ice Bear Monarch)",
+    koreanName: "탱크",
+    hindiTitle: "हिम भालू सम्राट टैंक",
+    rank: "ELITE KNIGHT",
+    combatPower: 32000,
+    manaCost: 180,
+    ability: "Glacial Roar & Seismic Groundslam",
+    description: "Alpha beast of the Red Gate snow plains. Massive brute strength and indestructible hide.",
+    defaultExtracted: false,
+  },
+  {
+    id: "iron",
+    name: "Iron (Shield Knight)",
+    koreanName: "아이언",
+    hindiTitle: "कवचधारी योद्धा आयरन",
+    rank: "KNIGHT",
+    combatPower: 28000,
+    manaCost: 150,
+    ability: "Taunt Warcry & Tower Shield Barrier",
+    description: "Extracted from the fallen A-rank hunter Kim Chul. Draws all enemy aggro with thunderous battle roars.",
+    defaultExtracted: false,
+  },
+  {
+    id: "kaisel",
+    name: "Kaisel (Sky Wyvern)",
+    koreanName: "카이셀",
+    hindiTitle: "आकाशीय ड्रैगन कैसेल",
+    rank: "ANCIENT DRAGON",
+    combatPower: 58000,
+    manaCost: 400,
+    ability: "Supersonic Flight & Dark Flame Breath",
+    description: "The steed of the Demon King Baran. Provides limitless aerial superiority to the Shadow Monarch.",
+    defaultExtracted: false,
+  },
+  {
+    id: "beru",
+    name: "Beru (Ant King)",
+    koreanName: "베르",
+    hindiTitle: "चींटी राजा बेरू",
+    rank: "MARSHAL",
+    combatPower: 92000,
+    manaCost: 650,
+    ability: "Hypersonic Claws, Regeneration & Devour",
+    description: "The apex predator of Jeju Island. Capable of speech, flight, high-tier healing magic, and unmatched speed.",
+    defaultExtracted: false,
+  },
+];
+
 const CHAPTERS: Chapter[] = [
   {
     id: 1,
@@ -357,6 +433,43 @@ export default function VarunVideoPage() {
     setQuestClaimed(false);
     setCopyToast("DAILY QUEST LOG RESET");
     setTimeout(() => setCopyToast(null), 2000);
+  };
+
+  const [showAriseModal, setShowAriseModal] = useState(false);
+  const [extractedShadows, setExtractedShadows] = useState<string[]>(["igris"]);
+  const [isExtractingId, setIsExtractingId] = useState<string | null>(null);
+
+  const toggleAriseModal = () => {
+    setShowAriseModal((prev) => !prev);
+  };
+
+  const attemptExtraction = (soldier: ShadowSoldier) => {
+    if (extractedShadows.includes(soldier.id)) {
+      setCopyToast(`${soldier.name.toUpperCase()} IS ALREADY SERVING IN YOUR SHADOW ARMY`);
+      setTimeout(() => setCopyToast(null), 2500);
+      return;
+    }
+
+    setIsExtractingId(soldier.id);
+    setCopyToast(`ATTEMPTING SHADOW EXTRACTION: "ARISE... (उठो)"`);
+
+    setTimeout(() => {
+      setIsExtractingId(null);
+      setExtractedShadows((prev) => [...prev, soldier.id]);
+      setCopyToast(`EXTRACTION SUCCESSFUL: ${soldier.name.toUpperCase()} HAS JOINED THE MONARCH!`);
+      setTimeout(() => setCopyToast(null), 3500);
+    }, 1100);
+  };
+
+  const summonAllShadows = () => {
+    setCopyToast(`"उठो... (ARISE!)" — ${extractedShadows.length} SHADOW SOLDIERS SUMMONED INTO BATTLE!`);
+    setTimeout(() => setCopyToast(null), 3500);
+  };
+
+  const resetShadowArmy = () => {
+    setExtractedShadows(["igris"]);
+    setCopyToast("SHADOW ARMY RESET TO DEFAULT (COMMANDER IGRIS)");
+    setTimeout(() => setCopyToast(null), 2500);
   };
 
   const toggleSystemHud = () => {
@@ -697,6 +810,9 @@ export default function VarunVideoPage() {
       } else if (e.key === "q" || e.key === "Q") {
         e.preventDefault();
         toggleQuestModal();
+      } else if (e.key === "r" || e.key === "R") {
+        e.preventDefault();
+        toggleAriseModal();
       } else if (e.key === "c" || e.key === "C") {
         e.preventDefault();
         cycleColorGrade();
@@ -827,6 +943,22 @@ export default function VarunVideoPage() {
               title="Daily Quest: Courage of the Weak Training Protocol (Q)"
             >
               QUEST [Q]: {questClaimed ? "CLEARED" : isQuestFullyCompleted ? "READY" : `${Math.round(((questPushups + questSitups + questSquats + (questRunKm * 10)) / 400) * 100)}%`}
+            </button>
+
+            {/* Shadow Extraction Necromancy Ceremony Trigger */}
+            <button
+              type="button"
+              onClick={toggleAriseModal}
+              className={`px-2.5 py-1 text-[9px] font-mono border transition-all cursor-pointer ${
+                showAriseModal
+                  ? "border-purple-400 text-purple-300 bg-purple-950/40 shadow-[0_0_12px_rgba(192,132,252,0.3)]"
+                  : extractedShadows.length >= 5
+                  ? "border-purple-400 text-purple-300 bg-purple-950/20"
+                  : "border-border-subtle text-chrome hover:border-purple-400 hover:text-purple-300"
+              }`}
+              title="Shadow Extraction & Necromancy Army Codex (R)"
+            >
+              ARISE [R]: {extractedShadows.length}/5
             </button>
 
             {/* Equalizer Spectrum Toggle */}
@@ -961,6 +1093,10 @@ export default function VarunVideoPage() {
                     <span>+{bonusStats} ALL STATS</span>
                   </div>
                 )}
+                <div className="flex justify-between text-purple-300 font-bold pt-0.5 border-t border-cyan-500/20">
+                  <span>SHADOW ARMY:</span>
+                  <span>{extractedShadows.length} / 5 EXTRACTED</span>
+                </div>
               </div>
             </div>
           )}
@@ -1631,6 +1767,10 @@ export default function VarunVideoPage() {
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">Q</kbd>
               </div>
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
+                <span>Shadow Army Arise Protocol</span>
+                <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">R</kbd>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Cycle Cinema Aspect Ratio</span>
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">A</kbd>
               </div>
@@ -2068,6 +2208,174 @@ export default function VarunVideoPage() {
                   INCOMPLETE ({Math.round(((questPushups + questSitups + questSquats + (questRunKm * 10)) / 400) * 100)}%)
                 </button>
               )}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shadow Army Necromancy Codex Modal */}
+      {showAriseModal && (
+        <div
+          role="dialog"
+          aria-label="Shadow Army Necromancy Codex"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4"
+          onClick={() => setShowAriseModal(false)}
+        >
+          <div
+            className="w-full max-w-2xl bg-bg-surface border-2 border-purple-500/60 p-6 shadow-[0_0_50px_rgba(168,85,247,0.3)] space-y-5 font-mono text-xs max-h-[90vh] overflow-y-auto"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* Header */}
+            <div className="flex items-center justify-between border-b border-purple-500/30 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-purple-400 animate-ping" />
+                <span className="text-purple-300 font-bold tracking-widest uppercase text-sm">
+                  NECROMANCY CODEX // SHADOW ARMY (그림자 군단)
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowAriseModal(false)}
+                className="text-chrome hover:text-purple-300 font-bold cursor-pointer"
+                aria-label="Close shadow army modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Sovereign Command Chant Banner */}
+            <div className="p-3 bg-purple-950/30 border border-purple-500/40 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[11px] text-purple-300 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <span>✦</span> SOVEREIGN INVOCATION: &ldquo;उठो... (ARISE)&rdquo;
+                </span>
+                <span className="text-[9px] text-accent font-bold uppercase">
+                  MONARCH MANA POOL: 9,840 MP
+                </span>
+              </div>
+              <p className="text-[10.5px] text-chrome/80 leading-relaxed">
+                Extract the spiritual shadows of defeated dungeon monarchs and fallen warriors. Binding a shadow permanently adds their combat abilities and loyal vanguard strength to your sovereign army.
+              </p>
+            </div>
+
+            {/* Army Telemetry Bar */}
+            <div className="grid grid-cols-3 gap-3">
+              <div className="p-2.5 bg-bg-primary/70 border border-border-subtle/50 text-center">
+                <span className="text-[9px] text-chrome/60 uppercase block">ACTIVE SOLDIERS</span>
+                <span className="text-purple-300 font-bold text-sm block mt-0.5">
+                  {extractedShadows.length} / {SHADOW_ROSTER.length} EXTRACTED
+                </span>
+              </div>
+              <div className="p-2.5 bg-bg-primary/70 border border-border-subtle/50 text-center">
+                <span className="text-[9px] text-chrome/60 uppercase block">TOTAL COMBAT POWER</span>
+                <span className="text-accent font-bold text-sm block mt-0.5">
+                  {SHADOW_ROSTER.filter((s) => extractedShadows.includes(s.id))
+                    .reduce((acc, curr) => acc + curr.combatPower, 0)
+                    .toLocaleString()}{" "}
+                  CP
+                </span>
+              </div>
+              <div className="p-2.5 bg-bg-primary/70 border border-border-subtle/50 text-center">
+                <span className="text-[9px] text-chrome/60 uppercase block">SHADOW DOMAIN</span>
+                <span className="text-emerald-400 font-bold text-sm block mt-0.5">
+                  EXPANDED (100%)
+                </span>
+              </div>
+            </div>
+
+            {/* Soldiers Roster */}
+            <div className="space-y-3">
+              {SHADOW_ROSTER.map((soldier) => {
+                const isExtracted = extractedShadows.includes(soldier.id);
+                const isExtracting = isExtractingId === soldier.id;
+
+                return (
+                  <div
+                    key={soldier.id}
+                    className={`p-3 border transition-all ${
+                      isExtracted
+                        ? "bg-purple-950/20 border-purple-500/50 shadow-[0_0_15px_rgba(168,85,247,0.15)]"
+                        : "bg-bg-primary/60 border-border-subtle/40 hover:border-purple-500/40"
+                    }`}
+                  >
+                    <div className="flex flex-wrap items-start justify-between gap-2 border-b border-border-subtle/30 pb-2">
+                      <div>
+                        <div className="flex items-center gap-2">
+                          <span className="text-text-primary font-bold text-xs uppercase tracking-wide">
+                            {soldier.name}
+                          </span>
+                          <span className="text-[9px] font-mono text-purple-300/80">
+                            ({soldier.koreanName})
+                          </span>
+                        </div>
+                        <span className="text-[9.5px] text-accent font-mono block mt-0.5">
+                          {soldier.hindiTitle}
+                        </span>
+                      </div>
+
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] px-2 py-0.5 bg-bg-surface border border-purple-400/50 text-purple-300 font-bold uppercase">
+                          {soldier.rank}
+                        </span>
+                        <span className="text-[9px] px-2 py-0.5 bg-bg-surface border border-accent/40 text-accent font-bold">
+                          {soldier.combatPower.toLocaleString()} CP
+                        </span>
+                      </div>
+                    </div>
+
+                    <div className="pt-2 space-y-1">
+                      <p className="text-[10px] text-chrome/90">
+                        <span className="text-purple-400 font-bold">SPECIALTY: </span>
+                        {soldier.ability}
+                      </p>
+                      <p className="text-[9.5px] text-chrome/70 italic leading-relaxed">
+                        {soldier.description}
+                      </p>
+                    </div>
+
+                    <div className="flex items-center justify-between pt-2.5 mt-2 border-t border-border-subtle/20">
+                      <span className="text-[9px] text-chrome/60">
+                        EXTRACTION MANA: <span className="text-cyan-400 font-bold">-{soldier.manaCost} MP</span>
+                      </span>
+
+                      {isExtracted ? (
+                        <span className="px-3 py-1 bg-purple-900/40 border border-purple-400 text-purple-300 font-bold text-[9px] uppercase tracking-wider flex items-center gap-1.5">
+                          <span className="w-1.5 h-1.5 rounded-full bg-purple-400 animate-ping" />
+                          SERVING MONARCH ✓
+                        </span>
+                      ) : (
+                        <button
+                          type="button"
+                          disabled={isExtracting}
+                          onClick={() => attemptExtraction(soldier)}
+                          className="px-3 py-1 bg-gradient-to-r from-purple-700 to-accent text-bg-primary font-bold text-[9px] uppercase tracking-wider hover:opacity-90 transition-opacity cursor-pointer shadow-[0_0_12px_rgba(168,85,247,0.3)] disabled:opacity-50"
+                        >
+                          {isExtracting ? "EXTRACTING... (उठो)" : "ARISE (EXTRACT) ⚔"}
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            {/* Footer Buttons */}
+            <div className="flex items-center justify-between gap-3 pt-2 border-t border-purple-500/30">
+              <button
+                type="button"
+                onClick={resetShadowArmy}
+                className="px-3 py-2 border border-border-subtle hover:border-rose-400 text-chrome hover:text-rose-400 text-xs uppercase cursor-pointer transition-colors"
+              >
+                RESET CODEX 🔄
+              </button>
+
+              <button
+                type="button"
+                onClick={summonAllShadows}
+                className="px-4 py-2 bg-gradient-to-r from-purple-600 via-accent to-purple-600 text-bg-primary font-bold uppercase text-xs hover:opacity-95 shadow-[0_0_20px_rgba(168,85,247,0.4)] cursor-pointer tracking-wider"
+              >
+                SUMMON ALL SHADOWS (ARISE / उठो) ⚔
+              </button>
             </div>
           </div>
         </div>
