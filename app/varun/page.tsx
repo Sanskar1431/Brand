@@ -158,6 +158,47 @@ const ICONIC_QUOTES: QuoteItem[] = [
   },
 ];
 
+type AspectRatio = "16:9" | "21:9" | "imax" | "fill";
+
+interface AspectRatioDetail {
+  id: AspectRatio;
+  name: string;
+  badge: string;
+  aspectClass: string;
+  lensSpec: string;
+}
+
+const ASPECT_RATIOS: AspectRatioDetail[] = [
+  {
+    id: "16:9",
+    name: "16:9 STANDARD",
+    badge: "WIDESCREEN",
+    aspectClass: "aspect-video",
+    lensSpec: "Standard 1.78:1 HD",
+  },
+  {
+    id: "21:9",
+    name: "21:9 ANAMORPHIC",
+    badge: "CINEMA SCOPE",
+    aspectClass: "aspect-[21/9]",
+    lensSpec: "Anamorphic Scope 2.39:1",
+  },
+  {
+    id: "imax",
+    name: "1.43:1 IMAX",
+    badge: "IMAX 70MM",
+    aspectClass: "aspect-[1.43/1]",
+    lensSpec: "Tall IMAX 1.43:1 Exp",
+  },
+  {
+    id: "fill",
+    name: "EXPANDED FILL",
+    badge: "FULL WIDTH",
+    aspectClass: "aspect-[16/10]",
+    lensSpec: "Studio Full 1.6:1",
+  },
+];
+
 const CHAPTERS: Chapter[] = [
   {
     id: 1,
@@ -223,6 +264,15 @@ export default function VarunVideoPage() {
   };
   const [audioProfile, setAudioProfile] = useState<AudioProfile>("cinematic");
   const [colorGrade, setColorGrade] = useState<ColorGrade>("original");
+  const [aspectRatio, setAspectRatio] = useState<AspectRatio>("16:9");
+
+  const cycleAspectRatio = () => {
+    const currentIndex = ASPECT_RATIOS.findIndex((a) => a.id === aspectRatio);
+    const nextRatio = ASPECT_RATIOS[(currentIndex + 1) % ASPECT_RATIOS.length];
+    setAspectRatio(nextRatio.id);
+    setCopyToast(`CINEMA FRAMING: ${nextRatio.name} [${nextRatio.badge}]`);
+    setTimeout(() => setCopyToast(null), 2500);
+  };
 
   const cycleColorGrade = () => {
     const currentIndex = COLOR_GRADES.findIndex((g) => g.id === colorGrade);
@@ -561,6 +611,9 @@ export default function VarunVideoPage() {
       } else if (e.key === "ArrowDown") {
         e.preventDefault();
         handleVolumeChange(volume - 0.1);
+      } else if (e.key === "a" || e.key === "A") {
+        e.preventDefault();
+        cycleAspectRatio();
       } else if (e.key === "c" || e.key === "C") {
         e.preventDefault();
         cycleColorGrade();
@@ -708,10 +761,10 @@ export default function VarunVideoPage() {
           </div>
         </div>
 
-        {/* Video Player Container */}
+        {/* Video Player Container with Dynamic Aspect Ratio */}
         <div
           ref={containerRef}
-          className="relative w-full aspect-video bg-black border border-accent/40 shadow-[0_0_50px_rgba(212,163,89,0.25)] overflow-hidden flex flex-col group"
+          className={`relative w-full ${ASPECT_RATIOS.find((a) => a.id === aspectRatio)?.aspectClass || "aspect-video"} bg-black border border-accent/40 shadow-[0_0_50px_rgba(212,163,89,0.25)] overflow-hidden flex flex-col group transition-all duration-500`}
         >
           <video
             ref={videoRef}
@@ -1125,6 +1178,41 @@ export default function VarunVideoPage() {
           </div>
         </div>
 
+        {/* Cinema Aspect Ratio Framing Bar */}
+        <div className="px-4 py-2.5 bg-bg-surface/60 border-l border-r border-b border-border-subtle/50 flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
+          <div className="flex flex-wrap items-center gap-2">
+            <span className="text-[10px] text-accent tracking-widest uppercase font-bold flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-accent animate-ping" />
+              CINEMA FRAMING:
+            </span>
+            <div className="flex flex-wrap gap-1">
+              {ASPECT_RATIOS.map((ratio) => (
+                <button
+                  key={ratio.id}
+                  type="button"
+                  onClick={() => {
+                    setAspectRatio(ratio.id);
+                    setCopyToast(`CINEMA FRAMING: ${ratio.name}`);
+                    setTimeout(() => setCopyToast(null), 2500);
+                  }}
+                  className={`px-2 py-0.5 text-[9px] uppercase tracking-wider border transition-all cursor-pointer ${
+                    aspectRatio === ratio.id
+                      ? "border-accent bg-accent/20 text-accent font-bold shadow-[0_0_8px_rgba(212,163,89,0.25)]"
+                      : "border-border-subtle text-chrome hover:border-chrome"
+                  }`}
+                  title={`${ratio.name} (${ratio.lensSpec})`}
+                >
+                  {ratio.name}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="text-[9px] font-mono text-chrome/60 hidden sm:block">
+            LENS: <span className="text-text-primary">{ASPECT_RATIOS.find((a) => a.id === aspectRatio)?.lensSpec}</span> (HotKey: <kbd className="text-accent bg-bg-primary px-1 border border-border-subtle font-bold">A</kbd>)
+          </div>
+        </div>
+
         {/* Tabs: Episode Chapters vs Production Dossier */}
         <div className="border border-border-subtle/50 bg-bg-surface/30">
           <div className="flex flex-wrap border-b border-border-subtle/50">
@@ -1379,6 +1467,10 @@ export default function VarunVideoPage() {
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Cycle Audio EQ Profile</span>
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">E</kbd>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border-subtle/30">
+                <span>Cycle Cinema Aspect Ratio</span>
+                <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">A</kbd>
               </div>
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Cycle Color Grade LUT</span>
