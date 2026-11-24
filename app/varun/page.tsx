@@ -291,6 +291,73 @@ export default function VarunVideoPage() {
   };
   const [showVisualizer, setShowVisualizer] = useState(false);
   const [showSystemHud, setShowSystemHud] = useState(false);
+  const [showQuestModal, setShowQuestModal] = useState(false);
+  const [questPushups, setQuestPushups] = useState(0);
+  const [questSitups, setQuestSitups] = useState(0);
+  const [questSquats, setQuestSquats] = useState(0);
+  const [questRunKm, setQuestRunKm] = useState(0);
+  const [questClaimed, setQuestClaimed] = useState(false);
+  const [bonusStats, setBonusStats] = useState(0);
+
+  const isQuestFullyCompleted =
+    questPushups >= 100 && questSitups >= 100 && questSquats >= 100 && questRunKm >= 10.0;
+
+  const toggleQuestModal = () => {
+    setShowQuestModal((prev) => !prev);
+  };
+
+  const addQuestProgress = (
+    type: "pushups" | "situps" | "squats" | "run",
+    amount: number
+  ) => {
+    if (type === "pushups") {
+      setQuestPushups((prev) => {
+        const next = Math.min(100, Math.max(0, prev + amount));
+        setCopyToast(`DAILY MISSION: PUSH-UPS ${next}/100`);
+        setTimeout(() => setCopyToast(null), 2000);
+        return next;
+      });
+    } else if (type === "situps") {
+      setQuestSitups((prev) => {
+        const next = Math.min(100, Math.max(0, prev + amount));
+        setCopyToast(`DAILY MISSION: SIT-UPS ${next}/100`);
+        setTimeout(() => setCopyToast(null), 2000);
+        return next;
+      });
+    } else if (type === "squats") {
+      setQuestSquats((prev) => {
+        const next = Math.min(100, Math.max(0, prev + amount));
+        setCopyToast(`DAILY MISSION: SQUATS ${next}/100`);
+        setTimeout(() => setCopyToast(null), 2000);
+        return next;
+      });
+    } else if (type === "run") {
+      setQuestRunKm((prev) => {
+        const next = Math.min(10.0, Math.max(0, Math.round((prev + amount) * 10) / 10));
+        setCopyToast(`DAILY MISSION: RUNNING ${next.toFixed(1)}/10.0 KM`);
+        setTimeout(() => setCopyToast(null), 2000);
+        return next;
+      });
+    }
+  };
+
+  const claimQuestRewards = () => {
+    if (!isQuestFullyCompleted) return;
+    setQuestClaimed(true);
+    setBonusStats((prev) => prev + 3);
+    setCopyToast("QUEST CLEARED! +3 STAT POINTS ACQUIRED & FATIGUE RECOVERED");
+    setTimeout(() => setCopyToast(null), 3500);
+  };
+
+  const resetQuest = () => {
+    setQuestPushups(0);
+    setQuestSitups(0);
+    setQuestSquats(0);
+    setQuestRunKm(0);
+    setQuestClaimed(false);
+    setCopyToast("DAILY QUEST LOG RESET");
+    setTimeout(() => setCopyToast(null), 2000);
+  };
 
   const toggleSystemHud = () => {
     setShowSystemHud((prev) => {
@@ -627,6 +694,9 @@ export default function VarunVideoPage() {
       } else if (e.key === "s" || e.key === "S") {
         e.preventDefault();
         toggleSystemHud();
+      } else if (e.key === "q" || e.key === "Q") {
+        e.preventDefault();
+        toggleQuestModal();
       } else if (e.key === "c" || e.key === "C") {
         e.preventDefault();
         cycleColorGrade();
@@ -741,6 +811,22 @@ export default function VarunVideoPage() {
               title="Toggle Solo Leveling Hunter System HUD (S)"
             >
               HUNTER HUD: {showSystemHud ? "ON" : "OFF"}
+            </button>
+
+            {/* Hunter Daily Quest Protocol Trigger */}
+            <button
+              type="button"
+              onClick={toggleQuestModal}
+              className={`px-2.5 py-1 text-[9px] font-mono border transition-all cursor-pointer ${
+                showQuestModal
+                  ? "border-amber-400 text-amber-300 bg-amber-950/40 shadow-[0_0_12px_rgba(251,191,36,0.3)]"
+                  : isQuestFullyCompleted
+                  ? "border-emerald-500 text-emerald-400 bg-emerald-950/20"
+                  : "border-border-subtle text-chrome hover:border-amber-400 hover:text-amber-300"
+              }`}
+              title="Daily Quest: Courage of the Weak Training Protocol (Q)"
+            >
+              QUEST [Q]: {questClaimed ? "CLEARED" : isQuestFullyCompleted ? "READY" : `${Math.round(((questPushups + questSitups + questSquats + (questRunKm * 10)) / 400) * 100)}%`}
             </button>
 
             {/* Equalizer Spectrum Toggle */}
@@ -869,6 +955,12 @@ export default function VarunVideoPage() {
                   <span>EQUIPPED:</span>
                   <span className="text-accent font-bold truncate">KASAKA'S FANG (+25)</span>
                 </div>
+                {bonusStats > 0 && (
+                  <div className="flex justify-between text-emerald-400 font-bold pt-0.5 border-t border-cyan-500/20">
+                    <span>QUEST REWARD:</span>
+                    <span>+{bonusStats} ALL STATS</span>
+                  </div>
+                )}
               </div>
             </div>
           )}
@@ -1535,6 +1627,10 @@ export default function VarunVideoPage() {
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">S</kbd>
               </div>
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
+                <span>Daily Quest Training Protocol</span>
+                <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">Q</kbd>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Cycle Cinema Aspect Ratio</span>
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">A</kbd>
               </div>
@@ -1684,6 +1780,295 @@ export default function VarunVideoPage() {
             >
               DISABLE TIMER (OFF)
             </button>
+          </div>
+        </div>
+      )}
+
+      {/* Hunter Daily Quest Protocol Modal */}
+      {showQuestModal && (
+        <div
+          role="dialog"
+          aria-label="Daily Quest Training Protocol"
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4"
+          onClick={() => setShowQuestModal(false)}
+        >
+          <div
+            className="w-full max-w-lg bg-bg-surface border-2 border-cyan-400/60 p-6 shadow-[0_0_50px_rgba(34,211,238,0.25)] space-y-5 font-mono text-xs"
+            onClick={(e) => e.stopPropagation()}
+          >
+            {/* System Quest Header */}
+            <div className="flex items-center justify-between border-b border-cyan-500/30 pb-3">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-cyan-400 animate-ping" />
+                <span className="text-cyan-300 font-bold tracking-widest uppercase text-sm">
+                  QUEST INFO // COURAGE OF THE WEAK
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setShowQuestModal(false)}
+                className="text-chrome hover:text-cyan-300 font-bold cursor-pointer"
+                aria-label="Close quest modal"
+              >
+                ✕
+              </button>
+            </div>
+
+            {/* Penalty Zone Warning */}
+            <div className="p-3 bg-rose-950/20 border border-rose-500/40 space-y-1">
+              <div className="flex items-center justify-between">
+                <span className="text-[10px] text-rose-400 font-bold uppercase tracking-wider flex items-center gap-1.5">
+                  <span>⚠</span> PENALTY ZONE CONTINGENCY
+                </span>
+                <span className="text-[9px] text-rose-300/80 uppercase">
+                  ACTIVE SURVIVAL TIMER
+                </span>
+              </div>
+              <p className="text-[10.5px] text-chrome/80 leading-relaxed">
+                Failure to complete daily training results in mandatory transfer to the Desert Penalty Zone for 4 hours of giant centipede survival.
+              </p>
+            </div>
+
+            {/* Objectives List */}
+            <div className="space-y-3">
+              {/* Objective 1: Push-ups */}
+              <div className="p-3 bg-bg-primary/70 border border-border-subtle/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={questPushups >= 100 ? "text-emerald-400 font-bold" : "text-cyan-400 font-bold"}>
+                      {questPushups >= 100 ? "[✓]" : "[ ]"}
+                    </span>
+                    <span className="text-text-primary font-bold uppercase tracking-wider">
+                      PUSH-UPS
+                    </span>
+                  </div>
+                  <span className="text-accent font-bold">
+                    {questPushups} / 100
+                  </span>
+                </div>
+                <div className="w-full bg-bg-surface h-1.5 rounded-full overflow-hidden border border-border-subtle/40">
+                  <div
+                    className="bg-gradient-to-r from-cyan-500 to-accent h-full transition-all duration-200"
+                    style={{ width: `${Math.min(100, questPushups)}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("pushups", 10)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +10
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("pushups", 25)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +25
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("pushups", 100)}
+                    className="px-2 py-0.5 text-[9px] bg-cyan-950/60 border border-cyan-500 text-cyan-300 font-bold cursor-pointer hover:bg-cyan-900/80"
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+
+              {/* Objective 2: Sit-ups */}
+              <div className="p-3 bg-bg-primary/70 border border-border-subtle/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={questSitups >= 100 ? "text-emerald-400 font-bold" : "text-cyan-400 font-bold"}>
+                      {questSitups >= 100 ? "[✓]" : "[ ]"}
+                    </span>
+                    <span className="text-text-primary font-bold uppercase tracking-wider">
+                      SIT-UPS
+                    </span>
+                  </div>
+                  <span className="text-accent font-bold">
+                    {questSitups} / 100
+                  </span>
+                </div>
+                <div className="w-full bg-bg-surface h-1.5 rounded-full overflow-hidden border border-border-subtle/40">
+                  <div
+                    className="bg-gradient-to-r from-cyan-500 to-accent h-full transition-all duration-200"
+                    style={{ width: `${Math.min(100, questSitups)}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("situps", 10)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +10
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("situps", 25)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +25
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("situps", 100)}
+                    className="px-2 py-0.5 text-[9px] bg-cyan-950/60 border border-cyan-500 text-cyan-300 font-bold cursor-pointer hover:bg-cyan-900/80"
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+
+              {/* Objective 3: Squats */}
+              <div className="p-3 bg-bg-primary/70 border border-border-subtle/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={questSquats >= 100 ? "text-emerald-400 font-bold" : "text-cyan-400 font-bold"}>
+                      {questSquats >= 100 ? "[✓]" : "[ ]"}
+                    </span>
+                    <span className="text-text-primary font-bold uppercase tracking-wider">
+                      SQUATS
+                    </span>
+                  </div>
+                  <span className="text-accent font-bold">
+                    {questSquats} / 100
+                  </span>
+                </div>
+                <div className="w-full bg-bg-surface h-1.5 rounded-full overflow-hidden border border-border-subtle/40">
+                  <div
+                    className="bg-gradient-to-r from-cyan-500 to-accent h-full transition-all duration-200"
+                    style={{ width: `${Math.min(100, questSquats)}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("squats", 10)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +10
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("squats", 25)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +25
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("squats", 100)}
+                    className="px-2 py-0.5 text-[9px] bg-cyan-950/60 border border-cyan-500 text-cyan-300 font-bold cursor-pointer hover:bg-cyan-900/80"
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+
+              {/* Objective 4: Running */}
+              <div className="p-3 bg-bg-primary/70 border border-border-subtle/50 space-y-2">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className={questRunKm >= 10 ? "text-emerald-400 font-bold" : "text-cyan-400 font-bold"}>
+                      {questRunKm >= 10 ? "[✓]" : "[ ]"}
+                    </span>
+                    <span className="text-text-primary font-bold uppercase tracking-wider">
+                      10KM RUN
+                    </span>
+                  </div>
+                  <span className="text-accent font-bold">
+                    {questRunKm.toFixed(1)} / 10.0 KM
+                  </span>
+                </div>
+                <div className="w-full bg-bg-surface h-1.5 rounded-full overflow-hidden border border-border-subtle/40">
+                  <div
+                    className="bg-gradient-to-r from-cyan-500 to-accent h-full transition-all duration-200"
+                    style={{ width: `${Math.min(100, (questRunKm / 10) * 100)}%` }}
+                  />
+                </div>
+                <div className="flex items-center justify-end gap-1.5 pt-1">
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("run", 1)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +1 KM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("run", 2.5)}
+                    className="px-2 py-0.5 text-[9px] border border-border-subtle hover:border-cyan-400 text-chrome hover:text-cyan-300 cursor-pointer"
+                  >
+                    +2.5 KM
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => addQuestProgress("run", 10)}
+                    className="px-2 py-0.5 text-[9px] bg-cyan-950/60 border border-cyan-500 text-cyan-300 font-bold cursor-pointer hover:bg-cyan-900/80"
+                  >
+                    MAX
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* System Quest Rewards */}
+            <div className="p-3 bg-bg-surface/50 border border-cyan-500/30 space-y-1.5">
+              <span className="text-[10px] text-cyan-300 font-bold uppercase tracking-wider block">
+                SYSTEM REWARDS (UPON COMPLETION):
+              </span>
+              <div className="grid grid-cols-3 gap-2 text-[10px] text-chrome/90">
+                <div className="p-1.5 bg-bg-primary/60 border border-border-subtle/40 text-center">
+                  <span className="text-accent block font-bold">REWARD 1</span>
+                  <span>Full Recovery</span>
+                </div>
+                <div className="p-1.5 bg-bg-primary/60 border border-border-subtle/40 text-center">
+                  <span className="text-accent block font-bold">REWARD 2</span>
+                  <span>+3 Stat Points</span>
+                </div>
+                <div className="p-1.5 bg-bg-primary/60 border border-border-subtle/40 text-center">
+                  <span className="text-accent block font-bold">REWARD 3</span>
+                  <span>Blessed Box</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Action Buttons */}
+            <div className="flex items-center justify-between gap-3 pt-2">
+              <button
+                type="button"
+                onClick={resetQuest}
+                className="px-3 py-2 border border-border-subtle hover:border-rose-400 text-chrome hover:text-rose-400 text-xs uppercase cursor-pointer transition-colors"
+              >
+                RESET QUEST 🔄
+              </button>
+
+              {isQuestFullyCompleted && !questClaimed ? (
+                <button
+                  type="button"
+                  onClick={claimQuestRewards}
+                  className="px-4 py-2 bg-gradient-to-r from-cyan-500 to-accent text-bg-primary font-bold uppercase text-xs hover:opacity-90 shadow-[0_0_20px_rgba(34,211,238,0.4)] cursor-pointer"
+                >
+                  CLAIM REWARDS 🏆
+                </button>
+              ) : questClaimed ? (
+                <span className="px-4 py-2 bg-emerald-950/60 border border-emerald-500 text-emerald-400 font-bold uppercase text-xs">
+                  MISSION CLEARED (+{bonusStats} STATS) ✓
+                </span>
+              ) : (
+                <button
+                  type="button"
+                  disabled
+                  className="px-4 py-2 bg-bg-primary/50 border border-border-subtle/40 text-chrome/40 text-xs uppercase cursor-not-allowed"
+                >
+                  INCOMPLETE ({Math.round(((questPushups + questSitups + questSquats + (questRunKm * 10)) / 400) * 100)}%)
+                </button>
+              )}
+            </div>
           </div>
         </div>
       )}
