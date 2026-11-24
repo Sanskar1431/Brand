@@ -290,6 +290,16 @@ export default function VarunVideoPage() {
     setTimeout(() => setCopyToast(null), 2500);
   };
   const [showVisualizer, setShowVisualizer] = useState(false);
+  const [showSystemHud, setShowSystemHud] = useState(false);
+
+  const toggleSystemHud = () => {
+    setShowSystemHud((prev) => {
+      const nextVal = !prev;
+      setCopyToast(`HUNTER SYSTEM HUD: ${nextVal ? "INITIALIZED" : "STANDBY"}`);
+      setTimeout(() => setCopyToast(null), 2500);
+      return nextVal;
+    });
+  };
   const [sleepRemainingSecs, setSleepRemainingSecs] = useState<number | null>(null);
   const [showSleepModal, setShowSleepModal] = useState(false);
   const [capturedImage, setCapturedImage] = useState<string | null>(null);
@@ -614,6 +624,9 @@ export default function VarunVideoPage() {
       } else if (e.key === "a" || e.key === "A") {
         e.preventDefault();
         cycleAspectRatio();
+      } else if (e.key === "s" || e.key === "S") {
+        e.preventDefault();
+        toggleSystemHud();
       } else if (e.key === "c" || e.key === "C") {
         e.preventDefault();
         cycleColorGrade();
@@ -716,6 +729,20 @@ export default function VarunVideoPage() {
               AMPLIGHT: {isAmbientGlow ? "ON" : "OFF"}
             </button>
 
+            {/* Solo Leveling Hunter System HUD Trigger */}
+            <button
+              type="button"
+              onClick={toggleSystemHud}
+              className={`px-2.5 py-1 text-[9px] font-mono border transition-all cursor-pointer ${
+                showSystemHud
+                  ? "border-cyan-400 text-cyan-300 bg-cyan-950/40 shadow-[0_0_12px_rgba(34,211,238,0.3)]"
+                  : "border-border-subtle text-chrome hover:border-cyan-400 hover:text-cyan-300"
+              }`}
+              title="Toggle Solo Leveling Hunter System HUD (S)"
+            >
+              HUNTER HUD: {showSystemHud ? "ON" : "OFF"}
+            </button>
+
             {/* Equalizer Spectrum Toggle */}
             <button
               type="button"
@@ -807,6 +834,41 @@ export default function VarunVideoPage() {
                     className="w-1 bg-gradient-to-t from-accent/50 to-accent rounded-t-xs"
                   />
                 ))}
+              </div>
+            </div>
+          )}
+
+          {/* Solo Leveling Hunter System HUD Overlay */}
+          {showSystemHud && (
+            <div className="absolute bottom-12 left-3 bg-black/85 backdrop-blur-md border border-cyan-400/50 p-3 pointer-events-none z-20 space-y-1.5 shadow-[0_0_20px_rgba(34,211,238,0.25)] max-w-xs font-mono">
+              <div className="flex items-center justify-between border-b border-cyan-500/30 pb-1">
+                <span className="text-[9px] font-bold text-cyan-300 uppercase tracking-widest flex items-center gap-1.5">
+                  <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping" />
+                  HUNTER SYSTEM // SUNG JIN-WOO
+                </span>
+                <span className="text-[9px] text-accent font-bold">LV.76</span>
+              </div>
+              <div className="space-y-1 text-[9px]">
+                <div className="flex justify-between text-chrome/80">
+                  <span>CLASS:</span>
+                  <span className="text-cyan-200 font-bold">SHADOW MONARCH</span>
+                </div>
+                <div>
+                  <div className="flex justify-between text-[8px] text-chrome/70">
+                    <span>MANA POOL:</span>
+                    <span className="text-cyan-300">9,840 / 10,000 MP</span>
+                  </div>
+                  <div className="w-full bg-bg-primary h-1 rounded-full overflow-hidden mt-0.5 border border-cyan-500/30">
+                    <div
+                      className="bg-gradient-to-r from-cyan-500 to-accent h-full transition-all duration-300"
+                      style={{ width: `${Math.min(100, Math.max(30, 98 - (currentTime % 30)))}%` }}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-between text-chrome/80 pt-0.5">
+                  <span>EQUIPPED:</span>
+                  <span className="text-accent font-bold truncate">KASAKA'S FANG (+25)</span>
+                </div>
               </div>
             </div>
           )}
@@ -1467,6 +1529,10 @@ export default function VarunVideoPage() {
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Cycle Audio EQ Profile</span>
                 <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">E</kbd>
+              </div>
+              <div className="flex justify-between py-1 border-b border-border-subtle/30">
+                <span>Toggle Hunter System HUD</span>
+                <kbd className="px-2 py-0.5 bg-bg-primary border border-border-subtle text-accent font-bold">S</kbd>
               </div>
               <div className="flex justify-between py-1 border-b border-border-subtle/30">
                 <span>Cycle Cinema Aspect Ratio</span>
